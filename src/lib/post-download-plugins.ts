@@ -141,6 +141,21 @@ export async function refreshPostDownloadWorkflowSteps(): Promise<PluginWorkflow
   return snapshots['download.completed'] ?? [];
 }
 
+export function refreshItemPluginWorkflowSnapshots<
+  T extends {
+    pluginWorkflowSnapshots?: PluginWorkflowSnapshotMap;
+    postDownloadWorkflowSteps?: PluginWorkflowStepSnapshot[];
+  },
+>(itemSettings: T | undefined, pluginWorkflowSnapshots: PluginWorkflowSnapshotMap): T | undefined {
+  if (!itemSettings) return itemSettings;
+
+  return {
+    ...itemSettings,
+    pluginWorkflowSnapshots,
+    postDownloadWorkflowSteps: pluginWorkflowSnapshots['download.completed'] ?? [],
+  };
+}
+
 export async function enqueuePluginWorkflowTrigger(
   trigger: PluginTrigger,
   payload: PostDownloadPluginPayload,

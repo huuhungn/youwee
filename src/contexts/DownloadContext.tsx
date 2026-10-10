@@ -65,6 +65,8 @@ import {
   enqueuePluginWorkflowTrigger,
   loadPluginWorkflowSnapshots,
   loadPostDownloadWorkflowSteps,
+  refreshItemPluginWorkflowSnapshots,
+  refreshPluginWorkflowSnapshots,
   refreshPostDownloadWorkflowSteps,
 } from '@/lib/post-download-plugins';
 import { QueueRunGuard } from '@/lib/queue-run-guard';
@@ -2355,26 +2357,31 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
   // Retry a failed download (reset item and restart)
   const retryFailedDownload = useCallback(
     (itemId: string) => {
-      // Reset item status to pending
-      const resetItem = (item: DownloadItem): DownloadItem =>
-        item.id === itemId
-          ? {
-              ...item,
-              status: 'pending' as const,
-              progress: 0,
-              error: undefined,
-              errorCode: undefined,
-              retryState: undefined,
-            }
-          : item;
+      void (async () => {
+        const pluginWorkflowSnapshots = await refreshPluginWorkflowSnapshots();
+        const resetItem = (item: DownloadItem): DownloadItem =>
+          item.id === itemId
+            ? {
+                ...item,
+                status: 'pending' as const,
+                progress: 0,
+                error: undefined,
+                errorCode: undefined,
+                retryState: undefined,
+                settings: refreshItemPluginWorkflowSnapshots(
+                  item.settings,
+                  pluginWorkflowSnapshots,
+                ),
+              }
+            : item;
 
-      // Update the ref synchronously: the queue reads itemsRef, which is otherwise
-      // only synced by an effect, so starting on a timer races the React commit.
-      itemsRef.current = itemsRef.current.map(resetItem);
-      setItems((currentItems) => currentItems.map(resetItem));
-      // Clear cookie error
-      setCookieError(null);
-      void startDownload();
+        // Update the ref synchronously: the queue reads itemsRef, which is otherwise
+        // only synced by an effect, so starting on a timer races the React commit.
+        itemsRef.current = itemsRef.current.map(resetItem);
+        setItems((currentItems) => currentItems.map(resetItem));
+        setCookieError(null);
+        void startDownload();
+      })();
     },
     [startDownload],
   );
