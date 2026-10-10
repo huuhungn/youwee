@@ -42,12 +42,12 @@ Status: ledger only. No product code has been ported from this file.
 | `dc2aa89` | 2026-07-19 | feat: add Flatpak build support and update documentation | Follow-up Flatpak manifest content is absent. |
 | `e65ddb0` | 2026-07-19 | feat: update Flatpak build configuration with appstream and runtime version change | Flatpak manifest is still absent. |
 | `222d507` | 2026-07-19 | feat: update Flatpak build configuration with appstream and runtime version change | Same missing manifest. |
-| `53bc789` | 2026-07-30 | fix(windows): improve yt-dlp filename safety without changing defaults | Fork has no `src-tauri/src/utils/filename.rs`. |
-| `a24a49a` | 2026-07-30 | fix(windows): cap trim at 180 and measure path length in bytes | Depends on the missing filename helper. |
+| `53bc789` | 2026-07-30 | fix(windows): improve yt-dlp filename safety without changing defaults | Already present in `services/ytdlp.rs`: Windows adds `--windows-filenames`, and trim length follows the output directory. The fork does not use a separate `utils/filename.rs`. |
+| `a24a49a` | 2026-07-30 | fix(windows): cap trim at 180 and measure path length in bytes | Already present: short paths clamp to 180 and `output_path.len()` measures bytes. |
 | `81e3dec` | 2026-08-01 | feat: add Turkish language support and update changelogs | `src/i18n/locales` has no `tr`. |
 | `6cd2621` | 2026-08-01 | feat: add Uzbek language support and update changelogs | `src/i18n/locales` has no `uz`. |
 | `72aad9c` | 2026-08-01 | feat: add Romanian language support and update changelogs | `src/i18n/locales` has no `ro`. |
-| `814fcc2` | 2026-07-09 | fix(windows): keep output folders out of yt-dlp templates | No fork equivalent for this template guard. |
+| `814fcc2` | 2026-07-09 | fix(windows): keep output folders out of yt-dlp templates | Already present: download and metadata pass the folder through `--paths home:...`; the `-o` template stays a filename. |
 | `ddab273` | 2026-09-20 | fix: improve AppImage runtime compatibility | `scripts/repair-appimage-runtime.sh` is absent. |
 | `3096176` | 2026-09-20 | fix: avoid system tray crash in Flatpak | No Flatpak tray guard. Fork tray use is not this path. |
 
@@ -153,4 +153,4 @@ These fork-only surfaces must still exist after every later port wave:
 
 ## Next wave
 
-Start with the remaining 12 `port` rows, in this order: Windows filename and output guards (`53bc789`, `a24a49a`, `814fcc2`), locales (`81e3dec`, `6cd2621`, `72aad9c`), then Linux packaging (`903386b`, `dc2aa89`, `e65ddb0`, `222d507`, `ddab273`, `3096176`). The first four download-settings rows were rechecked on 2026-10-10: three were already present, and `8c99b66` was adapted onto the fork retry path. After each later port, rerun the relevant `adapt` diff before editing that area.
+Start with the remaining 9 `port` rows: locales (`81e3dec`, `6cd2621`, `72aad9c`), then Linux packaging (`903386b`, `dc2aa89`, `e65ddb0`, `222d507`, `ddab273`, `3096176`). The Windows filename guards `53bc789`, `a24a49a`, and `814fcc2` were rechecked on 2026-10-10 and were already present, so their upstream helper was not copied. After each later port, rerun the relevant `adapt` diff before editing that area.
