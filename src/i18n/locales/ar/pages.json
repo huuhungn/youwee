@@ -303,6 +303,7 @@
       "copy": "نسخ",
       "copied": "تم النسخ",
       "delete": "حذف",
+      "moreActions": "المزيد",
       "deleteConfirm": "إزالة \"{{title}}\" من المكتبة؟ سيبقى ملف الوسائط على جهازك.",
       "failedToRedownload": "فشلت إعادة التنزيل",
       "sources": {

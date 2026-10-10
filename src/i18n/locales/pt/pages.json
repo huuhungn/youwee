@@ -303,6 +303,7 @@
       "copy": "Reter item visual num ponteiro de cópia",
       "copied": "Prontinho.",
       "delete": "Extinguir ambiente físico do banco local",
+      "moreActions": "Mais",
       "deleteConfirm": "Remover \"{{title}}\" da Biblioteca? O arquivo de mídia continuará no dispositivo.",
       "failedToRedownload": "Poxa. Tente na raíz...",
       "sources": {

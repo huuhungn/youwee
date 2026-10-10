@@ -300,6 +300,7 @@
       "copy": "Copiere",
       "copied": "Copiat",
       "delete": "Ștergeți",
+      "moreActions": "Mai mult",
       "deleteConfirm": "Eliminați „{{title}}” din Bibliotecă? Fișierul media va rămâne pe dispozitivul dvs.",
       "failedToRedownload": "Redescărcarea eșuată",
       "sources": {
