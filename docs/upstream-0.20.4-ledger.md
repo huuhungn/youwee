@@ -34,10 +34,10 @@ Status: ledger only. No product code has been ported from this file.
 
 | SHA | Date | Subject | Why it is still missing |
 | --- | --- | --- | --- |
-| `7b62cec` | 2026-06-27 | feat: add playlist numbering and chapter splitting options in download settings | Fork has no `src/lib/download-settings.ts` or its test. |
-| `8c99b66` | 2026-06-28 | feat: implement plugin workflow refresh for retried downloads | Same missing settings module. Workflow refresh is not a separate fork module. |
-| `ab9461c` | 2026-06-29 | feat: add option to prefix regular queued downloads with their queue order | Queue-order prefix settings file is absent. |
-| `434e632` | 2026-06-29 | feat: add automatic library collections for expanded playlists, channel downloads, and split chapter files | Automatic collection rules are not a fork module. |
+| `7b62cec` | 2026-06-27 | feat: add playlist numbering and chapter splitting options in download settings | Already present on the fork: settings UI, persisted flags, item snapshots, and `download.rs` template helpers. No new module imported. |
+| `8c99b66` | 2026-06-28 | feat: implement plugin workflow refresh for retried downloads | Ported the missing retry behavior. Manual retry now refreshes plugin workflow snapshots before restarting, while keeping the fork's synchronous queue ref. |
+| `ab9461c` | 2026-06-29 | feat: add option to prefix regular queued downloads with their queue order | Already present: `numberQueueItems` is persisted, snapshotted, and passed as `queue_index`. |
+| `434e632` | 2026-06-29 | feat: add automatic library collections for expanded playlists, channel downloads, and split chapter files | Already present: `autoOrganizeCollections` reaches the backend, and channel downloads have collection tests. |
 | `903386b` | 2026-07-19 | feat: add Flatpak build support and update documentation | `flatpak/com.vanloctech.youwee.yml` is absent. |
 | `dc2aa89` | 2026-07-19 | feat: add Flatpak build support and update documentation | Follow-up Flatpak manifest content is absent. |
 | `e65ddb0` | 2026-07-19 | feat: update Flatpak build configuration with appstream and runtime version change | Flatpak manifest is still absent. |
@@ -153,4 +153,4 @@ These fork-only surfaces must still exist after every later port wave:
 
 ## Next wave
 
-Start with the 16 `port` rows, in this order: download settings (`7b62cec`, `8c99b66`, `ab9461c`, `434e632`), Windows filename and output guards (`53bc789`, `a24a49a`, `814fcc2`), locales (`81e3dec`, `6cd2621`, `72aad9c`), then Linux packaging (`903386b`, `dc2aa89`, `e65ddb0`, `222d507`, `ddab273`, `3096176`). After each port, rerun the relevant `adapt` diff before editing that area.
+Start with the remaining 12 `port` rows, in this order: Windows filename and output guards (`53bc789`, `a24a49a`, `814fcc2`), locales (`81e3dec`, `6cd2621`, `72aad9c`), then Linux packaging (`903386b`, `dc2aa89`, `e65ddb0`, `222d507`, `ddab273`, `3096176`). The first four download-settings rows were rechecked on 2026-10-10: three were already present, and `8c99b66` was adapted onto the fork retry path. After each later port, rerun the relevant `adapt` diff before editing that area.

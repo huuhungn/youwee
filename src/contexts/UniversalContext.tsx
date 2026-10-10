@@ -59,6 +59,7 @@ import {
   enqueuePluginWorkflowTrigger,
   loadPluginWorkflowSnapshots,
   loadPostDownloadWorkflowSteps,
+  refreshItemPluginWorkflowSnapshots,
   refreshPluginWorkflowSnapshots,
   refreshPostDownloadWorkflowSteps,
 } from '@/lib/post-download-plugins';
@@ -1742,9 +1743,9 @@ export function UniversalProvider({ children }: { children: ReactNode }) {
   // Retry a failed download (reset item and restart)
   const retryFailedDownload = useCallback(
     (itemId: string) => {
-      // Reset item status to pending
-      setItems((currentItems) =>
-        currentItems.map((item) =>
+      void (async () => {
+        const pluginWorkflowSnapshots = await refreshPluginWorkflowSnapshots();
+        const resetItem = (item: DownloadItem): DownloadItem =>
           item.id === itemId
             ? {
                 ...item,
@@ -1753,16 +1754,18 @@ export function UniversalProvider({ children }: { children: ReactNode }) {
                 error: undefined,
                 errorCode: undefined,
                 retryState: undefined,
+                settings: refreshItemPluginWorkflowSnapshots(
+                  item.settings,
+                  pluginWorkflowSnapshots,
+                ),
               }
-            : item,
-        ),
-      );
-      // Clear cookie error
-      setCookieError(null);
-      // Use a short delay to ensure state update before starting download
-      setTimeout(() => {
+            : item;
+
+        itemsRef.current = itemsRef.current.map(resetItem);
+        setItems((currentItems) => currentItems.map(resetItem));
+        setCookieError(null);
         startDownload();
-      }, 100);
+      })();
     },
     [startDownload],
   );
