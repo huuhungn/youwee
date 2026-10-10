@@ -141,6 +141,8 @@ export interface ItemUniversalSettings {
   videoCompatibilityMode?: VideoCompatibilityMode;
   audioBitrate: AudioBitrate;
   youtubePlayerClient: YouTubePlayerClient;
+  ytdlpAdvancedOptionsEnabled?: boolean;
+  ytdlpAdvancedOptions?: YtdlpAdvancedOption[];
   preferredFps?: PreferredFps;
   useAria2: boolean;
   aria2Args: string;
@@ -701,6 +703,7 @@ export type PluginWorkflowRunStatus =
   | 'failed';
 
 export interface PluginChainMutation {
+  recovered?: boolean | null;
   activeFilepath?: string | null;
   activeFilename?: string | null;
   extraFiles: string[];
@@ -724,6 +727,7 @@ export interface PluginChainState {
   quality?: string | null;
   extraFiles: string[];
   metadata?: Record<string, unknown> | null;
+  recovered: boolean;
 }
 
 export interface PluginWorkflowRun {

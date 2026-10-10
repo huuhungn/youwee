@@ -6,6 +6,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-10-10
+
+### Added
+- **Recovered download mutation** - `download.failed` plugins can return `recovered: true` with `activeFilepath`. Youwee checks the path against the plugin write policy, confirms the file exists, records it in history, and marks the original download as completed.
+
 ## [2.2.0] - 2026-06-07
 
 ### Added
