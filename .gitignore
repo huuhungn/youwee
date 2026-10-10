@@ -31,6 +31,13 @@ src-tauri/bin/youwee-yt-dlp*
 src-tauri/resources/dependencies/windows/*.exe
 src-tauri/tauri.windows.full.conf.json
 
+# Flatpak build artifacts
+flatpak/input/
+flatpak/payload/
+flatpak/build-dir/
+flatpak/repo/
+flatpak/*.flatpak
+
 # Python (old version)
 *.py
 __pycache__/

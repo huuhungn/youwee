@@ -1,6 +1,6 @@
 # Upstream 0.20.4 disposition ledger
 
-Status: ledger only. No product code has been ported from this file.
+Status: all `port` rows ported on branch `port/upstream-0.20.4-ledger`. The `adapt` and `record` rows stay as written.
 
 - Fork base: `9e16de9` (`0.20.1-custom.7`, `origin/main`)
 - Upstream tip: `8db7ea4` (`0.20.4`, `upstream/main`)
@@ -38,18 +38,18 @@ Status: ledger only. No product code has been ported from this file.
 | `8c99b66` | 2026-06-28 | feat: implement plugin workflow refresh for retried downloads | Ported the missing retry behavior. Manual retry now refreshes plugin workflow snapshots before restarting, while keeping the fork's synchronous queue ref. |
 | `ab9461c` | 2026-06-29 | feat: add option to prefix regular queued downloads with their queue order | Already present: `numberQueueItems` is persisted, snapshotted, and passed as `queue_index`. |
 | `434e632` | 2026-06-29 | feat: add automatic library collections for expanded playlists, channel downloads, and split chapter files | Already present: `autoOrganizeCollections` reaches the backend, and channel downloads have collection tests. |
-| `903386b` | 2026-07-19 | feat: add Flatpak build support and update documentation | `flatpak/com.vanloctech.youwee.yml` is absent. |
-| `dc2aa89` | 2026-07-19 | feat: add Flatpak build support and update documentation | Follow-up Flatpak manifest content is absent. |
-| `e65ddb0` | 2026-07-19 | feat: update Flatpak build configuration with appstream and runtime version change | Flatpak manifest is still absent. |
-| `222d507` | 2026-07-19 | feat: update Flatpak build configuration with appstream and runtime version change | Same missing manifest. |
+| `903386b` | 2026-07-19 | feat: add Flatpak build support and update documentation | Ported the Flatpak manifest, `flatpak-test.yml`, the `flatpak` build job, and `.gitignore` excludes. The upstream metainfo file was later removed upstream, so it was not added. Updater and Settings Flatpak handling were already present. Changelog and README text were not copied. |
+| `dc2aa89` | 2026-07-19 | feat: add Flatpak build support and update documentation | Ported the follow-up job content: Flatpak artifact upload, release dependency, required `Youwee-Linux.flatpak` asset, checksum, and release file globs. |
+| `e65ddb0` | 2026-07-19 | feat: update Flatpak build configuration with appstream and runtime version change | Ported in the upstream-tip state, not this intermediate one: runtime is `49` (set by `f635cd7`), and the `appstream` package and metainfo check were removed again by `222d507`. |
+| `222d507` | 2026-07-19 | feat: update Flatpak build configuration with appstream and runtime version change | Ported: no `appstream` package, no metainfo file or check, matching upstream tip. |
 | `53bc789` | 2026-07-30 | fix(windows): improve yt-dlp filename safety without changing defaults | Already present in `services/ytdlp.rs`: Windows adds `--windows-filenames`, and trim length follows the output directory. The fork does not use a separate `utils/filename.rs`. |
 | `a24a49a` | 2026-07-30 | fix(windows): cap trim at 180 and measure path length in bytes | Already present: short paths clamp to 180 and `output_path.len()` measures bytes. |
 | `81e3dec` | 2026-08-01 | feat: add Turkish language support and update changelogs | Ported `tr` catalogs. Upstream changelog text was not copied. Fork-only keys stay in English. |
 | `6cd2621` | 2026-08-01 | feat: add Uzbek language support and update changelogs | Ported `uz` catalogs. Upstream changelog text was not copied. Fork-only keys stay in English. |
 | `72aad9c` | 2026-08-01 | feat: add Romanian language support and update changelogs | Ported `ro` catalogs. Upstream changelog text was not copied. Fork-only keys stay in English. |
 | `814fcc2` | 2026-07-09 | fix(windows): keep output folders out of yt-dlp templates | Already present: download and metadata pass the folder through `--paths home:...`; the `-o` template stays a filename. |
-| `ddab273` | 2026-09-20 | fix: improve AppImage runtime compatibility | `scripts/repair-appimage-runtime.sh` is absent. |
-| `3096176` | 2026-09-20 | fix: avoid system tray crash in Flatpak | No Flatpak tray guard. Fork tray use is not this path. |
+| `ddab273` | 2026-09-20 | fix: improve AppImage runtime compatibility | Ported `scripts/repair-appimage-runtime.sh` (executable), the release repair and re-sign step, CI deb/AppImage bundle validation, and `squashfs-tools`. The fork deep-link fix script was already identical. |
+| `3096176` | 2026-09-20 | fix: avoid system tray crash in Flatpak | Ported as `should_setup_system_tray()`, reusing the fork's `is_flatpak_environment()`. It skips tray setup and menu rebuilds in Flatpak, and closes normally instead of hiding to a missing tray. |
 
 ## Adapt
 
@@ -111,10 +111,10 @@ Diff these against the fork before editing. Do not replace the fork copy wholesa
 | `66547d4` | 2026-08-23 | fix: add CI validation for Linux package to ensure deep-link desktop entries preserve URL requests | `.github/workflows/build.yml` exists. Fork has no `flatpak-test.yml`. |
 | `760e1b2` | 2026-09-20 | fix: inherit settings for extension downloads | Extension download path exists. Inheritance of global settings was not found. |
 | `f9f22be` | 2026-09-20 | fix: respect auto subtitle languages | Subtitle selection code exists. Compare language filtering. |
-| `cff9719` | 2026-09-20 | fix: use Linux AppImage binary name | Release scripts exist. Binary-name fix still needs a diff. |
-| `f635cd7` | 2026-09-20 | fix: stabilize Flatpak WebKit runtime | Needs the ported Flatpak manifest before this delta applies. |
+| `cff9719` | 2026-09-20 | fix: use Linux AppImage binary name | Included in the Linux packaging port: the repair step passes the binary name `youwee`. |
+| `f635cd7` | 2026-09-20 | fix: stabilize Flatpak WebKit runtime | Included in the Linux packaging port: manifest runtime `49`, `xvfb`, and the Flatpak launch smoke test in both workflows. |
 | `7aeb63a` | 2026-09-20 | fix: update version to 0.20.4 and adjust Firefox extension signing order | Fork Firefox signing flow exists. Take the signing order only, never version `0.20.4`. |
-| `8db7ea4` | 2026-09-20 | fix: provide key when re-signing AppImage | Release workflow exists. Diff the key argument only. |
+| `8db7ea4` | 2026-09-20 | fix: provide key when re-signing AppImage | Included in the Linux packaging port: the AppImage repair step gets the Tauri signing key env before `tauri signer sign`. |
 
 ## Record
 
@@ -153,4 +153,4 @@ These fork-only surfaces must still exist after every later port wave:
 
 ## Next wave
 
-Start with the remaining 6 `port` rows: Linux packaging (`903386b`, `dc2aa89`, `e65ddb0`, `222d507`, `ddab273`, `3096176`). Locales `81e3dec`, `6cd2621`, and `72aad9c` were ported on 2026-10-10 with English fallbacks for fork-only keys and without upstream changelog text. The Windows filename guards `53bc789`, `a24a49a`, and `814fcc2` were rechecked on 2026-10-10 and were already present, so their upstream helper was not copied. After each later port, rerun the relevant `adapt` diff before editing that area.
+All 6 Linux packaging `port` rows (`903386b`, `dc2aa89`, `e65ddb0`, `222d507`, `ddab273`, `3096176`) were ported on 2026-10-10 on the fork's workflows, without upstream changelog or version text. Not tested locally: the Flatpak and AppImage jobs need an Ubuntu runner. Locales `81e3dec`, `6cd2621`, and `72aad9c` were ported on 2026-10-10 with English fallbacks for fork-only keys and without upstream changelog text. The Windows filename guards `53bc789`, `a24a49a`, and `814fcc2` were rechecked on 2026-10-10 and were already present, so their upstream helper was not copied. After each later port, rerun the relevant `adapt` diff before editing that area.
