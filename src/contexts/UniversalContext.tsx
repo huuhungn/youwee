@@ -85,7 +85,9 @@ import type {
 } from '@/lib/types';
 import {
   normalizeUniversalFormatCodec,
+  parseUniversalDownloadAdvancedSettings,
   resolveUniversalVideoCodec,
+  resolveUniversalYtdlpAdvancedOptions,
 } from '@/lib/universal-settings';
 import {
   applyVideoCompatibilityPreset,
@@ -226,20 +228,14 @@ function loadSponsorBlockArgs(): { remove: string | null; mark: string | null } 
   return { remove: null, mark: null };
 }
 
-function loadAria2Settings(): { useAria2: boolean; aria2Args: string } {
+// aria2 and the vetted yt-dlp advanced options live in the shared download settings.
+function loadDownloadAdvancedSettings() {
   try {
-    const saved = localStorage.getItem(DOWNLOAD_STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return {
-        useAria2: parsed.useAria2 === true,
-        aria2Args: typeof parsed.aria2Args === 'string' ? parsed.aria2Args : '',
-      };
-    }
+    return parseUniversalDownloadAdvancedSettings(localStorage.getItem(DOWNLOAD_STORAGE_KEY));
   } catch (e) {
-    console.error('Failed to load aria2 settings:', e);
+    console.error('Failed to load download advanced settings:', e);
+    return parseUniversalDownloadAdvancedSettings(null);
   }
-  return { useAria2: false, aria2Args: '' };
 }
 
 // Save settings to localStorage
@@ -789,7 +785,7 @@ export function UniversalProvider({ children }: { children: ReactNode }) {
 
       const currentItems = itemsRef.current;
       const currentSettings = settingsRef.current;
-      const aria2Settings = loadAria2Settings();
+      const advancedSettings = loadDownloadAdvancedSettings();
       const workflowSnapshots = await refreshPluginWorkflowSnapshots();
 
       // Snapshot current settings for these items
@@ -804,9 +800,11 @@ export function UniversalProvider({ children }: { children: ReactNode }) {
         videoCompatibilityMode: currentSettings.videoCompatibilityMode,
         audioBitrate: currentSettings.audioBitrate,
         youtubePlayerClient: downloadSettings.youtubePlayerClient,
+        ytdlpAdvancedOptionsEnabled: advancedSettings.ytdlpAdvancedOptionsEnabled,
+        ytdlpAdvancedOptions: advancedSettings.ytdlpAdvancedOptions.map((o) => ({ ...o })),
         preferredFps: currentSettings.preferredFps,
-        useAria2: aria2Settings.useAria2,
-        aria2Args: aria2Settings.aria2Args,
+        useAria2: advancedSettings.useAria2,
+        aria2Args: advancedSettings.aria2Args,
         liveFromStart: currentSettings.liveFromStart,
         skipLive: currentSettings.skipLive,
         numberQueueItems: downloadSettings.numberQueueItems,
@@ -970,7 +968,7 @@ export function UniversalProvider({ children }: { children: ReactNode }) {
       const videoQuality =
         options?.quality && options.quality !== 'audio' ? options.quality : 'best';
       const audioBitrate = options?.audioBitrate === '128' ? '128' : 'auto';
-      const aria2Settings = loadAria2Settings();
+      const advancedSettings = loadDownloadAdvancedSettings();
       const workflowSnapshots = await refreshPluginWorkflowSnapshots();
 
       const settingsSnapshot: ItemUniversalSettings = {
@@ -985,9 +983,11 @@ export function UniversalProvider({ children }: { children: ReactNode }) {
           mediaType === 'audio' ? 'original' : currentSettings.videoCompatibilityMode,
         audioBitrate: mediaType === 'audio' ? audioBitrate : currentSettings.audioBitrate,
         youtubePlayerClient: downloadSettings.youtubePlayerClient,
+        ytdlpAdvancedOptionsEnabled: advancedSettings.ytdlpAdvancedOptionsEnabled,
+        ytdlpAdvancedOptions: advancedSettings.ytdlpAdvancedOptions.map((o) => ({ ...o })),
         preferredFps: currentSettings.preferredFps,
-        useAria2: aria2Settings.useAria2,
-        aria2Args: aria2Settings.aria2Args,
+        useAria2: advancedSettings.useAria2,
+        aria2Args: advancedSettings.aria2Args,
         timeRangeStart: options?.timeRangeStart,
         timeRangeEnd: options?.timeRangeEnd,
         liveFromStart: options?.liveFromStart ?? currentSettings.liveFromStart,
@@ -1309,7 +1309,7 @@ export function UniversalProvider({ children }: { children: ReactNode }) {
       const networkOptions = buildCookieProxyInvokeOptions(cookieSettings, proxySettings);
       const embedSettings = loadEmbedSettings();
       const sponsorBlockArgs = loadSponsorBlockArgs();
-      const aria2Settings = loadAria2Settings();
+      const advancedSettings = loadDownloadAdvancedSettings();
 
       const autoRetryEnabled = itemSettings?.autoRetryEnabled ?? settings.autoRetryEnabled;
       const maxRetries = clampAutoRetryMaxAttempts(
@@ -1368,6 +1368,7 @@ export function UniversalProvider({ children }: { children: ReactNode }) {
             audioBitrate: itemSettings?.audioBitrate ?? settings.audioBitrate,
             youtubePlayerClient:
               itemSettings?.youtubePlayerClient ?? downloadSettings.youtubePlayerClient,
+            ...resolveUniversalYtdlpAdvancedOptions(itemSettings, advancedSettings),
             playlistLimit: null,
             subtitleMode: 'off',
             subtitleLangs: '',
@@ -1388,8 +1389,8 @@ export function UniversalProvider({ children }: { children: ReactNode }) {
               ? `${settings.speedLimitValue}${settings.speedLimitUnit}`
               : null,
             // External downloader settings (from item snapshot, fallback to global settings)
-            useAria2: itemSettings?.useAria2 ?? aria2Settings.useAria2,
-            aria2Args: itemSettings?.aria2Args ?? aria2Settings.aria2Args,
+            useAria2: itemSettings?.useAria2 ?? advancedSettings.useAria2,
+            aria2Args: itemSettings?.aria2Args ?? advancedSettings.aria2Args,
             // SponsorBlock settings
             sponsorblockRemove: sponsorBlockArgs.remove,
             sponsorblockMark: sponsorBlockArgs.mark,

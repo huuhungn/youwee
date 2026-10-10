@@ -141,6 +141,8 @@ export interface ItemUniversalSettings {
   videoCompatibilityMode?: VideoCompatibilityMode;
   audioBitrate: AudioBitrate;
   youtubePlayerClient: YouTubePlayerClient;
+  ytdlpAdvancedOptionsEnabled?: boolean;
+  ytdlpAdvancedOptions?: YtdlpAdvancedOption[];
   preferredFps?: PreferredFps;
   useAria2: boolean;
   aria2Args: string;
