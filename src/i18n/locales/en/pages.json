@@ -303,6 +303,7 @@
       "copy": "Copy",
       "copied": "Copied",
       "delete": "Delete",
+      "moreActions": "More",
       "deleteConfirm": "Remove \"{{title}}\" from Library? The media file will stay on your device.",
       "failedToRedownload": "Failed to redownload",
       "sources": {

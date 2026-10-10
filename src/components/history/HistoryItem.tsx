@@ -15,6 +15,7 @@ import {
   Hash,
   Images,
   Loader2,
+  MoreHorizontal,
   Pause,
   Pencil,
   Play,
@@ -28,6 +29,7 @@ import { useTranslation } from 'react-i18next';
 import { CollectionManagerDialog } from '@/components/history/CollectionManagerDialog';
 import { HistorySummaryDialog } from '@/components/history/HistorySummaryDialog';
 import { HistoryTagsCollectionsDialog } from '@/components/history/HistoryTagsCollectionsDialog';
+import { getHistoryItemActionLayout } from '@/components/history/historyItemActions';
 import { SplitMediaDialog } from '@/components/media/SplitMediaDialog';
 import { FaIcon } from '@/components/shared/FaIcon';
 import {
@@ -40,6 +42,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useAI } from '@/contexts/AIContext';
 import { useDependencies } from '@/contexts/DependenciesContext';
 import { useHistory } from '@/contexts/HistoryContext';
@@ -141,6 +144,7 @@ export function HistoryItem({ entry }: HistoryItemProps) {
   const [thumbLoaded, setThumbLoaded] = useState(false);
   const [isRenameEditorOpen, setIsRenameEditorOpen] = useState(false);
   const [isTaggingDialogOpen, setIsTaggingDialogOpen] = useState(false);
+  const [isActionsPopoverOpen, setIsActionsPopoverOpen] = useState(false);
   const [isCollectionsManagerOpen, setIsCollectionsManagerOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isSummaryDialogOpen, setIsSummaryDialogOpen] = useState(false);
@@ -195,6 +199,12 @@ export function HistoryItem({ entry }: HistoryItemProps) {
   const summaryError = aiEnabled && task?.status === 'error' ? task.error : null;
   const canDeleteMediaFile = Boolean(entry.file_exists && entry.filepath.trim() && !isImageGallery);
   const canSplitMedia = canDeleteMediaFile && !isDataExport && !isImageGallery;
+  const actionLayout = getHistoryItemActionLayout({
+    fileExists: entry.file_exists,
+    isDataExport,
+    isImageGallery,
+    canSplitMedia,
+  });
 
   // Update local summary when task completes
   useEffect(() => {
@@ -620,156 +630,181 @@ export function HistoryItem({ entry }: HistoryItemProps) {
         )}
 
         {/* Actions */}
-        <div
-          className={cn(
-            'flex items-center gap-1 mt-2 transition-opacity',
-            isRedownloading ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
+        <div className="flex flex-wrap items-center gap-1 mt-2">
+          {actionLayout.primary.includes('open-folder') && (
+            <button
+              type="button"
+              onClick={handleOpenFolder}
+              className={cn(
+                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium',
+                'bg-primary/10 hover:bg-primary/20 text-primary transition-colors',
+              )}
+            >
+              <FolderOpen className="w-3.5 h-3.5" />
+              {t('library.item.openFolder')}
+            </button>
           )}
-        >
-          {entry.file_exists ? (
-            <>
-              <button
-                type="button"
-                onClick={handleOpenFolder}
-                className={cn(
-                  'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium',
-                  'bg-primary/10 hover:bg-primary/20 text-primary transition-colors',
-                )}
-              >
-                <FolderOpen className="w-3.5 h-3.5" />
-                {t('library.item.openFolder')}
-              </button>
-              {!isImageGallery && (
-                <button
-                  type="button"
-                  onClick={handleOpenRenameEditor}
-                  className={cn(
-                    'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium',
-                    'bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors',
-                  )}
-                >
-                  <Pencil className="w-3.5 h-3.5" />
-                  {t('library.item.rename')}
-                </button>
+          {actionLayout.primary.includes('split') && (
+            <button
+              type="button"
+              onClick={() => setIsSplitDialogOpen(true)}
+              className={cn(
+                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium',
+                'bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 transition-colors',
               )}
-              {canSplitMedia && (
-                <button
-                  type="button"
-                  onClick={() => setIsSplitDialogOpen(true)}
-                  className={cn(
-                    'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium',
-                    'bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 transition-colors',
-                  )}
-                >
-                  <Scissors className="w-3.5 h-3.5" />
-                  {t('library.item.split')}
-                </button>
+            >
+              <Scissors className="w-3.5 h-3.5" />
+              {t('library.item.split')}
+            </button>
+          )}
+          {actionLayout.primary.includes('locate-moved-file') && (
+            <button
+              type="button"
+              onClick={handleLocateMovedFile}
+              disabled={isRelinking || isRedownloading}
+              className={cn(
+                'flex items-center gap-1.5 rounded-md border border-dashed px-2.5 py-1.5 text-xs font-medium',
+                'border-border text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/5 hover:text-primary',
+                (isRelinking || isRedownloading) && 'opacity-50',
               )}
-            </>
-          ) : !isDataExport ? (
-            <>
-              {!isImageGallery && (
-                <button
-                  type="button"
-                  onClick={handleLocateMovedFile}
-                  disabled={isRelinking || isRedownloading}
-                  className={cn(
-                    'flex items-center gap-1.5 rounded-md border border-dashed px-2.5 py-1.5 text-xs font-medium',
-                    'border-border text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/5 hover:text-primary',
-                    (isRelinking || isRedownloading) && 'opacity-50',
-                  )}
-                >
-                  {isRelinking ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : (
-                    <FolderSearch className="w-3.5 h-3.5" />
-                  )}
-                  {t('library.item.locateMovedFile')}
-                </button>
+            >
+              {isRelinking ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <FolderSearch className="w-3.5 h-3.5" />
               )}
-              <button
-                type="button"
-                onClick={handleRedownload}
-                disabled={isRedownloading || isRelinking}
-                className={cn(
-                  'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium',
-                  'bg-primary/10 hover:bg-primary/20 text-primary transition-colors',
-                  (isRedownloading || isRelinking) && 'opacity-50',
-                )}
-              >
-                {isRedownloading ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <Download className="w-3.5 h-3.5" />
-                )}
-                {t('library.item.redownload')}
-              </button>
-            </>
-          ) : null}
+              {t('library.item.locateMovedFile')}
+            </button>
+          )}
+          {actionLayout.primary.includes('redownload') && (
+            <button
+              type="button"
+              onClick={handleRedownload}
+              disabled={isRedownloading || isRelinking}
+              className={cn(
+                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium',
+                'bg-primary/10 hover:bg-primary/20 text-primary transition-colors',
+                (isRedownloading || isRelinking) && 'opacity-50',
+              )}
+            >
+              {isRedownloading ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Download className="w-3.5 h-3.5" />
+              )}
+              {t('library.item.redownload')}
+            </button>
+          )}
 
-          {!isDataExport && (
-            <>
-              <a
-                href={isSafeUrl(entry.url) ? entry.url : '#'}
-                target="_blank"
-                rel="noopener noreferrer"
+          <Popover open={isActionsPopoverOpen} onOpenChange={setIsActionsPopoverOpen}>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
                 className={cn(
                   'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium',
                   'bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors',
                 )}
+                aria-label={t('library.item.moreActions')}
               >
-                <ExternalLink className="w-3.5 h-3.5" />
-                {t('library.item.openUrl')}
-              </a>
-
-              <button
-                type="button"
-                onClick={handleCopyUrl}
-                className={cn(
-                  'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium',
-                  'bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors',
-                )}
-              >
-                {copied ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-green-500" />
-                    {t('library.item.copied')}
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5" />
-                    {t('library.item.copy')}
-                  </>
-                )}
+                <MoreHorizontal className="w-3.5 h-3.5" />
+                {t('library.item.moreActions')}
               </button>
-            </>
-          )}
+            </PopoverTrigger>
+            <PopoverContent align="start" className="w-56 p-2">
+              <div className="space-y-1">
+                {actionLayout.overflow.includes('rename') && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsActionsPopoverOpen(false);
+                      handleOpenRenameEditor();
+                    }}
+                    className={cn(
+                      'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm',
+                      'text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground',
+                    )}
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                    {t('library.item.rename')}
+                  </button>
+                )}
 
-          <button
-            type="button"
-            onClick={() => setIsTaggingDialogOpen(true)}
-            className={cn(
-              'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium',
-              'bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors',
-            )}
-          >
-            <Folder className="w-3.5 h-3.5" />
-            {t('library.item.manageTagsCollections')}
-          </button>
+                {actionLayout.overflow.includes('open-url') && (
+                  <a
+                    href={isSafeUrl(entry.url) ? entry.url : '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setIsActionsPopoverOpen(false)}
+                    className={cn(
+                      'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm',
+                      'text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground',
+                    )}
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    {t('library.item.openUrl')}
+                  </a>
+                )}
 
-          <button
-            type="button"
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className={cn(
-              'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium',
-              'bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-colors',
-              isDeleting && 'opacity-50',
-            )}
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-            {t('library.item.delete')}
-          </button>
+                {actionLayout.overflow.includes('copy-url') && (
+                  <button
+                    type="button"
+                    onClick={handleCopyUrl}
+                    className={cn(
+                      'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm',
+                      'text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground',
+                    )}
+                  >
+                    {copied ? (
+                      <Check className="w-3.5 h-3.5 text-green-500" />
+                    ) : (
+                      <Copy className="w-3.5 h-3.5" />
+                    )}
+                    {copied ? t('library.item.copied') : t('library.item.copy')}
+                  </button>
+                )}
+
+                {actionLayout.overflow.includes('manage-tags') && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsActionsPopoverOpen(false);
+                      setIsTaggingDialogOpen(true);
+                    }}
+                    className={cn(
+                      'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm',
+                      'text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground',
+                    )}
+                  >
+                    <Folder className="w-3.5 h-3.5" />
+                    {t('library.item.manageTagsCollections')}
+                  </button>
+                )}
+
+                {actionLayout.overflow.includes('delete') && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsActionsPopoverOpen(false);
+                      handleDelete();
+                    }}
+                    disabled={isDeleting}
+                    className={cn(
+                      'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm',
+                      'text-muted-foreground transition-colors hover:bg-red-500/10 hover:text-red-500',
+                      isDeleting && 'opacity-50',
+                    )}
+                  >
+                    {isDeleting ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-3.5 h-3.5" />
+                    )}
+                    {t('library.item.delete')}
+                  </button>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
 
         {!isImageGallery && isRenameEditorOpen && entry.file_exists && (

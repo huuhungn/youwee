@@ -300,6 +300,7 @@
       "copy": "Nusxalash",
       "copied": "Ko‘chirildi",
       "delete": "Oʻchirish",
+      "moreActions": "Koʻproq",
       "deleteConfirm": "“{{title}}” kutubxonadan olib tashlansinmi? Media fayl qurilmangizda qoladi.",
       "failedToRedownload": "Qayta yuklab bo‘lmadi",
       "sources": {

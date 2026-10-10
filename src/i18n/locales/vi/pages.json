@@ -303,6 +303,7 @@
       "copy": "Sao chép",
       "copied": "Đã sao chép",
       "delete": "Xóa",
+      "moreActions": "Thêm",
       "deleteConfirm": "Xóa \"{{title}}\" khỏi Thư viện? File media vẫn được giữ trên máy của bạn.",
       "failedToRedownload": "Tải lại thất bại",
       "sources": {
