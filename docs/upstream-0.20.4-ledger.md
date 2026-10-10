@@ -1,6 +1,6 @@
 # Upstream 0.20.4 disposition ledger
 
-Status: all `port` rows ported on branch `port/upstream-0.20.4-ledger`. The `adapt` and `record` rows stay as written.
+Status: all `port` rows ported (PR #4). Adapt wave 1 (the six 2026-06-28 rows) closed on branch `port/upstream-adapt-wave-1`: 2 changed, 3 already equivalent, 1 recorded. 52 `adapt` rows remain open.
 
 - Fork base: `9e16de9` (`0.20.1-custom.7`, `origin/main`)
 - Upstream tip: `8db7ea4` (`0.20.4`, `upstream/main`)
@@ -57,12 +57,12 @@ Diff these against the fork before editing. Do not replace the fork copy wholesa
 
 | SHA | Date | Subject | Fork evidence |
 | --- | --- | --- | --- |
-| `9e58456` | 2026-06-28 | feat: add cookie skip rules for authentication bypass on specified sites | `src/lib/network-config.ts` already has a cookie-skip catalog. |
-| `1b0fda1` | 2026-06-28 | feat: add recovered mutation for download.failed plugins to mark successful recoveries | Plugin workflow exists, but `recovered` is absent from `src-tauri/src/types/plugin.rs`. |
-| `5737a75` | 2026-06-28 | feat: add yt-dlp advanced options for enhanced download control | `src/lib/ytdlp-advanced-options.ts` exists. Upstream also expected the missing settings module. |
-| `0b39644` | 2026-06-28 | refactor: improve code readability by reorganizing imports and formatting | Touches files the fork already owns. Take only if a later port needs the cleanup. |
-| `96e4b18` | 2026-06-28 | feat: add support for DOWNLOAD_CANCELLED error handling and state management | `download.rs` already returns `DOWNLOAD_CANCELLED`. |
-| `0d37f32` | 2026-06-28 | feat: add option to select output folder for individual downloads in queue | `QueueItem.tsx` already has `onSelectOutputFolder`. |
+| `9e58456` | 2026-06-28 | feat: add cookie skip rules for authentication bypass on specified sites | `src/lib/network-config.ts` already has a cookie-skip catalog. **Wave 1 (2026-10-10): closed, already equivalent.** No code change. |
+| `1b0fda1` | 2026-06-28 | feat: add recovered mutation for download.failed plugins to mark successful recoveries | Plugin workflow exists, but `recovered` is absent from `src-tauri/src/types/plugin.rs`. **Wave 1 (2026-10-10): ported in `06d1449`.** Backend `recovered` mutation, history update, finished progress event, SDK types, and queue guards. The fork's existing Universal status-event completion is kept. |
+| `5737a75` | 2026-06-28 | feat: add yt-dlp advanced options for enhanced download control | `src/lib/ytdlp-advanced-options.ts` exists. Upstream also expected the missing settings module. **Wave 1 (2026-10-10): adapted in `3b409ad`.** The Universal queue now snapshots and sends the vetted advanced options. The fork's narrower option catalog and UI are kept. |
+| `0b39644` | 2026-06-28 | refactor: improve code readability by reorganizing imports and formatting | Touches files the fork already owns. Take only if a later port needs the cleanup. **Wave 1 (2026-10-10): recorded, not replayed.** Upstream-only format refactor with no behavior missing from the fork. |
+| `96e4b18` | 2026-06-28 | feat: add support for DOWNLOAD_CANCELLED error handling and state management | `download.rs` already returns `DOWNLOAD_CANCELLED`. **Wave 1 (2026-10-10): closed, already equivalent.** The fork already handles `DOWNLOAD_CANCELLED` in both queues. No code change. |
+| `0d37f32` | 2026-06-28 | feat: add option to select output folder for individual downloads in queue | `QueueItem.tsx` already has `onSelectOutputFolder`. **Wave 1 (2026-10-10): closed, already equivalent.** The fork already has per-item output folder selection. No code change. |
 | `b4e8574` | 2026-06-29 | chore: update version to 2.3.0 and document changes in CHANGELOG | SDK compatibility constant is still `2.2.0` in `sdk-js/src/compatibility.ts`. Keep app version custom. |
 | `c168d40` | 2026-06-29 | chore: update version to 0.18.0 and document changes in CHANGELOG | Also changes SDK package metadata. Do not copy app version `0.18.0`. |
 | `fb87a3e` | 2026-06-29 | fix: resolve extension cold-start links issue preventing video addition on app launch | `src/hooks/useExternalDownloadLinks.ts` exists. Compare the cold-start queue. |
@@ -154,3 +154,5 @@ These fork-only surfaces must still exist after every later port wave:
 ## Next wave
 
 All 6 Linux packaging `port` rows (`903386b`, `dc2aa89`, `e65ddb0`, `222d507`, `ddab273`, `3096176`) were ported on 2026-10-10 on the fork's workflows, without upstream changelog or version text. Not tested locally: the Flatpak and AppImage jobs need an Ubuntu runner. Locales `81e3dec`, `6cd2621`, and `72aad9c` were ported on 2026-10-10 with English fallbacks for fork-only keys and without upstream changelog text. The Windows filename guards `53bc789`, `a24a49a`, and `814fcc2` were rechecked on 2026-10-10 and were already present, so their upstream helper was not copied. After each later port, rerun the relevant `adapt` diff before editing that area.
+
+Adapt wave 1 (2026-10-10, branch `port/upstream-adapt-wave-1`): `5737a75` adapted in `3b409ad` and `1b0fda1` ported in `06d1449`; `9e58456`, `96e4b18`, and `0d37f32` were already equivalent; `0b39644` was recorded only. Tested: `bun test` for universal settings, advanced options, and the SDK; `bunx tsc -b`; biome; `cargo clippy --all-targets -D warnings`; `cargo test --lib plugin`. Not tested: a live Universal download with an advanced option enabled, and a live fallback plugin recovery in the packaged app. The next group is the following date block of open `adapt` rows.
