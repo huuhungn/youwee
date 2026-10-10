@@ -181,7 +181,7 @@ At minimum, your workspace should depend on:
 ```json
 {
   "dependencies": {
-    "youwee-sdk": "^2.2.0"
+    "youwee-sdk": "^2.3.0"
   }
 }
 ```
@@ -384,7 +384,7 @@ Example:
   },
   "compatibility": {
     "appVersion": ">=0.15.0 <0.16.0",
-    "sdkVersion": ">=2.2.0 <3.0.0"
+    "sdkVersion": ">=2.3.0 <3.0.0"
   },
   "triggers": [
     "download.completed"
@@ -841,12 +841,25 @@ return {
 
 Supported mutation fields:
 
+- `recovered`
 - `activeFilepath`
 - `activeFilename`
 - `extraFiles`
 - `metadataPatch`
 
 These mutations are merged into workflow chain state and passed to later plugins in the same run.
+
+For `download.failed` fallback plugins, return `recovered: true` with `activeFilepath`
+when the plugin creates a replacement file (SDK `>=2.3.0`). After the run completes,
+Youwee checks the path against the plugin write policy, confirms the file exists,
+records it in history, and marks the original download as completed.
+
+```ts
+return ctx.ok("Recovered download", null, null, {
+  recovered: true,
+  activeFilepath: recoveredFilepath,
+});
+```
 
 ---
 
