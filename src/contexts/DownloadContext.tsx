@@ -66,6 +66,7 @@ import {
   loadPluginWorkflowSnapshots,
   loadPostDownloadWorkflowSteps,
   refreshItemPluginWorkflowSnapshots,
+  refreshPluginWorkflowSnapshots,
   refreshPostDownloadWorkflowSteps,
 } from '@/lib/post-download-plugins';
 import { QueueRunGuard } from '@/lib/queue-run-guard';
