@@ -1,6 +1,6 @@
 # Upstream 0.20.4 disposition ledger
 
-Status: all `port` rows ported (PR #4). Adapt wave 1 (the six 2026-06-28 rows) closed on branch `port/upstream-adapt-wave-1`: 2 changed, 3 already equivalent, 1 recorded. 52 `adapt` rows remain open.
+Status: all `port` rows ported (PR #4). Adapt wave 1 (the six 2026-06-28 rows) closed on branch `port/upstream-adapt-wave-1`: 2 changed, 3 already equivalent, 1 recorded. 49 `adapt` rows remain open (58 minus the 3 closed with the Linux packaging port and these 6).
 
 - Fork base: `9e16de9` (`0.20.1-custom.7`, `origin/main`)
 - Upstream tip: `8db7ea4` (`0.20.4`, `upstream/main`)
