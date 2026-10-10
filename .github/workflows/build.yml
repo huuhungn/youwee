@@ -198,12 +198,24 @@ jobs:
             done
             cd ..
           fi
-          # Rename .AppImage
+          # Rename .AppImage together with its updater signature so the
+          # release asset names match what latest.json points at.
           if [ -d "appimage" ]; then
             cd appimage
-            for f in *.AppImage; do
-              mv "$f" "Youwee-${{ matrix.friendly_name }}.AppImage"
-            done
+            shopt -s nullglob
+            appimages=(*.AppImage)
+            if [ "${#appimages[@]}" -ne 1 ]; then
+              echo "Expected exactly one AppImage, found ${#appimages[@]}: ${appimages[*]}"
+              exit 1
+            fi
+            f="${appimages[0]}"
+            target="Youwee-${{ matrix.friendly_name }}.AppImage"
+            if [ ! -f "$f.sig" ]; then
+              echo "Missing updater signature: $f.sig"
+              exit 1
+            fi
+            mv "$f" "$target"
+            mv "$f.sig" "$target.sig"
             cd ..
           fi
           ls -laR
@@ -406,6 +418,8 @@ jobs:
             "Youwee-Extension-Firefox.zip"
             "Youwee-Extension-Firefox-AMO.zip"
             "Youwee-Linux.flatpak"
+            "Youwee-Linux.AppImage"
+            "Youwee-Linux.AppImage.sig"
           )
 
           for asset in "${REQUIRED_ASSETS[@]}"; do
@@ -560,7 +574,7 @@ jobs:
           fi
           
           # Linux
-          LINUX_SIG=$(find artifacts -name "*.AppImage.sig" 2>/dev/null | head -1)
+          LINUX_SIG=$(find artifacts -name "Youwee-Linux.AppImage.sig" 2>/dev/null | head -1)
           if [ -n "$LINUX_SIG" ] && [ -f "$LINUX_SIG" ]; then
             SIG=$(cat "$LINUX_SIG")
             if [ "$FIRST" = false ]; then echo "," >> latest.json; fi
