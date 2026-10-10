@@ -703,6 +703,7 @@ export type PluginWorkflowRunStatus =
   | 'failed';
 
 export interface PluginChainMutation {
+  recovered?: boolean | null;
   activeFilepath?: string | null;
   activeFilename?: string | null;
   extraFiles: string[];
@@ -726,6 +727,7 @@ export interface PluginChainState {
   quality?: string | null;
   extraFiles: string[];
   metadata?: Record<string, unknown> | null;
+  recovered: boolean;
 }
 
 export interface PluginWorkflowRun {
