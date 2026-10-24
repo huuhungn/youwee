@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Browser extension icons** - Draw the floating panel's collapse and close buttons and both quality pickers' chevrons as matching SVG icons instead of text glyphs, and dim the popup chevron together with its disabled picker.
+
 ## [0.20.1-custom.7] - 2026-09-08
 
 ### Added
