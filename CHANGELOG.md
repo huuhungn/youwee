@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.20.1-custom.8] - 2026-10-24
+
 ### Added
 - **Plugin download recovery** - A `download.failed` plugin can now report a recovered file, and Youwee marks the original download as finished and records it in the Library.
 

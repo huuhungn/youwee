@@ -7,6 +7,8 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.20.1-custom.8] - 2026-10-24
+
 ### Thêm mới
 - **Khôi phục tải xuống qua plugin** - Plugin `download.failed` giờ có thể báo một tệp đã được khôi phục; khi đó Youwee đánh dấu lượt tải gốc là hoàn tất và ghi vào Thư viện.
 
