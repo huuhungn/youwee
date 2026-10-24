@@ -7,6 +7,9 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Thay đổi
+- **Biểu tượng tiện ích trình duyệt** - Vẽ nút thu gọn, nút đóng của bảng nổi và mũi tên của cả hai ô chọn chất lượng bằng biểu tượng SVG đồng bộ thay cho ký tự chữ, đồng thời làm mờ mũi tên trong popup cùng lúc với ô chọn bị khoá.
+
 ## [0.20.1-custom.7] - 2026-09-08
 
 ### Thêm mới
