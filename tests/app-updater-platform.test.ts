@@ -2,6 +2,8 @@ import { describe, expect, test } from 'bun:test';
 import {
   calculateUpdateTransferStats,
   restoreInstalledUpdate,
+  UPDATE_CHECK_TIMEOUT_MS,
+  UPDATE_DOWNLOAD_TIMEOUT_MS,
   updaterRestartsAutomatically,
 } from '../src/hooks/useAppUpdater';
 
@@ -10,6 +12,16 @@ describe('app updater platform behavior', () => {
     expect(updaterRestartsAutomatically('Win32')).toBe(true);
     expect(updaterRestartsAutomatically('MacIntel')).toBe(false);
     expect(updaterRestartsAutomatically('Linux x86_64')).toBe(false);
+  });
+
+  test('bounds update requests without cutting off slow installer downloads', () => {
+    const windowsInstallerBytes = 160 * 1024 * 1024;
+    const slowBytesPerSecond = 256 * 1024;
+    expect(UPDATE_CHECK_TIMEOUT_MS).toBeGreaterThan(0);
+    expect(UPDATE_DOWNLOAD_TIMEOUT_MS).toBeGreaterThanOrEqual(
+      (windowsInstallerBytes / slowBytesPerSecond) * 1000,
+    );
+    expect(Number.isFinite(UPDATE_DOWNLOAD_TIMEOUT_MS)).toBe(true);
   });
 });
 

@@ -7,6 +7,9 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Sửa lỗi
+- **Tải bản cập nhật bị treo** - Giới hạn bước kiểm tra cập nhật trong 30 giây và bước tải bản cập nhật trong 15 phút, để khi kết nối bị kẹt thì app báo lỗi và cho thử lại, thay vì hộp thoại cập nhật đứng mãi mà không đóng được.
+
 ## [0.20.1-custom.8] - 2026-10-24
 
 ### Thêm mới
