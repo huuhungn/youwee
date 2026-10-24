@@ -162,6 +162,11 @@ async function loadCurrentReleaseInfo(currentVersion: string): Promise<UpdateInf
 
 export const updaterRestartsAutomatically = (platform: string) => platform.includes('Win');
 
+// The updater has no idle timeout, so a stalled connection hung the download forever.
+// These bound the whole request; the download limit allows ~160 MB at 256 KB/s.
+export const UPDATE_CHECK_TIMEOUT_MS = 30_000;
+export const UPDATE_DOWNLOAD_TIMEOUT_MS = 15 * 60_000;
+
 export function useAppUpdater() {
   const [status, setStatus] = useState<UpdateStatus>('initializing');
   const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
@@ -232,7 +237,7 @@ export function useAppUpdater() {
         return false;
       }
 
-      const update = await check();
+      const update = await check({ timeout: UPDATE_CHECK_TIMEOUT_MS });
 
       if (update) {
         setUpdateInfo(toUpdateInfo(update));
@@ -268,7 +273,7 @@ export function useAppUpdater() {
         return;
       }
 
-      const update = await check();
+      const update = await check({ timeout: UPDATE_CHECK_TIMEOUT_MS });
 
       if (!update) {
         setStatus('up-to-date');
@@ -286,54 +291,57 @@ export function useAppUpdater() {
       let bytesPerSecond = 0;
       let etaSeconds: number | null = null;
 
-      await update.downloadAndInstall((event) => {
-        switch (event.event) {
-          case 'Started':
-            contentLength = event.data.contentLength ?? 0;
-            sampledAt = performance.now();
-            setProgress({
-              downloaded: 0,
-              total: contentLength,
-              bytesPerSecond: 0,
-              etaSeconds: null,
-              phase: 'downloading',
-            });
-            break;
-          case 'Progress': {
-            downloaded += event.data.chunkLength;
-            const now = performance.now();
-            const elapsedMs = now - sampledAt;
-            if (elapsedMs >= 500) {
-              ({ bytesPerSecond, etaSeconds } = calculateUpdateTransferStats(
+      await update.downloadAndInstall(
+        (event) => {
+          switch (event.event) {
+            case 'Started':
+              contentLength = event.data.contentLength ?? 0;
+              sampledAt = performance.now();
+              setProgress({
+                downloaded: 0,
+                total: contentLength,
+                bytesPerSecond: 0,
+                etaSeconds: null,
+                phase: 'downloading',
+              });
+              break;
+            case 'Progress': {
+              downloaded += event.data.chunkLength;
+              const now = performance.now();
+              const elapsedMs = now - sampledAt;
+              if (elapsedMs >= 500) {
+                ({ bytesPerSecond, etaSeconds } = calculateUpdateTransferStats(
+                  downloaded,
+                  contentLength,
+                  sampledDownloaded,
+                  elapsedMs,
+                  bytesPerSecond,
+                ));
+                sampledDownloaded = downloaded;
+                sampledAt = now;
+              }
+              setProgress({
                 downloaded,
-                contentLength,
-                sampledDownloaded,
-                elapsedMs,
+                total: contentLength,
                 bytesPerSecond,
-              ));
-              sampledDownloaded = downloaded;
-              sampledAt = now;
+                etaSeconds,
+                phase: 'downloading',
+              });
+              break;
             }
-            setProgress({
-              downloaded,
-              total: contentLength,
-              bytesPerSecond,
-              etaSeconds,
-              phase: 'downloading',
-            });
-            break;
+            case 'Finished':
+              setProgress({
+                downloaded: contentLength || downloaded,
+                total: contentLength,
+                bytesPerSecond: 0,
+                etaSeconds: 0,
+                phase: 'installing',
+              });
+              break;
           }
-          case 'Finished':
-            setProgress({
-              downloaded: contentLength || downloaded,
-              total: contentLength,
-              bytesPerSecond: 0,
-              etaSeconds: 0,
-              phase: 'installing',
-            });
-            break;
-        }
-      });
+        },
+        { timeout: UPDATE_DOWNLOAD_TIMEOUT_MS },
+      );
 
       setStatus('ready');
     } catch (err) {
