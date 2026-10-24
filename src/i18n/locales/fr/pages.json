@@ -303,6 +303,7 @@
       "copy": "Copier",
       "copied": "Copié",
       "delete": "Supprimer",
+      "moreActions": "Plus",
       "deleteConfirm": "Retirer \"{{title}}\" de la bibliothèque ? Le fichier média restera sur votre appareil.",
       "failedToRedownload": "Échec du retéléchargement",
       "sources": {

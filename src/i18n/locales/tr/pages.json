@@ -300,6 +300,7 @@
       "copy": "Kopyala",
       "copied": "Kopyalandı",
       "delete": "Sil",
+      "moreActions": "Daha fazla",
       "deleteConfirm": "\"{{title}}\" Kitaplıktan kaldırılsın mı? Medya dosyası cihazınızda kalacaktır.",
       "failedToRedownload": "Yeniden indirilemedi",
       "sources": {

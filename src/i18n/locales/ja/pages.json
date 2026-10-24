@@ -303,6 +303,7 @@
       "copy": "コピー",
       "copied": "コピーしました",
       "delete": "削除",
+      "moreActions": "その他",
       "deleteConfirm": "「{{title}}」をライブラリから削除しますか？ メディアファイルはデバイス上に保持されます。",
       "failedToRedownload": "再ダウンロードに失敗しました",
       "sources": {

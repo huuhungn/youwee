@@ -303,6 +303,7 @@
       "copy": "复制",
       "copied": "已复制",
       "delete": "删除",
+      "moreActions": "更多",
       "deleteConfirm": "从资料库移除“{{title}}”？媒体文件会保留在设备上。",
       "failedToRedownload": "重新下载失败",
       "sources": {
