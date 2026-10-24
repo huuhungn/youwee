@@ -7,8 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Plugin download recovery** - A `download.failed` plugin can now report a recovered file, and Youwee marks the original download as finished and records it in the Library.
+
 ### Changed
 - **Browser extension icons** - Draw the floating panel's collapse and close buttons and both quality pickers' chevrons as matching SVG icons instead of text glyphs, and dim the popup chevron together with its disabled picker.
+- **Library item actions** - Keep the file actions on each Library item visible and move rename, open URL, copy URL, tags, and delete into a More menu, so the row no longer overflows narrow windows or depends on hover.
+
+### Fixed
+- **Universal advanced options** - Universal downloads now send the enabled yt-dlp advanced options, which were ignored outside the YouTube queue.
 
 ## [0.20.1-custom.7] - 2026-09-08
 
