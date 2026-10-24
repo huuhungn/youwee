@@ -7,8 +7,15 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Thêm mới
+- **Khôi phục tải xuống qua plugin** - Plugin `download.failed` giờ có thể báo một tệp đã được khôi phục; khi đó Youwee đánh dấu lượt tải gốc là hoàn tất và ghi vào Thư viện.
+
 ### Thay đổi
 - **Biểu tượng tiện ích trình duyệt** - Vẽ nút thu gọn, nút đóng của bảng nổi và mũi tên của cả hai ô chọn chất lượng bằng biểu tượng SVG đồng bộ thay cho ký tự chữ, đồng thời làm mờ mũi tên trong popup cùng lúc với ô chọn bị khoá.
+- **Thao tác trên mục Thư viện** - Giữ các thao tác với tệp luôn hiển thị và chuyển đổi tên, mở URL, sao chép URL, thẻ và xoá vào menu Thêm, để hàng không tràn khi cửa sổ hẹp và không phụ thuộc vào việc rê chuột.
+
+### Sửa lỗi
+- **Tùy chọn nâng cao của Universal** - Tải xuống Universal giờ gửi kèm các tùy chọn nâng cao của yt-dlp đã bật, trước đây bị bỏ qua ngoài hàng đợi YouTube.
 
 ## [0.20.1-custom.7] - 2026-09-08
 
