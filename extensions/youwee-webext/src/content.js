@@ -35,25 +35,37 @@
       'M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z',
     ],
   };
+  const CONTROL_ICON_PATHS = {
+    collapse: ['M6 12h12'],
+    close: ['M18 6 6 18', 'm6 6 12 12'],
+  };
 
-  function createActionIcon(iconName) {
+  function createIcon(paths, strokeWidth) {
     const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');
     svg.setAttribute('fill', 'none');
     svg.setAttribute('stroke', 'currentColor');
-    svg.setAttribute('stroke-width', '2.2');
+    svg.setAttribute('stroke-width', strokeWidth);
     svg.setAttribute('stroke-linecap', 'round');
     svg.setAttribute('stroke-linejoin', 'round');
     svg.setAttribute('aria-hidden', 'true');
     svg.setAttribute('focusable', 'false');
 
-    for (const pathData of ACTION_ICON_PATHS[iconName] || []) {
+    for (const pathData of paths) {
       const path = document.createElementNS(SVG_NAMESPACE, 'path');
       path.setAttribute('d', pathData);
       svg.appendChild(path);
     }
 
     return svg;
+  }
+
+  function createActionIcon(iconName) {
+    return createIcon(ACTION_ICON_PATHS[iconName] || [], '2.2');
+  }
+
+  function createControlIcon(iconName) {
+    return createIcon(CONTROL_ICON_PATHS[iconName] || [], '2.4');
   }
 
   function isTrustedUserEvent(event) {
@@ -434,7 +446,7 @@
     collapseButton.dataset.action = 'collapse';
     collapseButton.title = collapseLabel;
     collapseButton.setAttribute('aria-label', collapseLabel);
-    collapseButton.textContent = '—';
+    collapseButton.append(createControlIcon('collapse'));
 
     const disableLabel = ext.t('floatingDisable', 'Turn off floating button');
     const disableButton = document.createElement('button');
@@ -443,7 +455,7 @@
     disableButton.dataset.action = 'disable';
     disableButton.title = disableLabel;
     disableButton.setAttribute('aria-label', disableLabel);
-    disableButton.textContent = '×';
+    disableButton.append(createControlIcon('close'));
 
     titleActions.append(collapseButton, disableButton);
     titleRow.append(
