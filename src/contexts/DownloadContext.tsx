@@ -1847,6 +1847,10 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
           );
           return;
         } catch (error) {
+          if (itemsRef.current.some((i) => i.id === item.id && i.status === 'completed')) {
+            return;
+          }
+
           const parsedError = extractBackendError(error);
           if (parsedError.code === 'DOWNLOAD_CANCELLED') {
             setItems((items) =>
