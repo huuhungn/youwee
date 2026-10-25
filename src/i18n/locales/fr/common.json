@@ -64,7 +64,16 @@
     "installed": "Mise à jour terminée",
     "installedDescription": "Youwee a été mis à jour. Voici les changements de cette version.",
     "gotIt": "Compris",
-    "whatsNew": "Nouveautés"
+    "whatsNew": "Nouveautés",
+    "downloadingTitle": "Téléchargement de la mise à jour",
+    "installingTitle": "Installation de la mise à jour",
+    "readyTitle": "Prêt à redémarrer",
+    "hide": "Continuer en arrière-plan",
+    "stalled": "Aucune donnée depuis {{time}}. En attente de la connexion…",
+    "stoppedAt": "Arrêté à {{percent}} % ({{downloaded}} sur {{total}}).",
+    "errorTimeout": "Le serveur de mise à jour ne répond plus. Vérifiez votre connexion et réessayez.",
+    "errorNetwork": "Impossible de joindre le serveur de mise à jour. Vérifiez votre connexion Internet et réessayez.",
+    "errorSignature": "La mise à jour téléchargée n'a pas passé la vérification de signature, elle n'a donc pas été installée."
   },
   "legalDisclaimer": {
     "title": "Avis d'utilisation responsable",

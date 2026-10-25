@@ -24,6 +24,7 @@ import {
   Info,
   Loader2,
   RefreshCw,
+  RotateCcw,
   Settings,
   Share2,
 } from 'lucide-react';
@@ -46,6 +47,11 @@ import {
   SettingsSidebar,
 } from '@/components/settings';
 import { FaIcon } from '@/components/shared/FaIcon';
+import {
+  formatDuration,
+  UPDATE_ERROR_KEYS,
+  updateProgressPercent,
+} from '@/components/UpdateDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -53,7 +59,7 @@ import { Switch } from '@/components/ui/switch';
 import { useDownload } from '@/contexts/DownloadContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useUpdater } from '@/contexts/UpdaterContext';
-import { updateRefreshAction } from '@/hooks/useAppUpdater';
+import { useUpdateStall } from '@/hooks/useAppUpdater';
 import { cn } from '@/lib/utils';
 
 export function SettingsPage({
@@ -214,6 +220,11 @@ function AboutSettingsContent({
   const { settings, updateAutoCheckUpdate } = useDownload();
   const { mode } = useTheme();
   const [copied, setCopied] = useState(false);
+  const isAppDownloading = updater.status === 'downloading';
+  const isAppReady = updater.status === 'ready';
+  const isDownloadFailed = isAppError && updater.failedStep === 'download';
+  const stalledSeconds = useUpdateStall(updater.progress, isAppDownloading);
+  const downloadPercent = updateProgressPercent(updater.progress);
 
   const appUrl = 'https://github.com/anhtahaylove/youwee';
   const websiteUrl = 'https://youwee.app';
@@ -332,7 +343,7 @@ function AboutSettingsContent({
                     </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">{t('about.appDesc')}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <div className="text-xs text-muted-foreground mt-1">
                     {isAppChecking ? (
                       <span className="flex items-center gap-1.5">
                         <Loader2 className="w-3 h-3 animate-spin text-primary" />
@@ -342,6 +353,39 @@ function AboutSettingsContent({
                       <span className="inline-flex items-center gap-1.5 text-primary font-medium">
                         <Download className="w-3 h-3" />
                         {t('about.versionAvailable', { version: updater.updateInfo.version })}
+                      </span>
+                    ) : isAppDownloading && updater.updateInfo ? (
+                      <>
+                        <span
+                          className={cn(
+                            'inline-flex items-center gap-1.5 font-medium tabular-nums',
+                            stalledSeconds === null
+                              ? 'text-primary'
+                              : 'text-amber-600 dark:text-amber-400',
+                          )}
+                        >
+                          <Download className="w-3 h-3" />
+                          {stalledSeconds === null
+                            ? t('about.downloadingUpdate', {
+                                version: updater.updateInfo.version,
+                                percent: downloadPercent,
+                              })
+                            : tCommon('update.stalled', { time: formatDuration(stalledSeconds) })}
+                        </span>
+                        <div className="mt-2 h-1.5 w-56 max-w-full rounded-full bg-muted overflow-hidden">
+                          <div
+                            className={cn(
+                              'h-full rounded-full transition-all duration-300',
+                              stalledSeconds === null ? 'bg-primary' : 'bg-amber-500',
+                            )}
+                            style={{ width: `${downloadPercent}%` }}
+                          />
+                        </div>
+                      </>
+                    ) : isAppReady && updater.updateInfo ? (
+                      <span className="flex items-center gap-1.5 text-emerald-500">
+                        <CheckCircle2 className="w-3 h-3" />
+                        {t('about.readyToInstall', { version: updater.updateInfo.version })}
                       </span>
                     ) : isAppUpToDate ? (
                       <span className="flex items-center gap-1.5 text-emerald-500">
@@ -354,11 +398,17 @@ function AboutSettingsContent({
                         {t('about.flatpakUpdates')}
                       </span>
                     ) : isAppError ? (
-                      <span className="text-destructive">
-                        {updater.error || t('about.checkFailed')}
+                      <span
+                        className="flex items-center gap-1.5 text-red-600 dark:text-red-400"
+                        title={updater.error ?? undefined}
+                      >
+                        <AlertTriangle className="w-3 h-3 shrink-0" />
+                        {updater.errorKind === 'generic' && updater.failedStep === 'check'
+                          ? t('about.checkFailed')
+                          : tCommon(UPDATE_ERROR_KEYS[updater.errorKind])}
                       </span>
                     ) : null}
-                  </p>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -368,11 +418,28 @@ function AboutSettingsContent({
                     {t('about.update')}
                   </Button>
                 )}
+                {isAppDownloading && (
+                  <Button size="sm" variant="secondary" onClick={updater.showUpdateDialog}>
+                    {t('about.showProgress')}
+                  </Button>
+                )}
+                {isAppReady && (
+                  <Button size="sm" onClick={updater.restartApp} className="gap-1.5">
+                    <RotateCcw className="w-4 h-4" />
+                    {t('about.restart')}
+                  </Button>
+                )}
+                {isDownloadFailed && (
+                  <Button size="sm" onClick={updater.retryUpdate} className="gap-1.5">
+                    <RotateCcw className="w-4 h-4" />
+                    {tCommon('update.retry')}
+                  </Button>
+                )}
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={updateRefreshAction(updater.status, updater)}
-                  disabled={isAppChecking}
+                  onClick={updater.checkForUpdate}
+                  disabled={isAppChecking || isAppDownloading || isAppReady}
                   title={t('about.checkForUpdates')}
                   className="h-9 w-9"
                 >

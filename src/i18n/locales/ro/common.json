@@ -64,7 +64,16 @@
     "installed": "Update Complete",
     "installedDescription": "Youwee was updated successfully. Here is what changed in this version.",
     "gotIt": "Got it",
-    "whatsNew": "What's new"
+    "whatsNew": "What's new",
+    "downloadingTitle": "Se descarcă actualizarea",
+    "installingTitle": "Se instalează actualizarea",
+    "readyTitle": "Gata de repornire",
+    "hide": "Continuă în fundal",
+    "stalled": "Nicio dată de {{time}}. Se așteaptă conexiunea…",
+    "stoppedAt": "Oprită la {{percent}}% ({{downloaded}} din {{total}}).",
+    "errorTimeout": "Serverul de actualizări nu mai răspunde. Verifică conexiunea și încearcă din nou.",
+    "errorNetwork": "Serverul de actualizări nu poate fi accesat. Verifică conexiunea la internet și încearcă din nou.",
+    "errorSignature": "Actualizarea descărcată nu a trecut verificarea semnăturii, așa că nu a fost instalată."
   },
   "legalDisclaimer": {
     "title": "Notă de utilizare responsabilă",

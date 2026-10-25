@@ -1,8 +1,10 @@
-import { createContext, type ReactNode, useContext, useEffect } from 'react';
+import { createContext, type ReactNode, useContext, useEffect, useRef } from 'react';
 import {
+  type UpdateErrorKind,
   type UpdateInfo,
   type UpdateProgress,
   type UpdateStatus,
+  type UpdateStep,
   useAppUpdater,
 } from '@/hooks/useAppUpdater';
 
@@ -11,11 +13,16 @@ interface UpdaterContextType {
   updateInfo: UpdateInfo | null;
   progress: UpdateProgress | null;
   error: string | null;
+  errorKind: UpdateErrorKind;
+  failedStep: UpdateStep;
+  dialogVisible: boolean;
+  installAfterRestart: boolean;
   checkForUpdate: () => Promise<boolean>;
   downloadAndInstall: () => Promise<void>;
   retryUpdate: () => Promise<unknown>;
   restartApp: () => Promise<void>;
   dismissUpdate: () => void;
+  showUpdateDialog: () => void;
 }
 
 const UpdaterContext = createContext<UpdaterContextType | null>(null);
@@ -27,12 +34,14 @@ interface UpdaterProviderProps {
 
 export function UpdaterProvider({ children, autoCheck }: UpdaterProviderProps) {
   const updater = useAppUpdater();
+  const autoChecked = useRef(false);
 
-  // Auto check for updates on mount if enabled
+  // Auto check once per launch, so closing the update dialog does not bring it straight back.
   useEffect(() => {
-    if (!autoCheck || updater.status !== 'idle') return;
+    if (!autoCheck || autoChecked.current || updater.status !== 'idle') return;
 
     const timer = setTimeout(() => {
+      autoChecked.current = true;
       updater.checkForUpdate();
     }, 2000); // Wait 2s after app start
 

@@ -64,7 +64,16 @@
     "installed": "Cập nhật thành công!",
     "installedDescription": "Youwee đã được cập nhật. Đây là các thay đổi trong phiên bản mới.",
     "gotIt": "Đã hiểu",
-    "whatsNew": "Có gì mới"
+    "whatsNew": "Có gì mới",
+    "downloadingTitle": "Đang tải bản cập nhật",
+    "installingTitle": "Đang cài bản cập nhật",
+    "readyTitle": "Sẵn sàng khởi động lại",
+    "hide": "Tiếp tục chạy nền",
+    "stalled": "Không nhận được dữ liệu trong {{time}}. Đang chờ kết nối…",
+    "stoppedAt": "Đã dừng ở {{percent}}% ({{downloaded}} / {{total}}).",
+    "errorTimeout": "Máy chủ cập nhật ngừng phản hồi. Hãy kiểm tra kết nối rồi thử lại.",
+    "errorNetwork": "Không kết nối được tới máy chủ cập nhật. Hãy kiểm tra Internet rồi thử lại.",
+    "errorSignature": "Bản cập nhật tải về không qua được bước kiểm tra chữ ký nên chưa được cài."
   },
   "legalDisclaimer": {
     "title": "Thông báo sử dụng có trách nhiệm",

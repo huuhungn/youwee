@@ -64,7 +64,16 @@
     "installed": "Update Complete",
     "installedDescription": "Youwee was updated successfully. Here is what changed in this version.",
     "gotIt": "Got it",
-    "whatsNew": "What's new"
+    "whatsNew": "What's new",
+    "downloadingTitle": "Güncelleme indiriliyor",
+    "installingTitle": "Güncelleme yükleniyor",
+    "readyTitle": "Yeniden başlatmaya hazır",
+    "hide": "Arka planda devam et",
+    "stalled": "{{time}} süredir veri yok. Bağlantı bekleniyor…",
+    "stoppedAt": "%{{percent}} noktasında durdu ({{downloaded}} / {{total}}).",
+    "errorTimeout": "Güncelleme sunucusu yanıt vermeyi durdurdu. Bağlantınızı kontrol edip tekrar deneyin.",
+    "errorNetwork": "Güncelleme sunucusuna ulaşılamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.",
+    "errorSignature": "İndirilen güncelleme imza doğrulamasını geçemediği için yüklenmedi."
   },
   "legalDisclaimer": {
     "title": "Sorumlu kullanım bildirimi",

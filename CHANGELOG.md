@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **App update dialog** - A running update download can continue in the background while you keep using Youwee. Settings > About shows its progress and can bring the dialog back. A download sent to the background waits for you to restart instead of closing Youwee to install. The dialog also names the step it is on, keeps keyboard focus inside it without taking it from a field you are typing in, and closes with Escape.
+
 ### Fixed
+- **Stalled update progress** - When no data arrives for 10 seconds, the update progress says it is waiting for the connection instead of showing the last speed and a time remaining that never changes.
+- **Update error details** - Update errors now name the likely cause (no response, no connection or a failed signature check), show where the download stopped and include the original error text. The message is also readable in dark mode.
+- **Closing the update dialog** - Later and the close button now keep the update in Settings > About instead of forgetting it, and the dialog no longer opens again a few seconds after you close it.
 - **Stalled app update download** - Give the update check a 30 second limit and the update download a 15 minute limit, so a stalled connection ends with an error you can retry instead of leaving the update dialog stuck with no way to close it.
-- **Update retry after a failed download** - Retry in the update error dialog now restarts the download when the download failed, instead of only checking for updates again and asking you to click Update Now a second time. The refresh button in Settings > About does the same while an update error is showing.
+- **Update retry after a failed download** - Retry in the update error dialog now restarts the download when the download failed, instead of only checking for updates again and asking you to click Update Now a second time. After a failed download, Settings > About shows a Retry button that does the same.
 
 ## [0.20.1-custom.8] - 2026-10-24
 

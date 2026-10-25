@@ -1,12 +1,15 @@
 import { describe, expect, test } from 'bun:test';
 import {
   calculateUpdateTransferStats,
+  classifyUpdateError,
   restoreInstalledUpdate,
   runUpdateRetry,
   UPDATE_CHECK_TIMEOUT_MS,
   UPDATE_DOWNLOAD_TIMEOUT_MS,
-  updateRefreshAction,
+  UPDATE_STALL_MS,
+  type UpdateProgress,
   updaterRestartsAutomatically,
+  updateStalledSeconds,
 } from '../src/hooks/useAppUpdater';
 
 describe('app updater platform behavior', () => {
@@ -55,17 +58,47 @@ describe('update retry', () => {
   });
 });
 
-describe('settings update refresh button', () => {
-  const actions = { checkForUpdate: 'check', retryUpdate: 'retry' };
-
-  test('retries the failed step while an update error is showing', () => {
-    expect(updateRefreshAction('error', actions)).toBe('retry');
+describe('stalled update download', () => {
+  const progress = (updatedAt: number, phase: UpdateProgress['phase'] = 'downloading') => ({
+    downloaded: 68_000_000,
+    total: 155_000_000,
+    bytesPerSecond: 36_000_000,
+    etaSeconds: 3,
+    phase,
+    updatedAt,
   });
 
-  test('checks for updates in every other state', () => {
-    for (const status of ['idle', 'up-to-date', 'available', 'installed'] as const) {
-      expect(updateRefreshAction(status, actions)).toBe('check');
-    }
+  test('reports nothing while bytes keep arriving', () => {
+    expect(updateStalledSeconds(progress(1_000), 1_000 + UPDATE_STALL_MS - 1)).toBeNull();
+  });
+
+  test('reports how long the connection has been silent', () => {
+    expect(updateStalledSeconds(progress(1_000), 1_000 + 25_400)).toBe(25);
+  });
+
+  test('never reports a stall while installing or without progress', () => {
+    expect(updateStalledSeconds(progress(0, 'installing'), 60_000)).toBeNull();
+    expect(updateStalledSeconds(null, 60_000)).toBeNull();
+  });
+});
+
+describe('update error reasons', () => {
+  test('reads the reason from the plain string the updater rejects with', () => {
+    // Exact text the packaged app showed when the 15 minute download deadline hit a stalled body.
+    expect(classifyUpdateError('error decoding response body')).toEqual({
+      kind: 'timeout',
+      detail: 'error decoding response body',
+    });
+    expect(classifyUpdateError('error sending request: operation timed out').kind).toBe('timeout');
+    expect(
+      classifyUpdateError('error sending request for url (https://example.com/latest.json)').kind,
+    ).toBe('network');
+    expect(classifyUpdateError(new Error('signature verification failed')).kind).toBe('signature');
+  });
+
+  test('falls back to a generic reason without inventing details', () => {
+    expect(classifyUpdateError(undefined)).toEqual({ kind: 'generic', detail: null });
+    expect(classifyUpdateError('  ')).toEqual({ kind: 'generic', detail: null });
   });
 });
 

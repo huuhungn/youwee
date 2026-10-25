@@ -64,7 +64,16 @@
     "installed": "Update Complete",
     "installedDescription": "Youwee was updated successfully. Here is what changed in this version.",
     "gotIt": "Got it",
-    "whatsNew": "What's new"
+    "whatsNew": "What's new",
+    "downloadingTitle": "Downloading Update",
+    "installingTitle": "Installing Update",
+    "readyTitle": "Ready to Restart",
+    "hide": "Continue in background",
+    "stalled": "No data for {{time}}. Waiting for the connection…",
+    "stoppedAt": "Stopped at {{percent}}% ({{downloaded}} of {{total}}).",
+    "errorTimeout": "The update server stopped responding. Check your connection and try again.",
+    "errorNetwork": "Couldn't reach the update server. Check your internet connection and try again.",
+    "errorSignature": "The downloaded update failed its signature check, so it was not installed."
   },
   "legalDisclaimer": {
     "title": "Responsible use notice",
