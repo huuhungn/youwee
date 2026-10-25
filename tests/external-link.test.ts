@@ -1,5 +1,9 @@
 import { describe, expect, test } from 'bun:test';
-import { parseExternalDeepLink, parseExternalSummaryDeepLink } from '../src/lib/external-link';
+import {
+  externalDownloadFormat,
+  parseExternalDeepLink,
+  parseExternalSummaryDeepLink,
+} from '../src/lib/external-link';
 
 describe('parseExternalDeepLink', () => {
   test('accepts Chromium extension download-now links', () => {
@@ -62,5 +66,21 @@ describe('parseExternalSummaryDeepLink', () => {
         'youwee://summary?v=1&url=http%3A%2F%2Flocalhost%3A3000%2Fwatch%3Fv%3Dabc123',
       ),
     ).toBeNull();
+  });
+});
+
+describe('externalDownloadFormat', () => {
+  test('keeps the user format when it fits the requested media type', () => {
+    expect(externalDownloadFormat('video', 'mkv')).toBe('mkv');
+    expect(externalDownloadFormat('video', 'webm')).toBe('webm');
+    expect(externalDownloadFormat('audio', 'm4a')).toBe('m4a');
+    expect(externalDownloadFormat('audio', 'opus')).toBe('opus');
+  });
+
+  test('never turns a video request into audio extraction, or audio into a video container', () => {
+    expect(externalDownloadFormat('video', 'mp3')).toBe('mp4');
+    expect(externalDownloadFormat('video', 'm4a')).toBe('mp4');
+    expect(externalDownloadFormat('audio', 'mp4')).toBe('mp3');
+    expect(externalDownloadFormat('audio', 'mkv')).toBe('mp3');
   });
 });

@@ -10,6 +10,12 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Thay đổi
 - **Bộ cài Windows** - Bản phát hành giờ chỉ có bộ cài Setup `.exe` cho Windows. Không còn phát hành `.msi`, vì cập nhật trong app luôn cài bản Setup, khiến máy cài từ MSI bị hiện hai mục Youwee trong Windows.
 
+### Sửa lỗi
+- **Menu khay bằng tiếng Nhật và tiếng Tây Ban Nha** - Menu khay giờ theo ngôn ngữ của app khi dùng tiếng Nhật hoặc tiếng Tây Ban Nha, thay vì luôn hiện tiếng Anh.
+- **Tìm Plugin Store trong cài đặt** - Tìm "plugin store", "plugins" hoặc "marketplace" trong ô tìm kiếm cài đặt giờ ra mục Plugin Store.
+- **Tải từ tiện ích trình duyệt** - Lượt tải gửi từ tiện ích trình duyệt giữ định dạng video hoặc âm thanh và cài đặt playlist của bạn, thay vì luôn dùng MP4 hoặc MP3.
+- **Phụ đề tự động** - Phụ đề tự động giờ chỉ tải các ngôn ngữ bạn đã chọn; nếu không chọn ngôn ngữ nào thì vẫn tải mọi ngôn ngữ có sẵn.
+
 ## [0.20.1-custom.9] - 2026-10-25
 
 ### Thay đổi

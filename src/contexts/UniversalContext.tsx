@@ -46,6 +46,7 @@ import {
   isRetryableError,
   waitWithCancellation,
 } from '@/lib/download-retry';
+import { externalDownloadFormat } from '@/lib/external-link';
 import {
   buildCookieProxyInvokeOptions,
   loadCookieSettings,
@@ -973,7 +974,7 @@ export function UniversalProvider({ children }: { children: ReactNode }) {
 
       const settingsSnapshot: ItemUniversalSettings = {
         quality: mediaType === 'audio' ? 'audio' : videoQuality,
-        format: mediaType === 'audio' ? 'mp3' : 'mp4',
+        format: externalDownloadFormat(mediaType, currentSettings.format),
         outputPath,
         filenameTemplate: downloadSettings.filenameTemplate,
         skipExisting: downloadSettings.skipExisting,

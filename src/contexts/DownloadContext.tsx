@@ -47,6 +47,7 @@ import {
   isRetryableError,
   waitWithCancellation,
 } from '@/lib/download-retry';
+import { externalDownloadFormat } from '@/lib/external-link';
 import { resolveFilenameMetadataSettings } from '@/lib/filename-metadata';
 import {
   buildCookieProxyInvokeOptions,
@@ -1091,13 +1092,15 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
 
       const settingsSnapshot: ItemDownloadSettings = {
         quality: mediaType === 'audio' ? 'audio' : videoQuality,
-        format: mediaType === 'audio' ? 'mp3' : 'mp4',
+        format: externalDownloadFormat(mediaType, currentSettings.format),
         outputPath,
         filenameTemplate: currentSettings.filenameTemplate,
         skipExisting: currentSettings.skipExisting,
         organizeBySource: currentSettings.organizeBySource,
-        downloadPlaylist: options?.downloadPlaylist ?? false,
-        playlistLimit: options?.playlistLimit ?? null,
+        downloadPlaylist: options?.downloadPlaylist ?? currentSettings.downloadPlaylist,
+        playlistLimit:
+          options?.playlistLimit ??
+          (currentSettings.playlistLimit > 0 ? currentSettings.playlistLimit : null),
         videoCodec: currentSettings.videoCodec,
         videoCompatibilityMode: currentSettings.videoCompatibilityMode,
         preferredFps: currentSettings.preferredFps,

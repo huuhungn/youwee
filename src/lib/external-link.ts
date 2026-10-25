@@ -1,5 +1,18 @@
-import type { AudioBitrate, ExternalEnqueueOptions, Quality } from './types';
+import type { AudioBitrate, ExternalEnqueueOptions, Format, Quality } from './types';
 import { isSafeUrl } from './utils';
+
+const AUDIO_FORMATS: Format[] = ['mp3', 'm4a', 'opus'];
+
+/**
+ * Container for a browser-extension download. The extension picks only video or audio, so the
+ * user's own format is kept when it fits that media type; an audio format would turn a video
+ * request into an audio extraction, and a video container cannot hold an audio-only request.
+ */
+export function externalDownloadFormat(mediaType: 'audio' | 'video', format: Format): Format {
+  const isAudioFormat = AUDIO_FORMATS.includes(format);
+  if (mediaType === 'audio') return isAudioFormat ? format : 'mp3';
+  return isAudioFormat ? 'mp4' : format;
+}
 
 export type ExternalLinkTarget = 'auto' | 'youtube' | 'universal';
 export type ExternalLinkAction = 'download_now' | 'queue_only';
