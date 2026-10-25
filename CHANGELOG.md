@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.20.1-custom.9] - 2026-10-25
+
 ### Changed
 - **Update hint in the sidebar** - While an update is available, downloading, ready to install or failed to download, the Settings button shows a dot with a tooltip, and clicking it opens Settings > About.
 - **App update dialog** - A running update download can continue in the background while you keep using Youwee. Settings > About shows its progress and can bring the dialog back. A download sent to the background waits for you to restart instead of closing Youwee to install. The dialog also names the step it is on, keeps keyboard focus inside it without taking it from a field you are typing in, and closes with Escape.

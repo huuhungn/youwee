@@ -7,6 +7,8 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.20.1-custom.9] - 2026-10-25
+
 ### Thay đổi
 - **Gợi ý cập nhật ở thanh bên** - Khi có bản cập nhật, đang tải, sẵn sàng cài hoặc tải lỗi, nút Cài đặt hiện một chấm kèm chú thích, và bấm vào sẽ mở thẳng Cài đặt > Giới thiệu.
 - **Hộp thoại cập nhật app** - Bản cập nhật đang tải có thể chạy nền để bạn tiếp tục dùng Youwee. Cài đặt > Giới thiệu hiện tiến trình tải và mở lại được hộp thoại. Bản cập nhật tải nền sẽ chờ bạn khởi động lại thay vì tự đóng Youwee để cài. Hộp thoại cũng ghi rõ đang ở bước nào, giữ focus bàn phím trong hộp thoại nhưng không lấy focus khỏi ô bạn đang gõ, và đóng được bằng Escape.
