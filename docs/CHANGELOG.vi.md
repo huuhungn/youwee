@@ -9,7 +9,7 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Sửa lỗi
 - **Tải bản cập nhật bị treo** - Giới hạn bước kiểm tra cập nhật trong 30 giây và bước tải bản cập nhật trong 15 phút, để khi kết nối bị kẹt thì app báo lỗi và cho thử lại, thay vì hộp thoại cập nhật đứng mãi mà không đóng được.
-- **Thử lại sau khi tải bản cập nhật lỗi** - Khi lỗi xảy ra lúc tải, nút Thử lại trong hộp thoại lỗi cập nhật sẽ tải lại ngay, thay vì chỉ kiểm tra cập nhật lại rồi bắt bạn bấm Cập nhật ngay thêm một lần.
+- **Thử lại sau khi tải bản cập nhật lỗi** - Khi lỗi xảy ra lúc tải, nút Thử lại trong hộp thoại lỗi cập nhật sẽ tải lại ngay, thay vì chỉ kiểm tra cập nhật lại rồi bắt bạn bấm Cập nhật ngay thêm một lần. Nút làm mới trong Cài đặt > Giới thiệu cũng làm như vậy khi đang có lỗi cập nhật.
 
 ## [0.20.1-custom.8] - 2026-10-24
 

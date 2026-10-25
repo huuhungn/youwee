@@ -177,6 +177,14 @@ export function runUpdateRetry(
   return failedStep === 'download' ? actions.downloadAndInstall() : actions.checkForUpdate();
 }
 
+// The Settings refresh button acts as Retry while an update error is showing.
+export function updateRefreshAction<T>(
+  status: UpdateStatus,
+  actions: { checkForUpdate: T; retryUpdate: T },
+): T {
+  return status === 'error' ? actions.retryUpdate : actions.checkForUpdate;
+}
+
 export function useAppUpdater() {
   const [status, setStatus] = useState<UpdateStatus>('initializing');
   const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
