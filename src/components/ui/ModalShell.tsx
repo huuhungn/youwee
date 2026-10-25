@@ -18,6 +18,16 @@ export function isTypingTarget(element: Element | null) {
   );
 }
 
+// Any open modal, including Radix alert dialogs, keeps its own Tab handling.
+const MODAL_SELECTOR = '[role="dialog"],[role="alertdialog"],[aria-modal="true"]';
+
+function focusInitial(panel: HTMLElement) {
+  const first =
+    panel.querySelector<HTMLElement>('[data-autofocus]') ??
+    panel.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+  (first ?? panel).focus();
+}
+
 interface ModalShellProps {
   /** Called when the user dismisses via Escape or the backdrop. */
   onDismiss: () => void;
@@ -66,10 +76,20 @@ export function ModalShell({
   useEffect(() => {
     const panel = panelRef.current;
     if (!panel || isTypingTarget(document.activeElement)) return;
-    const first =
-      panel.querySelector<HTMLElement>('[data-autofocus]') ??
-      panel.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
-    (first ?? panel).focus();
+    focusInitial(panel);
+  }, []);
+
+  // When focus stayed in that field, the next Tab moves into the dialog, not the page behind it.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const panel = panelRef.current;
+      if (event.key !== 'Tab' || event.defaultPrevented || !panel) return;
+      if (document.activeElement?.closest(MODAL_SELECTOR)) return;
+      event.preventDefault();
+      focusInitial(panel);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
   }, []);
 
   const handleKeyDown = useCallback(

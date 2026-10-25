@@ -77,7 +77,15 @@
     "runningJobs": "Încă rulează descărcări sau procesări ({{count}}). Repornirea acum le va opri.",
     "restartWhenDone": "Repornește când se termină",
     "restartQueued": "Youwee va reporni imediat ce se termină.",
-    "waitsForRestart": "Încă rulează descărcări, așa că actualizarea va aștepta până repornești."
+    "waitsForRestart": "Încă rulează descărcări, așa că actualizarea va aștepta până repornești.",
+    "retryNow": "Reîncearcă acum",
+    "details": "Detalii",
+    "copyDetails": "Copiază detaliile",
+    "copied": "Copiat",
+    "badgeAvailable": "Actualizare disponibilă",
+    "badgeDownloading": "Se descarcă actualizarea",
+    "badgeReady": "Actualizare pregătită: repornește pentru instalare",
+    "badgeFailed": "Descărcarea actualizării a eșuat"
   },
   "legalDisclaimer": {
     "title": "Notă de utilizare responsabilă",

@@ -77,7 +77,15 @@
     "runningJobs": "Des téléchargements ou traitements sont encore en cours ({{count}}). Redémarrer maintenant les arrêtera.",
     "restartWhenDone": "Redémarrer quand ils sont terminés",
     "restartQueued": "Youwee redémarrera dès qu’ils seront terminés.",
-    "waitsForRestart": "Des téléchargements sont encore en cours : la mise à jour attendra que vous redémarriez."
+    "waitsForRestart": "Des téléchargements sont encore en cours : la mise à jour attendra que vous redémarriez.",
+    "retryNow": "Réessayer maintenant",
+    "details": "Détails",
+    "copyDetails": "Copier les détails",
+    "copied": "Copié",
+    "badgeAvailable": "Mise à jour disponible",
+    "badgeDownloading": "Téléchargement de la mise à jour",
+    "badgeReady": "Mise à jour prête : redémarrez pour l’installer",
+    "badgeFailed": "Échec du téléchargement de la mise à jour"
   },
   "legalDisclaimer": {
     "title": "Avis d'utilisation responsable",

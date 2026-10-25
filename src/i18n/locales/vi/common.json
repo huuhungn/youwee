@@ -77,7 +77,15 @@
     "runningJobs": "Vẫn còn lượt tải hoặc xử lý đang chạy ({{count}}). Khởi động lại bây giờ sẽ dừng chúng.",
     "restartWhenDone": "Khởi động lại khi xong",
     "restartQueued": "Youwee sẽ khởi động lại ngay khi chúng xong.",
-    "waitsForRestart": "Vẫn còn lượt tải đang chạy nên bản cập nhật sẽ chờ tới khi bạn khởi động lại."
+    "waitsForRestart": "Vẫn còn lượt tải đang chạy nên bản cập nhật sẽ chờ tới khi bạn khởi động lại.",
+    "retryNow": "Thử lại ngay",
+    "details": "Chi tiết",
+    "copyDetails": "Sao chép chi tiết",
+    "copied": "Đã sao chép",
+    "badgeAvailable": "Có bản cập nhật",
+    "badgeDownloading": "Đang tải bản cập nhật",
+    "badgeReady": "Cập nhật đã sẵn sàng: khởi động lại để cài",
+    "badgeFailed": "Tải bản cập nhật thất bại"
   },
   "legalDisclaimer": {
     "title": "Thông báo sử dụng có trách nhiệm",

@@ -77,7 +77,15 @@
     "runningJobs": "ダウンロードまたは処理がまだ実行中です（{{count}}）。今すぐ再起動すると停止します。",
     "restartWhenDone": "完了後に再起動",
     "restartQueued": "完了次第 Youwee を再起動します。",
-    "waitsForRestart": "ダウンロードが実行中のため、アップデートは再起動するまで待機します。"
+    "waitsForRestart": "ダウンロードが実行中のため、アップデートは再起動するまで待機します。",
+    "retryNow": "今すぐ再試行",
+    "details": "詳細",
+    "copyDetails": "詳細をコピー",
+    "copied": "コピーしました",
+    "badgeAvailable": "アップデートがあります",
+    "badgeDownloading": "アップデートをダウンロード中",
+    "badgeReady": "アップデートの準備完了：再起動してインストール",
+    "badgeFailed": "アップデートのダウンロードに失敗しました"
   },
   "legalDisclaimer": {
     "title": "利用規約と免責事項",

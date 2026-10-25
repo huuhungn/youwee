@@ -39,6 +39,7 @@ export type Page =
 interface SidebarProps {
   currentPage: Page;
   onPageChange: (page: Page) => void;
+  settingsBadge?: string | null;
 }
 
 interface NavItem {
@@ -110,7 +111,7 @@ const navItems: NavItem[] = [
   },
 ];
 
-export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
+export function Sidebar({ currentPage, onPageChange, settingsBadge }: SidebarProps) {
   const { t } = useTranslation('common');
   const [isCollapsed, setIsCollapsed] = useState(true);
   const { mode, toggleMode } = useTheme();
@@ -169,51 +170,69 @@ export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
 
         {/* Navigation */}
         <nav className="relative flex-1 p-2 space-y-1 mt-2">
-          {navItems.map((item) => (
-            <Tooltip key={item.id}>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  onClick={() => onPageChange(item.id)}
-                  className={cn(
-                    'group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl',
-                    'transition-all duration-200 ease-out',
-                    'hover:bg-white/[0.08] dark:hover:bg-white/[0.05]',
-                    currentPage === item.id && ['bg-primary/10', 'text-primary'],
-                    currentPage !== item.id && 'text-muted-foreground hover:text-foreground',
-                  )}
-                >
-                  <span
+          {navItems.map((item) => {
+            const badge = item.id === 'settings' ? settingsBadge : null;
+            return (
+              <Tooltip key={item.id}>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={() => onPageChange(item.id)}
                     className={cn(
-                      'flex-shrink-0 transition-all duration-200 relative',
-                      'group-hover:scale-110',
-                      currentPage === item.id && 'drop-shadow-[0_0_8px_hsl(var(--primary)/0.4)]',
+                      'group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl',
+                      'transition-all duration-200 ease-out',
+                      'hover:bg-white/[0.08] dark:hover:bg-white/[0.05]',
+                      currentPage === item.id && ['bg-primary/10', 'text-primary'],
+                      currentPage !== item.id && 'text-muted-foreground hover:text-foreground',
                     )}
                   >
-                    {item.icon}
-                  </span>
-                  <span
-                    className={cn(
-                      'text-sm font-medium whitespace-nowrap transition-all duration-300',
-                      isCollapsed ? 'opacity-0 w-0' : 'opacity-100',
-                    )}
-                  >
-                    {t(item.labelKey)}
-                  </span>
+                    <span
+                      className={cn(
+                        'flex-shrink-0 transition-all duration-200 relative',
+                        'group-hover:scale-110',
+                        currentPage === item.id && 'drop-shadow-[0_0_8px_hsl(var(--primary)/0.4)]',
+                      )}
+                    >
+                      {item.icon}
+                      {badge && (
+                        <span
+                          aria-hidden="true"
+                          className={cn(
+                            'absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full ring-2 ring-background',
+                            badge === 'update.badgeFailed' ? 'bg-red-500' : 'bg-primary',
+                          )}
+                        />
+                      )}
+                    </span>
+                    {badge && <span className="sr-only">{t(badge)}</span>}
+                    <span
+                      className={cn(
+                        'text-sm font-medium whitespace-nowrap transition-all duration-300',
+                        isCollapsed ? 'opacity-0 w-0' : 'opacity-100',
+                      )}
+                    >
+                      {t(item.labelKey)}
+                    </span>
 
-                  {/* Active indicator */}
-                  {currentPage === item.id && (
-                    <div className="absolute left-0 w-1 h-5 rounded-r-full bg-primary shadow-[0_0_10px_hsl(var(--primary)/0.5)]" />
-                  )}
-                </button>
-              </TooltipTrigger>
-              {isCollapsed && (
-                <TooltipContent side="right" className="font-medium">
-                  {t(item.labelKey)}
-                </TooltipContent>
-              )}
-            </Tooltip>
-          ))}
+                    {/* Active indicator */}
+                    {currentPage === item.id && (
+                      <div className="absolute left-0 w-1 h-5 rounded-r-full bg-primary shadow-[0_0_10px_hsl(var(--primary)/0.5)]" />
+                    )}
+                  </button>
+                </TooltipTrigger>
+                {(isCollapsed || badge) && (
+                  <TooltipContent side="right" className="font-medium">
+                    {t(item.labelKey)}
+                    {badge && (
+                      <span className="block text-xs font-normal text-muted-foreground">
+                        {t(badge)}
+                      </span>
+                    )}
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            );
+          })}
         </nav>
 
         {/* Bottom Actions */}

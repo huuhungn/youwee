@@ -223,6 +223,16 @@ export function classifyUpdateError(err: unknown): {
   return { kind, detail: detail || null };
 }
 
+/** i18n key for the sidebar hint while an update needs the user, or null when there is none. */
+export function updateBadgeKey(status: UpdateStatus, failedStep: UpdateStep) {
+  if (status === 'available') return 'update.badgeAvailable';
+  if (status === 'downloading') return 'update.badgeDownloading';
+  if (status === 'ready') return 'update.badgeReady';
+  // A failed check (often just offline) is not worth a badge; a failed download the user started is.
+  if (status === 'error' && failedStep === 'download') return 'update.badgeFailed';
+  return null;
+}
+
 /** Downloads or processing jobs still running; restarting to install would stop them. */
 export function useAppUpdater(runningJobs = 0) {
   const [status, setStatusState] = useState<UpdateStatus>('initializing');
@@ -239,6 +249,8 @@ export function useAppUpdater(runningJobs = 0) {
   const [installAfterRestart, setInstallAfterRestart] = useState(false);
   const installAfterRestartRef = useRef(false);
   const pendingInstallRef = useRef<NonNullable<Awaited<ReturnType<typeof check>>> | null>(null);
+  // Bumped to abandon a running download: the updater cannot abort one, so its late events are ignored.
+  const attemptRef = useRef(0);
 
   const setInstallLater = useCallback((later: boolean) => {
     installAfterRestartRef.current = later;
@@ -343,6 +355,8 @@ export function useAppUpdater(runningJobs = 0) {
   }, [isExternalUpdateManaged, setStatus, fail]);
 
   const downloadAndInstall = useCallback(async () => {
+    const attempt = ++attemptRef.current;
+    const abandoned = () => attempt !== attemptRef.current;
     setStatus('downloading');
     setInstallLater(false);
     setProgress({
@@ -363,6 +377,10 @@ export function useAppUpdater(runningJobs = 0) {
       }
 
       const update = await check({ timeout: UPDATE_CHECK_TIMEOUT_MS });
+      if (abandoned()) {
+        void update?.close();
+        return;
+      }
 
       if (!update) {
         setStatus('up-to-date');
@@ -382,6 +400,7 @@ export function useAppUpdater(runningJobs = 0) {
 
       await update.download(
         (event) => {
+          if (abandoned()) return;
           switch (event.event) {
             case 'Started':
               contentLength = event.data.contentLength ?? 0;
@@ -434,6 +453,10 @@ export function useAppUpdater(runningJobs = 0) {
         },
         { timeout: UPDATE_DOWNLOAD_TIMEOUT_MS },
       );
+      if (abandoned()) {
+        void update.close(); // frees the downloaded bytes held by the updater
+        return;
+      }
 
       // A download sent to the background, or one that finishes while videos are still downloading,
       // waits for Restart, so the installer never closes the app mid-task.
@@ -444,9 +467,28 @@ export function useAppUpdater(runningJobs = 0) {
       }
       setStatus('ready');
     } catch (err) {
-      fail('download', err);
+      if (!abandoned()) fail('download', err);
     }
   }, [isExternalUpdateManaged, setStatus, setInstallLater, fail]);
+
+  // shortcut: an abandoned request keeps its connection until the download deadline, since the
+  // updater has no abort; fine for a stalled connection, revisit if the plugin gains one.
+  const cancelDownload = useCallback(() => {
+    attemptRef.current++;
+    setProgress(null);
+    setInstallLater(false);
+    clearPendingUpdate();
+    setStatus('available');
+    setDialogHidden(true); // the Settings badge and About card still offer the update
+  }, [setStatus, setInstallLater]);
+
+  // Retry now on a stalled download keeps "install after restart" if the user had backgrounded it.
+  const restartDownload = useCallback(() => {
+    const later = installAfterRestartRef.current;
+    const run = downloadAndInstall(); // clears the latch synchronously, before its first await
+    setInstallLater(later);
+    return run;
+  }, [downloadAndInstall, setInstallLater]);
 
   const retryUpdate = useCallback(
     () => runUpdateRetry(failedStep, { checkForUpdate, downloadAndInstall }),
@@ -515,6 +557,8 @@ export function useAppUpdater(runningJobs = 0) {
     restartQueued,
     checkForUpdate,
     downloadAndInstall,
+    cancelDownload,
+    restartDownload,
     retryUpdate,
     restartApp,
     dismissUpdate,

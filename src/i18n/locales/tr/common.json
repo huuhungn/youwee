@@ -77,7 +77,15 @@
     "runningJobs": "Hâlâ devam eden indirmeler veya işlemler var ({{count}}). Şimdi yeniden başlatmak onları durdurur.",
     "restartWhenDone": "Bitince yeniden başlat",
     "restartQueued": "Youwee, bunlar biter bitmez yeniden başlayacak.",
-    "waitsForRestart": "İndirmeler hâlâ sürüyor, bu yüzden güncelleme siz yeniden başlatana kadar bekleyecek."
+    "waitsForRestart": "İndirmeler hâlâ sürüyor, bu yüzden güncelleme siz yeniden başlatana kadar bekleyecek.",
+    "retryNow": "Şimdi yeniden dene",
+    "details": "Ayrıntılar",
+    "copyDetails": "Ayrıntıları kopyala",
+    "copied": "Kopyalandı",
+    "badgeAvailable": "Güncelleme mevcut",
+    "badgeDownloading": "Güncelleme indiriliyor",
+    "badgeReady": "Güncelleme hazır: yüklemek için yeniden başlatın",
+    "badgeFailed": "Güncelleme indirilemedi"
   },
   "legalDisclaimer": {
     "title": "Sorumlu kullanım bildirimi",

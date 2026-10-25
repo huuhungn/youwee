@@ -22,6 +22,8 @@ interface UpdaterContextType {
   restartQueued: boolean;
   checkForUpdate: () => Promise<boolean>;
   downloadAndInstall: () => Promise<void>;
+  cancelDownload: () => void;
+  restartDownload: () => Promise<void>;
   retryUpdate: () => Promise<unknown>;
   restartApp: () => Promise<void>;
   dismissUpdate: () => void;
