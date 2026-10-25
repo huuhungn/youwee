@@ -73,7 +73,11 @@
     "stoppedAt": "Đã dừng ở {{percent}}% ({{downloaded}} / {{total}}).",
     "errorTimeout": "Máy chủ cập nhật ngừng phản hồi. Hãy kiểm tra kết nối rồi thử lại.",
     "errorNetwork": "Không kết nối được tới máy chủ cập nhật. Hãy kiểm tra Internet rồi thử lại.",
-    "errorSignature": "Bản cập nhật tải về không qua được bước kiểm tra chữ ký nên chưa được cài."
+    "errorSignature": "Bản cập nhật tải về không qua được bước kiểm tra chữ ký nên chưa được cài.",
+    "runningJobs": "Vẫn còn lượt tải hoặc xử lý đang chạy ({{count}}). Khởi động lại bây giờ sẽ dừng chúng.",
+    "restartWhenDone": "Khởi động lại khi xong",
+    "restartQueued": "Youwee sẽ khởi động lại ngay khi chúng xong.",
+    "waitsForRestart": "Vẫn còn lượt tải đang chạy nên bản cập nhật sẽ chờ tới khi bạn khởi động lại."
   },
   "legalDisclaimer": {
     "title": "Thông báo sử dụng có trách nhiệm",

@@ -73,7 +73,11 @@
     "stoppedAt": "Stopped at {{percent}}% ({{downloaded}} of {{total}}).",
     "errorTimeout": "The update server stopped responding. Check your connection and try again.",
     "errorNetwork": "Couldn't reach the update server. Check your internet connection and try again.",
-    "errorSignature": "The downloaded update failed its signature check, so it was not installed."
+    "errorSignature": "The downloaded update failed its signature check, so it was not installed.",
+    "runningJobs": "Downloads or processing jobs are still running ({{count}}). Restarting now will stop them.",
+    "restartWhenDone": "Restart when they finish",
+    "restartQueued": "Youwee will restart as soon as they finish.",
+    "waitsForRestart": "Downloads are still running, so the update will wait until you restart."
   },
   "legalDisclaimer": {
     "title": "Responsible use notice",

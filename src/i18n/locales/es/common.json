@@ -73,7 +73,11 @@
     "stoppedAt": "Detenida en {{percent}}% ({{downloaded}} de {{total}}).",
     "errorTimeout": "El servidor de actualizaciones dejó de responder. Revisa tu conexión e inténtalo de nuevo.",
     "errorNetwork": "No se pudo conectar con el servidor de actualizaciones. Revisa tu conexión a internet e inténtalo de nuevo.",
-    "errorSignature": "La actualización descargada no superó la verificación de firma, así que no se instaló."
+    "errorSignature": "La actualización descargada no superó la verificación de firma, así que no se instaló.",
+    "runningJobs": "Todavía hay descargas o tareas de procesamiento en curso ({{count}}). Reiniciar ahora las detendrá.",
+    "restartWhenDone": "Reiniciar cuando terminen",
+    "restartQueued": "Youwee se reiniciará en cuanto terminen.",
+    "waitsForRestart": "Todavía hay descargas en curso, así que la actualización esperará a que reinicies."
   },
   "legalDisclaimer": {
     "title": "Aviso de uso responsable",

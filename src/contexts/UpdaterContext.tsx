@@ -7,6 +7,7 @@ import {
   type UpdateStep,
   useAppUpdater,
 } from '@/hooks/useAppUpdater';
+import { useRunningJobs } from '@/hooks/useRunningJobs';
 
 interface UpdaterContextType {
   status: UpdateStatus;
@@ -17,12 +18,15 @@ interface UpdaterContextType {
   failedStep: UpdateStep;
   dialogVisible: boolean;
   installAfterRestart: boolean;
+  runningJobs: number;
+  restartQueued: boolean;
   checkForUpdate: () => Promise<boolean>;
   downloadAndInstall: () => Promise<void>;
   retryUpdate: () => Promise<unknown>;
   restartApp: () => Promise<void>;
   dismissUpdate: () => void;
   showUpdateDialog: () => void;
+  queueRestart: () => void;
 }
 
 const UpdaterContext = createContext<UpdaterContextType | null>(null);
@@ -33,7 +37,7 @@ interface UpdaterProviderProps {
 }
 
 export function UpdaterProvider({ children, autoCheck }: UpdaterProviderProps) {
-  const updater = useAppUpdater();
+  const updater = useAppUpdater(useRunningJobs());
   const autoChecked = useRef(false);
 
   // Auto check once per launch, so closing the update dialog does not bring it straight back.

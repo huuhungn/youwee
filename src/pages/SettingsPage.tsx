@@ -385,7 +385,9 @@ function AboutSettingsContent({
                     ) : isAppReady && updater.updateInfo ? (
                       <span className="flex items-center gap-1.5 text-emerald-500">
                         <CheckCircle2 className="w-3 h-3" />
-                        {t('about.readyToInstall', { version: updater.updateInfo.version })}
+                        {updater.restartQueued
+                          ? tCommon('update.restartQueued')
+                          : t('about.readyToInstall', { version: updater.updateInfo.version })}
                       </span>
                     ) : isAppUpToDate ? (
                       <span className="flex items-center gap-1.5 text-emerald-500">
@@ -424,7 +426,14 @@ function AboutSettingsContent({
                   </Button>
                 )}
                 {isAppReady && (
-                  <Button size="sm" onClick={updater.restartApp} className="gap-1.5">
+                  <Button
+                    size="sm"
+                    // With downloads running, open the dialog so the warning is seen before restarting.
+                    onClick={
+                      updater.runningJobs > 0 ? updater.showUpdateDialog : updater.restartApp
+                    }
+                    className="gap-1.5"
+                  >
                     <RotateCcw className="w-4 h-4" />
                     {t('about.restart')}
                   </Button>

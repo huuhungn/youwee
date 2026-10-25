@@ -73,7 +73,11 @@
     "stoppedAt": "Arrêté à {{percent}} % ({{downloaded}} sur {{total}}).",
     "errorTimeout": "Le serveur de mise à jour ne répond plus. Vérifiez votre connexion et réessayez.",
     "errorNetwork": "Impossible de joindre le serveur de mise à jour. Vérifiez votre connexion Internet et réessayez.",
-    "errorSignature": "La mise à jour téléchargée n'a pas passé la vérification de signature, elle n'a donc pas été installée."
+    "errorSignature": "La mise à jour téléchargée n'a pas passé la vérification de signature, elle n'a donc pas été installée.",
+    "runningJobs": "Des téléchargements ou traitements sont encore en cours ({{count}}). Redémarrer maintenant les arrêtera.",
+    "restartWhenDone": "Redémarrer quand ils sont terminés",
+    "restartQueued": "Youwee redémarrera dès qu’ils seront terminés.",
+    "waitsForRestart": "Des téléchargements sont encore en cours : la mise à jour attendra que vous redémarriez."
   },
   "legalDisclaimer": {
     "title": "Avis d'utilisation responsable",

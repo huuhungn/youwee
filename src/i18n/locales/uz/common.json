@@ -73,7 +73,11 @@
     "stoppedAt": "{{percent}}% da to‘xtadi ({{downloaded}} / {{total}}).",
     "errorTimeout": "Yangilanish serveri javob bermay qoldi. Ulanishni tekshirib, qayta urinib ko‘ring.",
     "errorNetwork": "Yangilanish serveriga ulanib bo‘lmadi. Internet aloqasini tekshirib, qayta urinib ko‘ring.",
-    "errorSignature": "Yuklab olingan yangilanish imzo tekshiruvidan o‘tmadi, shuning uchun o‘rnatilmadi."
+    "errorSignature": "Yuklab olingan yangilanish imzo tekshiruvidan o‘tmadi, shuning uchun o‘rnatilmadi.",
+    "runningJobs": "Yuklab olishlar yoki ishlov berish hali davom etmoqda ({{count}}). Hozir qayta ishga tushirish ularni to‘xtatadi.",
+    "restartWhenDone": "Tugagach qayta ishga tushirish",
+    "restartQueued": "Youwee ular tugashi bilan qayta ishga tushadi.",
+    "waitsForRestart": "Yuklab olishlar hali davom etmoqda, shuning uchun yangilanish qayta ishga tushirishingizni kutadi."
   },
   "legalDisclaimer": {
     "title": "Mas'uliyatli foydalanish haqida eslatma",

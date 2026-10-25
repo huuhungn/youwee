@@ -224,6 +224,9 @@ function AppContent() {
           errorKind={updater.errorKind}
           failedStep={updater.failedStep}
           installAfterRestart={updater.installAfterRestart}
+          runningJobs={updater.runningJobs}
+          restartQueued={updater.restartQueued}
+          onRestartWhenDone={updater.queueRestart}
           onDownload={updater.downloadAndInstall}
           onRestart={updater.restartApp}
           onDismiss={updater.dismissUpdate}

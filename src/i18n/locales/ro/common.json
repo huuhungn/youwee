@@ -73,7 +73,11 @@
     "stoppedAt": "Oprită la {{percent}}% ({{downloaded}} din {{total}}).",
     "errorTimeout": "Serverul de actualizări nu mai răspunde. Verifică conexiunea și încearcă din nou.",
     "errorNetwork": "Serverul de actualizări nu poate fi accesat. Verifică conexiunea la internet și încearcă din nou.",
-    "errorSignature": "Actualizarea descărcată nu a trecut verificarea semnăturii, așa că nu a fost instalată."
+    "errorSignature": "Actualizarea descărcată nu a trecut verificarea semnăturii, așa că nu a fost instalată.",
+    "runningJobs": "Încă rulează descărcări sau procesări ({{count}}). Repornirea acum le va opri.",
+    "restartWhenDone": "Repornește când se termină",
+    "restartQueued": "Youwee va reporni imediat ce se termină.",
+    "waitsForRestart": "Încă rulează descărcări, așa că actualizarea va aștepta până repornești."
   },
   "legalDisclaimer": {
     "title": "Notă de utilizare responsabilă",

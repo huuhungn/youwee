@@ -223,13 +223,17 @@ export function classifyUpdateError(err: unknown): {
   return { kind, detail: detail || null };
 }
 
-export function useAppUpdater() {
+/** Downloads or processing jobs still running; restarting to install would stop them. */
+export function useAppUpdater(runningJobs = 0) {
   const [status, setStatusState] = useState<UpdateStatus>('initializing');
   const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
   const [progress, setProgress] = useState<UpdateProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [errorKind, setErrorKind] = useState<UpdateErrorKind>('generic');
   const [failedStep, setFailedStep] = useState<UpdateStep>('check');
+  const [restartQueued, setRestartQueued] = useState(false);
+  const runningJobsRef = useRef(runningJobs);
+  runningJobsRef.current = runningJobs;
   const [dialogHidden, setDialogHidden] = useState(false);
   // Set once a running download is sent to the background; reopening the dialog does not undo it.
   const [installAfterRestart, setInstallAfterRestart] = useState(false);
@@ -431,8 +435,9 @@ export function useAppUpdater() {
         { timeout: UPDATE_DOWNLOAD_TIMEOUT_MS },
       );
 
-      // A download sent to the background waits for Restart, so the installer never closes the app mid-task.
-      if (installAfterRestartRef.current) {
+      // A download sent to the background, or one that finishes while videos are still downloading,
+      // waits for Restart, so the installer never closes the app mid-task.
+      if (installAfterRestartRef.current || runningJobsRef.current > 0) {
         pendingInstallRef.current = update;
       } else {
         await update.install();
@@ -449,6 +454,7 @@ export function useAppUpdater() {
   );
 
   const restartApp = useCallback(async () => {
+    setRestartQueued(false);
     const pending = pendingInstallRef.current;
     if (pending) {
       pendingInstallRef.current = null;
@@ -486,6 +492,16 @@ export function useAppUpdater() {
 
   const showUpdateDialog = useCallback(() => setDialogHidden(false), []);
 
+  // "Restart when they finish": wait for running jobs to reach zero, then install and restart.
+  const queueRestart = useCallback(() => {
+    setRestartQueued(true);
+    setDialogHidden(true);
+  }, []);
+
+  useEffect(() => {
+    if (restartQueued && status === 'ready' && runningJobs === 0) void restartApp();
+  }, [restartQueued, status, runningJobs, restartApp]);
+
   return {
     status,
     updateInfo,
@@ -495,11 +511,14 @@ export function useAppUpdater() {
     failedStep,
     dialogVisible: !dialogHidden,
     installAfterRestart,
+    runningJobs,
+    restartQueued,
     checkForUpdate,
     downloadAndInstall,
     retryUpdate,
     restartApp,
     dismissUpdate,
     showUpdateDialog,
+    queueRestart,
   };
 }

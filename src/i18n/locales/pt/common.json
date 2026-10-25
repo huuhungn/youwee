@@ -73,7 +73,11 @@
     "stoppedAt": "Parou em {{percent}}% ({{downloaded}} de {{total}}).",
     "errorTimeout": "O servidor de atualizações parou de responder. Verifique sua conexão e tente novamente.",
     "errorNetwork": "Não foi possível acessar o servidor de atualizações. Verifique sua conexão com a internet e tente novamente.",
-    "errorSignature": "A atualização baixada falhou na verificação de assinatura e não foi instalada."
+    "errorSignature": "A atualização baixada falhou na verificação de assinatura e não foi instalada.",
+    "runningJobs": "Ainda há downloads ou processamentos em andamento ({{count}}). Reiniciar agora vai interrompê-los.",
+    "restartWhenDone": "Reiniciar quando terminarem",
+    "restartQueued": "O Youwee vai reiniciar assim que terminarem.",
+    "waitsForRestart": "Ainda há downloads em andamento, então a atualização vai esperar até você reiniciar."
   },
   "legalDisclaimer": {
     "title": "Aviso de uso responsável",
