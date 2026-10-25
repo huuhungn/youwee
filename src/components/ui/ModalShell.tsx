@@ -10,6 +10,14 @@ const FOCUSABLE_SELECTOR = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
 
+/** True while the user is typing in a field, so a dialog that opens on its own leaves focus there. */
+export function isTypingTarget(element: Element | null) {
+  return (
+    element instanceof HTMLElement &&
+    (element.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(element.tagName))
+  );
+}
+
 interface ModalShellProps {
   /** Called when the user dismisses via Escape or the backdrop. */
   onDismiss: () => void;
@@ -54,9 +62,10 @@ export function ModalShell({
   }, []);
 
   // Move focus into the dialog once it opens, preferring an element marked data-autofocus.
+  // A dialog that pops up while the user types must not swallow the rest of their input.
   useEffect(() => {
     const panel = panelRef.current;
-    if (!panel) return;
+    if (!panel || isTypingTarget(document.activeElement)) return;
     const first =
       panel.querySelector<HTMLElement>('[data-autofocus]') ??
       panel.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);

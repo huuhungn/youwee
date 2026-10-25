@@ -12,7 +12,7 @@ import {
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { ModalShell, useDialogIds } from '@/components/ui/ModalShell';
+import { isTypingTarget, ModalShell, useDialogIds } from '@/components/ui/ModalShell';
 import { SimpleMarkdown } from '@/components/ui/simple-markdown';
 import {
   type UpdateErrorKind,
@@ -97,7 +97,8 @@ export function UpdateDialog({
   useEffect(() => {
     statusSince.current = performance.now();
     const actions = actionsRef.current;
-    if (!actions || actions.contains(document.activeElement)) return;
+    const active = document.activeElement;
+    if (!actions || actions.contains(active) || isTypingTarget(active)) return;
     actions.querySelector<HTMLButtonElement>('[data-autofocus]')?.focus();
   }, [status]);
 

@@ -8,7 +8,7 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 
 ### Thay đổi
-- **Hộp thoại cập nhật app** - Bản cập nhật đang tải có thể chạy nền để bạn tiếp tục dùng Youwee. Cài đặt > Giới thiệu hiện tiến trình tải và mở lại được hộp thoại. Bản cập nhật tải nền sẽ chờ bạn khởi động lại thay vì tự đóng Youwee để cài. Hộp thoại cũng ghi rõ đang ở bước nào, giữ focus bàn phím ở nút chính và đóng được bằng Escape.
+- **Hộp thoại cập nhật app** - Bản cập nhật đang tải có thể chạy nền để bạn tiếp tục dùng Youwee. Cài đặt > Giới thiệu hiện tiến trình tải và mở lại được hộp thoại. Bản cập nhật tải nền sẽ chờ bạn khởi động lại thay vì tự đóng Youwee để cài. Hộp thoại cũng ghi rõ đang ở bước nào, giữ focus bàn phím trong hộp thoại nhưng không lấy focus khỏi ô bạn đang gõ, và đóng được bằng Escape.
 
 ### Sửa lỗi
 - **Tiến trình cập nhật bị treo** - Khi không nhận được dữ liệu trong 10 giây, phần tiến trình báo đang chờ kết nối thay vì giữ nguyên tốc độ cuối và thời gian còn lại không bao giờ đổi.

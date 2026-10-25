@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- **App update dialog** - A running update download can continue in the background while you keep using Youwee. Settings > About shows its progress and can bring the dialog back. A download sent to the background waits for you to restart instead of closing Youwee to install. The dialog also names the step it is on, keeps keyboard focus on its main button and closes with Escape.
+- **App update dialog** - A running update download can continue in the background while you keep using Youwee. Settings > About shows its progress and can bring the dialog back. A download sent to the background waits for you to restart instead of closing Youwee to install. The dialog also names the step it is on, keeps keyboard focus inside it without taking it from a field you are typing in, and closes with Escape.
 
 ### Fixed
 - **Stalled update progress** - When no data arrives for 10 seconds, the update progress says it is waiting for the connection instead of showing the last speed and a time remaining that never changes.
