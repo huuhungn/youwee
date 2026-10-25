@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **Windows installer** - Releases now ship only the Setup `.exe` for Windows. The `.msi` is no longer published, because in-app updates always install the Setup build, so an MSI install ended up listed twice in Windows.
 
+### Fixed
+- **Tray menu in Japanese and Spanish** - The tray menu now follows the app language for Japanese and Spanish instead of staying in English.
+- **Plugin Store in settings search** - Searching settings for the Plugin Store, plugins or a marketplace now finds the Plugin Store section.
+- **Browser extension downloads** - Downloads sent from the browser extension keep your video or audio format and playlist settings instead of always using MP4 or MP3.
+- **Auto-generated subtitles** - Auto subtitles now download only the languages you selected; with no language selected they still fetch every available language.
+
 ## [0.20.1-custom.9] - 2026-10-25
 
 ### Changed
