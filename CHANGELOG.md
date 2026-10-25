@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **Stalled app update download** - Give the update check a 30 second limit and the update download a 15 minute limit, so a stalled connection ends with an error you can retry instead of leaving the update dialog stuck with no way to close it.
+- **Update retry after a failed download** - Retry in the update error dialog now restarts the download when the download failed, instead of only checking for updates again and asking you to click Update Now a second time.
 
 ## [0.20.1-custom.8] - 2026-10-24
 

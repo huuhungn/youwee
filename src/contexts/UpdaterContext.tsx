@@ -13,6 +13,7 @@ interface UpdaterContextType {
   error: string | null;
   checkForUpdate: () => Promise<boolean>;
   downloadAndInstall: () => Promise<void>;
+  retryUpdate: () => Promise<unknown>;
   restartApp: () => Promise<void>;
   dismissUpdate: () => void;
 }
