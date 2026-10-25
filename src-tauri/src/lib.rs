@@ -28,8 +28,9 @@ static HIDE_DOCK_ON_CLOSE: AtomicBool = AtomicBool::new(false);
 
 /// Whether this launch followed a Tauri updater install of the running version.
 static LAUNCHED_AFTER_UPDATE: AtomicBool = AtomicBool::new(false);
+// The repository moved to huuhungn/youwee; the old URL only works through GitHub's redirect.
 const UPDATER_METADATA_URL: &str =
-    "https://github.com/anhtahaylove/youwee/releases/latest/download/latest.json";
+    "https://github.com/huuhungn/youwee/releases/latest/download/latest.json";
 
 /// Current UI language for tray menu translations (default: "en")
 static TRAY_LANG: Mutex<String> = Mutex::new(String::new());
