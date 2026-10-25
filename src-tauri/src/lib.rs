@@ -731,6 +731,10 @@ fn tray_text(key: &str) -> &'static str {
         "zh-CN"
     } else if lang.starts_with("fr") {
         "fr"
+    } else if lang.starts_with("ja") {
+        "ja"
+    } else if lang.starts_with("es") {
+        "es"
     } else {
         "en"
     };
@@ -793,6 +797,44 @@ fn tray_text(key: &str) -> &'static str {
         ("fr", "open") => "Ouvrir Youwee",
         ("fr", "browser_extension") => "Extension navigateur",
         ("fr", "quit") => "Quitter",
+        // Japanese
+        ("ja", "followed_channels") => "フォロー中のチャンネル",
+        ("ja", "no_channels") => "フォロー中のチャンネルはありません",
+        ("ja", "new_suffix") => "件の新着",
+        ("ja", "download_queue") => "ダウンロードキュー",
+        ("ja", "downloading") => "ダウンロード中",
+        ("ja", "pending") => "待機中",
+        ("ja", "completed") => "完了",
+        ("ja", "errors") => "エラー",
+        ("ja", "idle") => "アイドル",
+        ("ja", "remote_download") => "リモートダウンロード",
+        ("ja", "running") => "実行中",
+        ("ja", "disabled") => "無効",
+        ("ja", "check_all") => "フォロー中チャンネルを今すぐチェック",
+        ("ja", "settings") => "設定",
+        ("ja", "check_update") => "更新をチェック...",
+        ("ja", "open") => "Youwee を開く",
+        ("ja", "browser_extension") => "ブラウザ拡張機能",
+        ("ja", "quit") => "終了",
+        // Spanish
+        ("es", "followed_channels") => "Canales seguidos",
+        ("es", "no_channels") => "No sigues ningún canal",
+        ("es", "new_suffix") => "nuevos",
+        ("es", "download_queue") => "Cola de descargas",
+        ("es", "downloading") => "Descargando",
+        ("es", "pending") => "Pendiente",
+        ("es", "completed") => "Completado",
+        ("es", "errors") => "Errores",
+        ("es", "idle") => "Inactivo",
+        ("es", "remote_download") => "Descarga remota",
+        ("es", "running") => "Ejecutándose",
+        ("es", "disabled") => "Deshabilitado",
+        ("es", "check_all") => "Comprobar canales seguidos ahora",
+        ("es", "settings") => "Ajustes",
+        ("es", "check_update") => "Buscar actualizaciones...",
+        ("es", "open") => "Abrir Youwee",
+        ("es", "browser_extension") => "Extensión de navegador",
+        ("es", "quit") => "Salir",
         // English (default)
         (_, "followed_channels") => "Followed Channels",
         (_, "no_channels") => "No channels followed",
@@ -975,4 +1017,45 @@ fn rebuild_tray_menu_inner(
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tray_text_tests {
+    use super::*;
+
+    #[test]
+    fn japanese_and_spanish_trays_translate_every_key() {
+        const KEYS: [&str; 18] = [
+            "followed_channels",
+            "no_channels",
+            "new_suffix",
+            "download_queue",
+            "downloading",
+            "pending",
+            "completed",
+            "errors",
+            "idle",
+            "remote_download",
+            "running",
+            "disabled",
+            "check_all",
+            "settings",
+            "check_update",
+            "open",
+            "browser_extension",
+            "quit",
+        ];
+        for lang in ["ja", "es-ES"] {
+            *TRAY_LANG.lock().unwrap() = lang.to_string();
+            let translated: Vec<&str> = KEYS.iter().map(|key| tray_text(key)).collect();
+            *TRAY_LANG.lock().unwrap() = "en".to_string();
+            for (key, text) in KEYS.iter().zip(translated) {
+                assert_ne!(
+                    text,
+                    tray_text(key),
+                    "{lang} tray falls back to English for {key}"
+                );
+            }
+        }
+    }
 }
