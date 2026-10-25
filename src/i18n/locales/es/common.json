@@ -64,7 +64,16 @@
     "installed": "Actualización completada",
     "installedDescription": "Youwee se actualizó correctamente. Estos son los cambios de esta versión.",
     "gotIt": "Entendido",
-    "whatsNew": "Novedades"
+    "whatsNew": "Novedades",
+    "downloadingTitle": "Descargando actualización",
+    "installingTitle": "Instalando actualización",
+    "readyTitle": "Listo para reiniciar",
+    "hide": "Continuar en segundo plano",
+    "stalled": "Sin datos desde hace {{time}}. Esperando la conexión…",
+    "stoppedAt": "Detenida en {{percent}}% ({{downloaded}} de {{total}}).",
+    "errorTimeout": "El servidor de actualizaciones dejó de responder. Revisa tu conexión e inténtalo de nuevo.",
+    "errorNetwork": "No se pudo conectar con el servidor de actualizaciones. Revisa tu conexión a internet e inténtalo de nuevo.",
+    "errorSignature": "La actualización descargada no superó la verificación de firma, así que no se instaló."
   },
   "legalDisclaimer": {
     "title": "Aviso de uso responsable",

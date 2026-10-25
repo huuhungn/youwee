@@ -64,7 +64,16 @@
     "installed": "アップデート完了",
     "installedDescription": "Youwee が正常に更新されました。このバージョンの変更点をご確認ください。",
     "gotIt": "了解",
-    "whatsNew": "新機能"
+    "whatsNew": "新機能",
+    "downloadingTitle": "アップデートをダウンロード中",
+    "installingTitle": "アップデートをインストール中",
+    "readyTitle": "再起動の準備ができました",
+    "hide": "バックグラウンドで続行",
+    "stalled": "{{time}}間データを受信していません。接続を待っています…",
+    "stoppedAt": "{{percent}}%（{{downloaded}} / {{total}}）で停止しました。",
+    "errorTimeout": "アップデートサーバーが応答しなくなりました。接続を確認して再試行してください。",
+    "errorNetwork": "アップデートサーバーに接続できません。インターネット接続を確認して再試行してください。",
+    "errorSignature": "ダウンロードしたアップデートは署名の検証に失敗したため、インストールされませんでした。"
   },
   "legalDisclaimer": {
     "title": "利用規約と免責事項",

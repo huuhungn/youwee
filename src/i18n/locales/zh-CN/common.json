@@ -64,7 +64,16 @@
     "installed": "更新成功！",
     "installedDescription": "Youwee 已成功更新。以下是此版本的变更内容。",
     "gotIt": "知道了",
-    "whatsNew": "新功能"
+    "whatsNew": "新功能",
+    "downloadingTitle": "正在下载更新",
+    "installingTitle": "正在安装更新",
+    "readyTitle": "准备重启",
+    "hide": "在后台继续",
+    "stalled": "已 {{time}} 未收到数据，正在等待连接…",
+    "stoppedAt": "已停止于 {{percent}}%（{{downloaded}} / {{total}}）。",
+    "errorTimeout": "更新服务器停止响应。请检查网络连接后重试。",
+    "errorNetwork": "无法连接到更新服务器。请检查网络连接后重试。",
+    "errorSignature": "下载的更新未通过签名校验，因此未安装。"
   },
   "legalDisclaimer": {
     "title": "负责任使用提示",

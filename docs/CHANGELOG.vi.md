@@ -7,9 +7,15 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Thay đổi
+- **Hộp thoại cập nhật app** - Bản cập nhật đang tải có thể chạy nền để bạn tiếp tục dùng Youwee. Cài đặt > Giới thiệu hiện tiến trình tải và mở lại được hộp thoại. Bản cập nhật tải nền sẽ chờ bạn khởi động lại thay vì tự đóng Youwee để cài. Hộp thoại cũng ghi rõ đang ở bước nào, giữ focus bàn phím ở nút chính và đóng được bằng Escape.
+
 ### Sửa lỗi
+- **Tiến trình cập nhật bị treo** - Khi không nhận được dữ liệu trong 10 giây, phần tiến trình báo đang chờ kết nối thay vì giữ nguyên tốc độ cuối và thời gian còn lại không bao giờ đổi.
+- **Chi tiết lỗi cập nhật** - Lỗi cập nhật giờ nêu nguyên nhân có thể (máy chủ không phản hồi, mất kết nối hoặc chữ ký không hợp lệ), cho biết lượt tải dừng ở đâu và kèm nội dung lỗi gốc. Thông báo lỗi cũng dễ đọc hơn ở giao diện tối.
+- **Đóng hộp thoại cập nhật** - Nút Để sau và nút đóng giờ giữ bản cập nhật trong Cài đặt > Giới thiệu thay vì quên nó, và hộp thoại không còn tự mở lại vài giây sau khi bạn đóng.
 - **Tải bản cập nhật bị treo** - Giới hạn bước kiểm tra cập nhật trong 30 giây và bước tải bản cập nhật trong 15 phút, để khi kết nối bị kẹt thì app báo lỗi và cho thử lại, thay vì hộp thoại cập nhật đứng mãi mà không đóng được.
-- **Thử lại sau khi tải bản cập nhật lỗi** - Khi lỗi xảy ra lúc tải, nút Thử lại trong hộp thoại lỗi cập nhật sẽ tải lại ngay, thay vì chỉ kiểm tra cập nhật lại rồi bắt bạn bấm Cập nhật ngay thêm một lần. Nút làm mới trong Cài đặt > Giới thiệu cũng làm như vậy khi đang có lỗi cập nhật.
+- **Thử lại sau khi tải bản cập nhật lỗi** - Khi lỗi xảy ra lúc tải, nút Thử lại trong hộp thoại lỗi cập nhật sẽ tải lại ngay, thay vì chỉ kiểm tra cập nhật lại rồi bắt bạn bấm Cập nhật ngay thêm một lần. Sau khi tải lỗi, Cài đặt > Giới thiệu có nút Thử lại làm việc tương tự.
 
 ## [0.20.1-custom.8] - 2026-10-24
 

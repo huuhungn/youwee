@@ -2,7 +2,7 @@ import { getVersion } from '@tauri-apps/api/app';
 import { invoke } from '@tauri-apps/api/core';
 import { relaunch } from '@tauri-apps/plugin-process';
 import { check } from '@tauri-apps/plugin-updater';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { parseUpdaterManifest } from '@/lib/updater-manifest';
 
 export interface UpdateInfo {
@@ -20,6 +20,8 @@ export interface UpdateProgress {
   bytesPerSecond: number;
   etaSeconds: number | null;
   phase: 'downloading' | 'installing';
+  /** Date.now() when the last bytes arrived, used to spot a stalled connection. */
+  updatedAt: number;
 }
 
 export function calculateUpdateTransferStats(
@@ -177,20 +179,84 @@ export function runUpdateRetry(
   return failedStep === 'download' ? actions.downloadAndInstall() : actions.checkForUpdate();
 }
 
-// The Settings refresh button acts as Retry while an update error is showing.
-export function updateRefreshAction<T>(
-  status: UpdateStatus,
-  actions: { checkForUpdate: T; retryUpdate: T },
-): T {
-  return status === 'error' ? actions.retryUpdate : actions.checkForUpdate;
+// No bytes for this long means the connection has stalled, so the frozen speed and ETA are hidden.
+export const UPDATE_STALL_MS = 10_000;
+
+/** Whole seconds since the last bytes arrived, or null while data is still flowing. */
+export function updateStalledSeconds(progress: UpdateProgress | null, now: number) {
+  if (!progress || progress.phase !== 'downloading') return null;
+  const idleMs = now - progress.updatedAt;
+  return idleMs >= UPDATE_STALL_MS ? Math.floor(idleMs / 1000) : null;
+}
+
+/** Ticks once a second while a download runs and reports how long it has stalled. */
+export function useUpdateStall(progress: UpdateProgress | null, active: boolean) {
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (!active) return;
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [active]);
+
+  return active ? updateStalledSeconds(progress, now) : null;
+}
+
+export type UpdateErrorKind = 'timeout' | 'network' | 'signature' | 'generic';
+
+// The updater rejects with a plain string, so the reason is read from its text.
+export function classifyUpdateError(err: unknown): {
+  kind: UpdateErrorKind;
+  detail: string | null;
+} {
+  const detail = (typeof err === 'string' ? err : err instanceof Error ? err.message : '').trim();
+  const kind: UpdateErrorKind = /signature|minisign/i.test(detail)
+    ? 'signature'
+    : /timed out|timeout/i.test(detail)
+      ? 'timeout'
+      : /error sending request|connect|dns|resolve|network|unreachable|tls|certificate/i.test(
+            detail,
+          )
+        ? 'network'
+        : 'generic';
+  return { kind, detail: detail || null };
 }
 
 export function useAppUpdater() {
-  const [status, setStatus] = useState<UpdateStatus>('initializing');
+  const [status, setStatusState] = useState<UpdateStatus>('initializing');
   const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
   const [progress, setProgress] = useState<UpdateProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [errorKind, setErrorKind] = useState<UpdateErrorKind>('generic');
   const [failedStep, setFailedStep] = useState<UpdateStep>('check');
+  const [dialogHidden, setDialogHiddenState] = useState(false);
+  const dialogHiddenRef = useRef(false);
+  const pendingInstallRef = useRef<NonNullable<Awaited<ReturnType<typeof check>>> | null>(null);
+
+  const setDialogHidden = useCallback((hidden: boolean) => {
+    dialogHiddenRef.current = hidden;
+    setDialogHiddenState(hidden);
+  }, []);
+
+  // Hiding the dialog lasts until the update moves to its next state.
+  const setStatus = useCallback(
+    (next: UpdateStatus) => {
+      setStatusState(next);
+      setDialogHidden(false);
+    },
+    [setDialogHidden],
+  );
+
+  const fail = useCallback(
+    (step: UpdateStep, err: unknown) => {
+      const { kind, detail } = classifyUpdateError(err);
+      setError(detail);
+      setErrorKind(kind);
+      setFailedStep(step);
+      setStatus('error');
+    },
+    [setStatus],
+  );
 
   useEffect(() => {
     let active = true;
@@ -235,7 +301,7 @@ export function useAppUpdater() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [setStatus]);
 
   const isExternalUpdateManaged = useCallback(async () => {
     try {
@@ -267,13 +333,10 @@ export function useAppUpdater() {
         return false;
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to check for updates';
-      setError(message);
-      setFailedStep('check');
-      setStatus('error');
+      fail('check', err);
       return false;
     }
-  }, [isExternalUpdateManaged]);
+  }, [isExternalUpdateManaged, setStatus, fail]);
 
   const downloadAndInstall = useCallback(async () => {
     setStatus('downloading');
@@ -283,6 +346,7 @@ export function useAppUpdater() {
       bytesPerSecond: 0,
       etaSeconds: null,
       phase: 'downloading',
+      updatedAt: Date.now(),
     });
 
     try {
@@ -311,7 +375,7 @@ export function useAppUpdater() {
       let bytesPerSecond = 0;
       let etaSeconds: number | null = null;
 
-      await update.downloadAndInstall(
+      await update.download(
         (event) => {
           switch (event.event) {
             case 'Started':
@@ -323,6 +387,7 @@ export function useAppUpdater() {
                 bytesPerSecond: 0,
                 etaSeconds: null,
                 phase: 'downloading',
+                updatedAt: Date.now(),
               });
               break;
             case 'Progress': {
@@ -346,6 +411,7 @@ export function useAppUpdater() {
                 bytesPerSecond,
                 etaSeconds,
                 phase: 'downloading',
+                updatedAt: Date.now(),
               });
               break;
             }
@@ -356,6 +422,7 @@ export function useAppUpdater() {
                 bytesPerSecond: 0,
                 etaSeconds: 0,
                 phase: 'installing',
+                updatedAt: Date.now(),
               });
               break;
           }
@@ -363,14 +430,17 @@ export function useAppUpdater() {
         { timeout: UPDATE_DOWNLOAD_TIMEOUT_MS },
       );
 
+      // A download sent to the background waits for Restart, so the installer never closes the app mid-task.
+      if (dialogHiddenRef.current) {
+        pendingInstallRef.current = update;
+      } else {
+        await update.install();
+      }
       setStatus('ready');
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to download update';
-      setError(message);
-      setFailedStep('download');
-      setStatus('error');
+      fail('download', err);
     }
-  }, [isExternalUpdateManaged]);
+  }, [isExternalUpdateManaged, setStatus, fail]);
 
   const retryUpdate = useCallback(
     () => runUpdateRetry(failedStep, { checkForUpdate, downloadAndInstall }),
@@ -378,27 +448,50 @@ export function useAppUpdater() {
   );
 
   const restartApp = useCallback(async () => {
-    await relaunch();
-  }, []);
-
-  const dismissUpdate = useCallback(() => {
-    if (status === 'installed') {
-      if (updateInfo) storeShownUpdateVersion(updateInfo.version);
-      clearPendingUpdate();
+    const pending = pendingInstallRef.current;
+    if (pending) {
+      pendingInstallRef.current = null;
+      setStatus('downloading');
+      setProgress(
+        (current) => current && { ...current, phase: 'installing', updatedAt: Date.now() },
+      );
+      try {
+        await pending.install();
+      } catch (err) {
+        fail('download', err);
+        return;
+      }
     }
+    await relaunch();
+  }, [setStatus, fail]);
+
+  // Closing the dialog only hides it: Settings > About keeps the update, its progress or its error.
+  const dismissUpdate = useCallback(() => {
+    if (status !== 'installed') {
+      setDialogHidden(true);
+      return;
+    }
+    if (updateInfo) storeShownUpdateVersion(updateInfo.version);
+    clearPendingUpdate();
     setStatus('idle');
     setUpdateInfo(null);
-  }, [status, updateInfo]);
+  }, [status, updateInfo, setStatus, setDialogHidden]);
+
+  const showUpdateDialog = useCallback(() => setDialogHidden(false), [setDialogHidden]);
 
   return {
     status,
     updateInfo,
     progress,
     error,
+    errorKind,
+    failedStep,
+    dialogVisible: !dialogHidden,
     checkForUpdate,
     downloadAndInstall,
     retryUpdate,
     restartApp,
     dismissUpdate,
+    showUpdateDialog,
   };
 }

@@ -215,16 +215,20 @@ function AppContent() {
         <MusicPlayer />
       </MainLayout>
 
-      <UpdateDialog
-        status={updater.status}
-        updateInfo={updater.updateInfo}
-        progress={updater.progress}
-        error={updater.error}
-        onDownload={updater.downloadAndInstall}
-        onRestart={updater.restartApp}
-        onDismiss={updater.dismissUpdate}
-        onRetry={updater.retryUpdate}
-      />
+      {updater.dialogVisible && (
+        <UpdateDialog
+          status={updater.status}
+          updateInfo={updater.updateInfo}
+          progress={updater.progress}
+          error={updater.error}
+          errorKind={updater.errorKind}
+          failedStep={updater.failedStep}
+          onDownload={updater.downloadAndInstall}
+          onRestart={updater.restartApp}
+          onDismiss={updater.dismissUpdate}
+          onRetry={updater.retryUpdate}
+        />
+      )}
 
       {showFfmpegDialog && <FFmpegDialog onDismiss={() => setShowFfmpegDialog(false)} />}
 

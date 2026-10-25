@@ -21,6 +21,9 @@ interface ModalShellProps {
   children: React.ReactNode;
   /** Set false for dialogs that must not close on Escape/backdrop. */
   dismissible?: boolean;
+  /** Replaces the default overlay and panel styling. */
+  overlayClassName?: string;
+  className?: string;
 }
 
 /**
@@ -36,6 +39,8 @@ export function ModalShell({
   descriptionId,
   children,
   dismissible = true,
+  overlayClassName = 'fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm',
+  className = 'w-full max-w-md mx-4 bg-card border border-border rounded-xl shadow-2xl overflow-hidden outline-none',
 }: ModalShellProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
@@ -48,11 +53,13 @@ export function ModalShell({
     };
   }, []);
 
-  // Move focus into the dialog once it opens.
+  // Move focus into the dialog once it opens, preferring an element marked data-autofocus.
   useEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
-    const first = panel.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+    const first =
+      panel.querySelector<HTMLElement>('[data-autofocus]') ??
+      panel.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
     (first ?? panel).focus();
   }, []);
 
@@ -96,7 +103,7 @@ export function ModalShell({
   return (
     // biome-ignore lint/a11y/noStaticElementInteractions: overlay implements dialog keyboard semantics
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      className={overlayClassName}
       onKeyDown={handleKeyDown}
       onMouseDown={(event) => {
         if (dismissible && event.target === event.currentTarget) {
@@ -111,7 +118,7 @@ export function ModalShell({
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
         tabIndex={-1}
-        className="w-full max-w-md mx-4 bg-card border border-border rounded-xl shadow-2xl overflow-hidden outline-none"
+        className={className}
       >
         {children}
       </div>

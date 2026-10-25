@@ -64,7 +64,16 @@
     "installed": "Update Complete",
     "installedDescription": "Youwee was updated successfully. Here is what changed in this version.",
     "gotIt": "Got it",
-    "whatsNew": "What's new"
+    "whatsNew": "What's new",
+    "downloadingTitle": "Yangilanish yuklab olinmoqda",
+    "installingTitle": "Yangilanish o‘rnatilmoqda",
+    "readyTitle": "Qayta ishga tushirishga tayyor",
+    "hide": "Fonda davom ettirish",
+    "stalled": "{{time}} davomida ma’lumot kelmadi. Ulanish kutilmoqda…",
+    "stoppedAt": "{{percent}}% da to‘xtadi ({{downloaded}} / {{total}}).",
+    "errorTimeout": "Yangilanish serveri javob bermay qoldi. Ulanishni tekshirib, qayta urinib ko‘ring.",
+    "errorNetwork": "Yangilanish serveriga ulanib bo‘lmadi. Internet aloqasini tekshirib, qayta urinib ko‘ring.",
+    "errorSignature": "Yuklab olingan yangilanish imzo tekshiruvidan o‘tmadi, shuning uchun o‘rnatilmadi."
   },
   "legalDisclaimer": {
     "title": "Mas'uliyatli foydalanish haqida eslatma",
