@@ -167,11 +167,22 @@ export const updaterRestartsAutomatically = (platform: string) => platform.inclu
 export const UPDATE_CHECK_TIMEOUT_MS = 30_000;
 export const UPDATE_DOWNLOAD_TIMEOUT_MS = 15 * 60_000;
 
+export type UpdateStep = 'check' | 'download';
+
+// Retry repeats the step that failed, so one click restarts a failed download.
+export function runUpdateRetry(
+  failedStep: UpdateStep,
+  actions: { checkForUpdate: () => Promise<unknown>; downloadAndInstall: () => Promise<unknown> },
+) {
+  return failedStep === 'download' ? actions.downloadAndInstall() : actions.checkForUpdate();
+}
+
 export function useAppUpdater() {
   const [status, setStatus] = useState<UpdateStatus>('initializing');
   const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
   const [progress, setProgress] = useState<UpdateProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [failedStep, setFailedStep] = useState<UpdateStep>('check');
 
   useEffect(() => {
     let active = true;
@@ -250,6 +261,7 @@ export function useAppUpdater() {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to check for updates';
       setError(message);
+      setFailedStep('check');
       setStatus('error');
       return false;
     }
@@ -347,9 +359,15 @@ export function useAppUpdater() {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to download update';
       setError(message);
+      setFailedStep('download');
       setStatus('error');
     }
   }, [isExternalUpdateManaged]);
+
+  const retryUpdate = useCallback(
+    () => runUpdateRetry(failedStep, { checkForUpdate, downloadAndInstall }),
+    [failedStep, checkForUpdate, downloadAndInstall],
+  );
 
   const restartApp = useCallback(async () => {
     await relaunch();
@@ -371,6 +389,7 @@ export function useAppUpdater() {
     error,
     checkForUpdate,
     downloadAndInstall,
+    retryUpdate,
     restartApp,
     dismissUpdate,
   };

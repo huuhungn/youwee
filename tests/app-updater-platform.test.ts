@@ -2,6 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import {
   calculateUpdateTransferStats,
   restoreInstalledUpdate,
+  runUpdateRetry,
   UPDATE_CHECK_TIMEOUT_MS,
   UPDATE_DOWNLOAD_TIMEOUT_MS,
   updaterRestartsAutomatically,
@@ -22,6 +23,34 @@ describe('app updater platform behavior', () => {
       (windowsInstallerBytes / slowBytesPerSecond) * 1000,
     );
     expect(Number.isFinite(UPDATE_DOWNLOAD_TIMEOUT_MS)).toBe(true);
+  });
+});
+
+describe('update retry', () => {
+  const actions = () => {
+    const calls: string[] = [];
+    return {
+      calls,
+      checkForUpdate: async () => {
+        calls.push('check');
+        return true;
+      },
+      downloadAndInstall: async () => {
+        calls.push('download');
+      },
+    };
+  };
+
+  test('restarts the download when the download failed', async () => {
+    const a = actions();
+    await runUpdateRetry('download', a);
+    expect(a.calls).toEqual(['download']);
+  });
+
+  test('checks again when the update check failed', async () => {
+    const a = actions();
+    await runUpdateRetry('check', a);
+    expect(a.calls).toEqual(['check']);
   });
 });
 
