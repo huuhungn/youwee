@@ -16,6 +16,7 @@ interface UpdaterContextType {
   errorKind: UpdateErrorKind;
   failedStep: UpdateStep;
   dialogVisible: boolean;
+  installAfterRestart: boolean;
   checkForUpdate: () => Promise<boolean>;
   downloadAndInstall: () => Promise<void>;
   retryUpdate: () => Promise<unknown>;

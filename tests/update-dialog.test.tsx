@@ -72,3 +72,35 @@ test('a failed download explains the reason, where it stopped and the raw error'
   expect(html).toContain('operation timed out');
   expect(html).toContain('v0.20.1-custom.9');
 });
+
+test('a dialog that opens on its own never puts focus on an action that installs or downloads', () => {
+  const safe = {
+    available: 'Later',
+    downloading: 'Continue in background',
+    ready: 'Later',
+    error: 'Dismiss',
+  } as const;
+  for (const [status, label] of Object.entries(safe)) {
+    const html = renderToStaticMarkup(
+      <UpdateDialog
+        {...base}
+        status={status as keyof typeof safe}
+        progress={progress(Date.now())}
+      />,
+    );
+    expect(html.match(/data-autofocus="true"[^>]*>([^<]+)</)?.[1]).toBe(label);
+  }
+});
+
+test('a download waiting for Restart does not promise an automatic restart', () => {
+  const html = renderToStaticMarkup(
+    <UpdateDialog
+      {...base}
+      status="downloading"
+      progress={progress(Date.now())}
+      installAfterRestart
+    />,
+  );
+
+  expect(html).not.toContain('close and reopen automatically');
+});

@@ -229,23 +229,22 @@ export function useAppUpdater() {
   const [error, setError] = useState<string | null>(null);
   const [errorKind, setErrorKind] = useState<UpdateErrorKind>('generic');
   const [failedStep, setFailedStep] = useState<UpdateStep>('check');
-  const [dialogHidden, setDialogHiddenState] = useState(false);
-  const dialogHiddenRef = useRef(false);
+  const [dialogHidden, setDialogHidden] = useState(false);
+  // Set once a running download is sent to the background; reopening the dialog does not undo it.
+  const [installAfterRestart, setInstallAfterRestart] = useState(false);
+  const installAfterRestartRef = useRef(false);
   const pendingInstallRef = useRef<NonNullable<Awaited<ReturnType<typeof check>>> | null>(null);
 
-  const setDialogHidden = useCallback((hidden: boolean) => {
-    dialogHiddenRef.current = hidden;
-    setDialogHiddenState(hidden);
+  const setInstallLater = useCallback((later: boolean) => {
+    installAfterRestartRef.current = later;
+    setInstallAfterRestart(later);
   }, []);
 
   // Hiding the dialog lasts until the update moves to its next state.
-  const setStatus = useCallback(
-    (next: UpdateStatus) => {
-      setStatusState(next);
-      setDialogHidden(false);
-    },
-    [setDialogHidden],
-  );
+  const setStatus = useCallback((next: UpdateStatus) => {
+    setStatusState(next);
+    setDialogHidden(false);
+  }, []);
 
   const fail = useCallback(
     (step: UpdateStep, err: unknown) => {
@@ -340,6 +339,7 @@ export function useAppUpdater() {
 
   const downloadAndInstall = useCallback(async () => {
     setStatus('downloading');
+    setInstallLater(false);
     setProgress({
       downloaded: 0,
       total: 0,
@@ -431,7 +431,7 @@ export function useAppUpdater() {
       );
 
       // A download sent to the background waits for Restart, so the installer never closes the app mid-task.
-      if (dialogHiddenRef.current) {
+      if (installAfterRestartRef.current) {
         pendingInstallRef.current = update;
       } else {
         await update.install();
@@ -440,7 +440,7 @@ export function useAppUpdater() {
     } catch (err) {
       fail('download', err);
     }
-  }, [isExternalUpdateManaged, setStatus, fail]);
+  }, [isExternalUpdateManaged, setStatus, setInstallLater, fail]);
 
   const retryUpdate = useCallback(
     () => runUpdateRetry(failedStep, { checkForUpdate, downloadAndInstall }),
@@ -462,12 +462,18 @@ export function useAppUpdater() {
         return;
       }
     }
-    await relaunch();
+    try {
+      await relaunch();
+    } catch {
+      // The update is installed; leave Restart available instead of a stuck progress bar.
+      setStatus('ready');
+    }
   }, [setStatus, fail]);
 
   // Closing the dialog only hides it: Settings > About keeps the update, its progress or its error.
   const dismissUpdate = useCallback(() => {
     if (status !== 'installed') {
+      if (status === 'downloading') setInstallLater(true);
       setDialogHidden(true);
       return;
     }
@@ -475,9 +481,9 @@ export function useAppUpdater() {
     clearPendingUpdate();
     setStatus('idle');
     setUpdateInfo(null);
-  }, [status, updateInfo, setStatus, setDialogHidden]);
+  }, [status, updateInfo, setStatus, setInstallLater]);
 
-  const showUpdateDialog = useCallback(() => setDialogHidden(false), [setDialogHidden]);
+  const showUpdateDialog = useCallback(() => setDialogHidden(false), []);
 
   return {
     status,
@@ -487,6 +493,7 @@ export function useAppUpdater() {
     errorKind,
     failedStep,
     dialogVisible: !dialogHidden,
+    installAfterRestart,
     checkForUpdate,
     downloadAndInstall,
     retryUpdate,

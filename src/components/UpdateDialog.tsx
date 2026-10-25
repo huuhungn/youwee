@@ -65,6 +65,7 @@ interface UpdateDialogProps {
   error: string | null;
   errorKind: UpdateErrorKind;
   failedStep: UpdateStep;
+  installAfterRestart?: boolean;
   onDownload: () => void;
   onRestart: () => void;
   onDismiss: () => void;
@@ -78,6 +79,7 @@ export function UpdateDialog({
   error,
   errorKind,
   failedStep,
+  installAfterRestart = false,
   onDownload,
   onRestart,
   onDismiss,
@@ -87,14 +89,22 @@ export function UpdateDialog({
   const { titleId, descriptionId } = useDialogIds();
   const stalledSeconds = useUpdateStall(progress, status === 'downloading');
   const actionsRef = useRef<HTMLDivElement>(null);
+  const statusSince = useRef(0);
 
-  // Each state swaps the buttons, so move focus to the new primary action instead of losing it.
+  // Each state swaps the buttons, so move focus to the new safe action instead of losing it.
+  // The dialog can open on its own, so a stray Enter never starts, retries or installs an update.
   // biome-ignore lint/correctness/useExhaustiveDependencies: runs again whenever the status changes
   useEffect(() => {
+    statusSince.current = performance.now();
     const actions = actionsRef.current;
     if (!actions || actions.contains(document.activeElement)) return;
     actions.querySelector<HTMLButtonElement>('[data-autofocus]')?.focus();
   }, [status]);
+
+  // The background button takes the place of Update Now, so ignore the second click of a double click.
+  const hideDownload = () => {
+    if (performance.now() - statusSince.current >= 500) onDismiss();
+  };
 
   // Only show dialog for specific states
   if (
@@ -298,7 +308,7 @@ export function UpdateDialog({
                       })}`
                     : t('update.calculating')}
             </p>
-            {autoRestarts && (
+            {autoRestarts && !installAfterRestart && (
               <p className="mt-4 pt-3 border-t border-border/40 text-xs text-muted-foreground">
                 {t('update.autoRestart')}
               </p>
@@ -344,6 +354,7 @@ export function UpdateDialog({
         {status === 'available' && (
           <>
             <Button
+              data-autofocus
               variant="ghost"
               className="sm:w-1/3 h-12 rounded-xl font-medium"
               onClick={onDismiss}
@@ -351,7 +362,6 @@ export function UpdateDialog({
               {t('update.later')}
             </Button>
             <Button
-              data-autofocus
               onClick={onDownload}
               className="sm:w-2/3 h-12 rounded-xl font-bold bg-foreground text-background hover:bg-foreground/90 shadow-xl shadow-foreground/10"
             >
@@ -366,7 +376,7 @@ export function UpdateDialog({
             data-autofocus
             variant="secondary"
             className="w-full h-12 rounded-xl font-semibold"
-            onClick={onDismiss}
+            onClick={hideDownload}
           >
             {t('update.hide')}
           </Button>
@@ -375,6 +385,7 @@ export function UpdateDialog({
         {status === 'ready' && (
           <>
             <Button
+              data-autofocus
               variant="ghost"
               className="sm:w-1/3 h-12 rounded-xl font-medium"
               onClick={onDismiss}
@@ -382,7 +393,6 @@ export function UpdateDialog({
               {t('update.later')}
             </Button>
             <Button
-              data-autofocus
               onClick={onRestart}
               className="sm:w-2/3 h-12 rounded-xl font-bold bg-green-500 text-white hover:bg-green-600 shadow-xl shadow-green-500/20"
             >
@@ -406,6 +416,7 @@ export function UpdateDialog({
         {status === 'error' && (
           <>
             <Button
+              data-autofocus
               variant="ghost"
               className="sm:w-1/3 h-12 rounded-xl font-medium"
               onClick={onDismiss}
@@ -413,7 +424,6 @@ export function UpdateDialog({
               {t('update.dismiss')}
             </Button>
             <Button
-              data-autofocus
               onClick={onRetry}
               className="sm:w-2/3 h-12 rounded-xl font-bold bg-foreground text-background hover:bg-foreground/90"
             >

@@ -223,6 +223,7 @@ function AppContent() {
           error={updater.error}
           errorKind={updater.errorKind}
           failedStep={updater.failedStep}
+          installAfterRestart={updater.installAfterRestart}
           onDownload={updater.downloadAndInstall}
           onRestart={updater.restartApp}
           onDismiss={updater.dismissUpdate}
