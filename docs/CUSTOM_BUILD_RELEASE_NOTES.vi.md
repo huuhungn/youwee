@@ -40,13 +40,14 @@ Phiên bản custom dùng hậu tố dạng `0.20.1-custom.5`. Điều này ản
 
 - **NSIS chạy được ngay**: `bun run tauri build --bundles nsis` tạo
   `src-tauri/target/release/bundle/nsis/Youwee_<version>_x64-setup.exe`.
-- **MSI cần bước chuẩn bị trước**: chạy thẳng `--bundles msi` sẽ hỏng với lỗi
+- **MSI không còn được phát hành** sau `0.20.1-custom.9`: CI chỉ build NSIS, vì updater
+  luôn cài bản NSIS và bản cài MSI sẽ thành hai mục Youwee trong Windows.
+  Nếu vẫn cần build MSI tay: chạy thẳng `--bundles msi` sẽ hỏng với lỗi
   `optional pre-release identifier in app version must be numeric-only`, vì WiX
   không nhận chuỗi `custom.N`.
   Chạy `./scripts/prepare-windows-dependencies.ps1` trước: script sinh
   `src-tauri/tauri.windows.full.conf.json` (file này bị gitignore) và quy đổi
   `0.20.1-custom.5` thành `wix.version = 0.20.1.5`.
-  CI đã làm đúng thứ tự này, nên lỗi MSI chỉ xảy ra khi build tay.
 - **Bước ký**: build tay dừng ở `A public key has been found, but no private key`.
   Đó là hành vi mong đợi — installer đã nằm trong `bundle/nsis/`; chỉ CI có
   `TAURI_SIGNING_PRIVATE_KEY` để ký và phát hành.

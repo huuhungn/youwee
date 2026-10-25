@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Windows installer** - Releases now ship only the Setup `.exe` for Windows. The `.msi` is no longer published, because in-app updates always install the Setup build, so an MSI install ended up listed twice in Windows.
+
 ## [0.20.1-custom.9] - 2026-10-25
 
 ### Changed

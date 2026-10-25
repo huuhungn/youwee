@@ -96,7 +96,7 @@ Youwee 是一个本地工具，用于下载和处理用户提供的 URL 中的�
 
 | 平台 | 下载 |
 |------|------|
-| **Windows** (x64) | [下载 Full .msi](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Windows-Full.msi) · [下载 Full .exe](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Windows-Full-Setup.exe) |
+| **Windows** (x64) | [下载 Full .exe](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Windows-Full-Setup.exe) |
 | **macOS** (Apple Silicon) | [下载 .dmg](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Mac-Apple-Silicon.dmg) |
 | **macOS** (Intel) | [下载 .dmg](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Mac-Intel.dmg) |
 | **Linux** (x64) | [下载 .deb](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Linux.deb) · [下载 .AppImage](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Linux.AppImage) |
