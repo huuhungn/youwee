@@ -18,6 +18,9 @@ export function isTypingTarget(element: Element | null) {
   );
 }
 
+// Any open modal, including Radix alert dialogs, keeps its own Tab handling.
+const MODAL_SELECTOR = '[role="dialog"],[role="alertdialog"],[aria-modal="true"]';
+
 function focusInitial(panel: HTMLElement) {
   const first =
     panel.querySelector<HTMLElement>('[data-autofocus]') ??
@@ -81,7 +84,7 @@ export function ModalShell({
     const onKeyDown = (event: KeyboardEvent) => {
       const panel = panelRef.current;
       if (event.key !== 'Tab' || event.defaultPrevented || !panel) return;
-      if (document.activeElement?.closest('[role="dialog"]')) return;
+      if (document.activeElement?.closest(MODAL_SELECTOR)) return;
       event.preventDefault();
       focusInitial(panel);
     };

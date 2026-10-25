@@ -116,21 +116,24 @@ export function UpdateDialog({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const stalled = stalledSeconds !== null;
+
   // Each state swaps the buttons, so move focus to the new safe action instead of losing it.
   // The dialog can open on its own, so a stray Enter never starts, retries or installs an update.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: runs again whenever the status changes
+  // biome-ignore lint/correctness/useExhaustiveDependencies: runs again whenever the buttons change
   useEffect(() => {
     statusSince.current = performance.now();
     const actions = actionsRef.current;
     const active = document.activeElement;
     if (!actions || actions.contains(active) || isTypingTarget(active)) return;
     actions.querySelector<HTMLButtonElement>('[data-autofocus]')?.focus();
-  }, [status]);
+  }, [status, stalled]);
 
-  // The background button takes the place of Update Now, so ignore the second click of a double click.
-  const hideDownload = () => {
-    if (performance.now() - statusSince.current >= 500) onDismiss();
+  // Buttons move when the state or the stall changes, so ignore a click that lands within 500 ms.
+  const settled = (action?: () => void) => () => {
+    if (performance.now() - statusSince.current >= 500) action?.();
   };
+  const hideDownload = settled(onDismiss);
 
   // Only show dialog for specific states
   if (
@@ -145,7 +148,6 @@ export function UpdateDialog({
 
   const progressPercent = updateProgressPercent(progress);
   const installing = progress?.phase === 'installing';
-  const stalled = stalledSeconds !== null;
   const localizedBody = getLocalizedBody(updateInfo, i18n.language);
   const autoRestarts =
     typeof navigator !== 'undefined' && updaterRestartsAutomatically(navigator.platform);
@@ -438,7 +440,7 @@ export function UpdateDialog({
               <Button
                 variant="ghost"
                 className="sm:w-1/4 h-12 rounded-xl font-medium"
-                onClick={onCancelDownload}
+                onClick={settled(onCancelDownload)}
               >
                 {t('actions.cancel')}
               </Button>
@@ -453,7 +455,7 @@ export function UpdateDialog({
             </Button>
             {stalled && onRetryNow && (
               <Button
-                onClick={onRetryNow}
+                onClick={settled(onRetryNow)}
                 className="sm:flex-1 h-12 rounded-xl font-bold bg-foreground text-background hover:bg-foreground/90"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />

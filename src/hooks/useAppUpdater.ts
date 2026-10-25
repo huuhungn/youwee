@@ -377,7 +377,10 @@ export function useAppUpdater(runningJobs = 0) {
       }
 
       const update = await check({ timeout: UPDATE_CHECK_TIMEOUT_MS });
-      if (abandoned()) return;
+      if (abandoned()) {
+        void update?.close();
+        return;
+      }
 
       if (!update) {
         setStatus('up-to-date');
@@ -450,7 +453,10 @@ export function useAppUpdater(runningJobs = 0) {
         },
         { timeout: UPDATE_DOWNLOAD_TIMEOUT_MS },
       );
-      if (abandoned()) return;
+      if (abandoned()) {
+        void update.close(); // frees the downloaded bytes held by the updater
+        return;
+      }
 
       // A download sent to the background, or one that finishes while videos are still downloading,
       // waits for Restart, so the installer never closes the app mid-task.
