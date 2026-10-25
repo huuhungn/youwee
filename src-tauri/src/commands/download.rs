@@ -1765,6 +1765,23 @@ fn output_filepaths(
     paths
 }
 
+/// Every output path this job reported itself, in reporting order.
+fn mentioned_output_filepaths(
+    printed_filepaths: &[String],
+    chapter_filepaths: &[String],
+    final_filepath: &Option<String>,
+) -> Vec<String> {
+    let mut paths = Vec::new();
+    for filepath in printed_filepaths
+        .iter()
+        .chain(chapter_filepaths)
+        .chain(final_filepath.iter())
+    {
+        push_unique_filepath(&mut paths, filepath);
+    }
+    paths
+}
+
 type MediaFileSnapshot = BTreeMap<PathBuf, (Option<SystemTime>, u64)>;
 
 fn snapshot_media_files(output_directory: &str) -> MediaFileSnapshot {
@@ -1811,13 +1828,45 @@ fn changed_media_filepaths_since(
         .collect()
 }
 
-fn newest_changed_media_filepath(
+/// Recovers this job's output when the path yt-dlp reported does not exist. Paths the job
+/// itself named win, if they exist inside the output folder. Otherwise a folder diff is used
+/// only when exactly one media file changed: with parallel downloads into the same folder,
+/// several changed files may belong to other jobs, so none of them is claimed.
+fn recover_job_output_filepaths(
     output_directory: &str,
     before: &MediaFileSnapshot,
+    mentioned_filepaths: &[String],
 ) -> (Option<String>, Vec<String>) {
-    let changed = changed_media_filepaths_since(output_directory, before);
-    let newest = changed.last().cloned();
-    (newest, changed)
+    let Ok(output_root) = std::fs::canonicalize(output_directory) else {
+        return (None, Vec::new());
+    };
+    let mut recovered = Vec::new();
+    for filepath in mentioned_filepaths {
+        let path = Path::new(filepath);
+        let path = if path.is_absolute() {
+            path.to_path_buf()
+        } else {
+            output_root.join(path)
+        };
+        // Canonical forms are compared only; the reported path is kept (no `\\?\` prefix).
+        let inside_output = std::fs::canonicalize(&path)
+            .map(|canonical| canonical.is_file() && canonical.starts_with(&output_root))
+            .unwrap_or(false);
+        let path_text = path.to_string_lossy();
+        if inside_output && is_media_filepath(&path_text) {
+            push_unique_filepath(&mut recovered, &path_text);
+        }
+    }
+
+    if recovered.is_empty() {
+        // shortcut: a lone changed file is assumed to be this job's; if another download
+        // finishes in the same folder while this one wrote elsewhere, it is mislabelled.
+        let changed = changed_media_filepaths_since(output_directory, before);
+        if changed.len() == 1 {
+            recovered = changed;
+        }
+    }
+    (recovered.last().cloned(), recovered)
 }
 
 fn title_from_filepath(filepath: &str) -> Option<String> {
@@ -3612,10 +3661,16 @@ pub async fn download_video(
                                 .map(|path| Path::new(path).is_file())
                                 .unwrap_or(false);
                             if !final_path_exists {
+                                let mentioned = mentioned_output_filepaths(
+                                    &printed_filepaths,
+                                    &chapter_filepaths,
+                                    &final_filepath,
+                                );
                                 (final_filepath, recovered_filepaths) =
-                                    newest_changed_media_filepath(
+                                    recover_job_output_filepaths(
                                         &output_directory,
                                         &output_snapshot,
+                                        &mentioned,
                                     );
                             }
                             let mut output_paths = output_filepaths(
@@ -4284,8 +4339,10 @@ async fn handle_tokio_download(
             .map(|path| Path::new(path).is_file())
             .unwrap_or(false);
         if !final_path_exists {
+            let mentioned =
+                mentioned_output_filepaths(&printed_filepaths, &chapter_filepaths, &final_filepath);
             (final_filepath, recovered_filepaths) =
-                newest_changed_media_filepath(&output_directory, &output_snapshot);
+                recover_job_output_filepaths(&output_directory, &output_snapshot, &mentioned);
         }
         let mut output_paths = output_filepaths(
             &printed_filepaths,
@@ -5297,33 +5354,69 @@ mod tests {
         );
     }
 
-    #[test]
-    fn output_fallback_only_returns_files_changed_by_this_job() {
+    fn recovery_test_root(name: &str) -> PathBuf {
         let nonce = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .expect("system time should be after epoch")
             .as_nanos();
-        let root = std::env::temp_dir().join(format!("youwee-output-scan-{nonce}"));
+        let root = std::env::temp_dir().join(format!("youwee-{name}-{nonce}"));
         std::fs::create_dir_all(&root).expect("test output directory should be created");
-        let existing = root.join("existing.mp4");
-        let changed = root.join("changed.webm");
-        let created = root.join("created.mkv");
-        let ignored = root.join("thumbnail.jpg");
-        std::fs::write(&existing, b"existing").expect("existing media should be written");
-        std::fs::write(&changed, b"before").expect("changed media should be written");
+        root
+    }
+
+    #[test]
+    fn output_recovery_keeps_paths_this_job_reported_and_ignores_parallel_jobs() {
+        let root = recovery_test_root("job-output");
+        let outside = root.with_extension("outside.mp4");
         let snapshot = snapshot_media_files(&root.to_string_lossy());
+        let chapter = root.join("01 - Intro.mp4");
+        let parallel = root.join("another-job.mkv");
+        std::fs::write(&chapter, b"chapter").expect("chapter should be written");
+        std::fs::write(&parallel, b"other").expect("parallel output should be written");
+        std::fs::write(&outside, b"outside").expect("outside file should be written");
 
-        std::fs::write(&changed, b"after update").expect("changed media should be updated");
+        let mentioned = vec![
+            root.join("garbled ??.mp4").to_string_lossy().to_string(),
+            chapter.to_string_lossy().to_string(),
+            outside.to_string_lossy().to_string(),
+        ];
+        let (last, recovered) =
+            recover_job_output_filepaths(&root.to_string_lossy(), &snapshot, &mentioned);
+
+        assert_eq!(recovered, vec![chapter.to_string_lossy().to_string()]);
+        assert_eq!(last, Some(chapter.to_string_lossy().to_string()));
+        std::fs::remove_dir_all(&root).ok();
+        std::fs::remove_file(outside).ok();
+    }
+
+    #[test]
+    fn output_recovery_uses_a_lone_changed_file_when_the_job_named_none() {
+        let root = recovery_test_root("lone-output");
+        let existing = root.join("existing.mp4");
+        std::fs::write(&existing, b"existing").expect("existing media should be written");
+        let snapshot = snapshot_media_files(&root.to_string_lossy());
+        let created = root.join("created.webm");
         std::fs::write(&created, b"created").expect("new media should be written");
-        std::fs::write(&ignored, b"thumbnail").expect("thumbnail should be written");
+        std::fs::write(root.join("thumbnail.jpg"), b"jpg").expect("thumbnail should be written");
 
-        let (_, recovered) = newest_changed_media_filepath(&root.to_string_lossy(), &snapshot);
-        assert_eq!(recovered.len(), 2);
-        assert!(recovered.contains(&changed.to_string_lossy().to_string()));
-        assert!(recovered.contains(&created.to_string_lossy().to_string()));
-        assert!(!recovered.contains(&existing.to_string_lossy().to_string()));
-        assert!(!recovered.contains(&ignored.to_string_lossy().to_string()));
+        let (_, recovered) = recover_job_output_filepaths(&root.to_string_lossy(), &snapshot, &[]);
 
+        assert_eq!(recovered, vec![created.to_string_lossy().to_string()]);
+        std::fs::remove_dir_all(root).ok();
+    }
+
+    #[test]
+    fn output_recovery_claims_nothing_when_several_files_changed() {
+        let root = recovery_test_root("ambiguous-output");
+        let snapshot = snapshot_media_files(&root.to_string_lossy());
+        std::fs::write(root.join("a.mp4"), b"a").expect("first output should be written");
+        std::fs::write(root.join("b.mp4"), b"b").expect("second output should be written");
+
+        let (last, recovered) =
+            recover_job_output_filepaths(&root.to_string_lossy(), &snapshot, &[]);
+
+        assert!(recovered.is_empty());
+        assert_eq!(last, None);
         std::fs::remove_dir_all(root).ok();
     }
 

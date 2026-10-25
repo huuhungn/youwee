@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Plugin Store in settings search** - Searching settings for the Plugin Store, plugins or a marketplace now finds the Plugin Store section.
 - **Browser extension downloads** - Downloads sent from the browser extension keep your video or audio format and playlist settings instead of always using MP4 or MP3.
 - **Auto-generated subtitles** - Auto subtitles now download only the languages you selected; with no language selected they still fetch every available language.
+- **Parallel downloads into one folder** - When yt-dlp's reported file path is missing, Youwee now only claims files this download reported itself, or a single new file, instead of every file that changed in the folder. A parallel download's file no longer ends up in the wrong Library entry or gets post-processed twice.
 
 ## [0.20.1-custom.9] - 2026-10-25
 
