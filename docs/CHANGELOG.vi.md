@@ -15,6 +15,7 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **Tìm Plugin Store trong cài đặt** - Tìm "plugin store", "plugins" hoặc "marketplace" trong ô tìm kiếm cài đặt giờ ra mục Plugin Store.
 - **Tải từ tiện ích trình duyệt** - Lượt tải gửi từ tiện ích trình duyệt giữ định dạng video hoặc âm thanh và cài đặt playlist của bạn, thay vì luôn dùng MP4 hoặc MP3.
 - **Phụ đề tự động** - Phụ đề tự động giờ chỉ tải các ngôn ngữ bạn đã chọn; nếu không chọn ngôn ngữ nào thì vẫn tải mọi ngôn ngữ có sẵn.
+- **Tải song song vào cùng một thư mục** - Khi đường dẫn file mà yt-dlp báo không tồn tại, Youwee giờ chỉ nhận file do chính lượt tải đó báo, hoặc một file mới duy nhất, thay vì mọi file thay đổi trong thư mục. File của lượt tải song song không còn bị ghi nhầm vào mục Thư viện khác hay bị xử lý hậu kỳ hai lần.
 
 ## [0.20.1-custom.9] - 2026-10-25
 
