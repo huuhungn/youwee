@@ -7,6 +7,9 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Thay đổi
+- **Bộ cài Windows** - Bản phát hành giờ chỉ có bộ cài Setup `.exe` cho Windows. Không còn phát hành `.msi`, vì cập nhật trong app luôn cài bản Setup, khiến máy cài từ MSI bị hiện hai mục Youwee trong Windows.
+
 ## [0.20.1-custom.9] - 2026-10-25
 
 ### Thay đổi

@@ -7,6 +7,9 @@ Youwee 的所有重要更改都将记录在此文件中。
 
 ## [Unreleased]
 
+### 变更
+- **Windows 安装包** - 发布版本现在只提供 Windows 的 Setup `.exe`。不再发布 `.msi`，因为应用内更新总是安装 Setup 版本，导致通过 MSI 安装的电脑在 Windows 中出现两个 Youwee 条目。
+
 ## [0.20.1-custom.9] - 2026-10-25
 
 ### 变更

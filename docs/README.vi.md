@@ -96,7 +96,7 @@ Chỉ sử dụng Youwee với nội dung bạn sở hữu, được phép sử 
 
 | Nền tảng | Tải về |
 |----------|--------|
-| **Windows** (x64) | [Tải Full .msi](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Windows-Full.msi) · [Tải Full .exe](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Windows-Full-Setup.exe) |
+| **Windows** (x64) | [Tải Full .exe](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Windows-Full-Setup.exe) |
 | **macOS** (Apple Silicon) | [Tải .dmg](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Mac-Apple-Silicon.dmg) |
 | **macOS** (Intel) | [Tải .dmg](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Mac-Intel.dmg) |
 | **Linux** (x64) | [Tải .deb](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Linux.deb) · [Tải .AppImage](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Linux.AppImage) |

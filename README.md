@@ -112,7 +112,7 @@ Use Youwee only with content you own, have permission to use, or are legally all
 
 | Platform | Download |
 |----------|----------|
-| **Windows** (x64) | [Full Setup `.exe` — recommended](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Windows-Full-Setup.exe) · [Full `.msi`](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Windows-Full.msi) |
+| **Windows** (x64) | [Full Setup `.exe` — recommended](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Windows-Full-Setup.exe) |
 | **macOS** (Apple Silicon: M1/M2/M3/M4 or newer) | [Download latest Apple Silicon DMG](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Mac-Apple-Silicon.dmg) |
 | **macOS** (Intel) | [Download latest Intel DMG](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Mac-Intel.dmg) |
 | **Linux** (x86_64/amd64) | [Debian/Ubuntu `.deb` — recommended](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Linux.deb) · [Portable `.AppImage`](https://github.com/anhtahaylove/youwee/releases/latest/download/Youwee-Linux.AppImage) |
@@ -122,7 +122,6 @@ Use Youwee only with content you own, have permission to use, or are legally all
 **Not sure which file to choose?**
 
 - On a normal Windows 10/11 PC, choose **`Youwee-Windows-Full-Setup.exe`**.
-- On a company-managed Windows PC where an administrator deploys software, choose **`Youwee-Windows-Full.msi`**.
 - On Ubuntu, Linux Mint, Pop!_OS, Zorin OS, Debian, or another Debian-based distribution, choose **`Youwee-Linux.deb`**.
 - On another 64-bit Intel/AMD Linux distribution, try **`Youwee-Linux.AppImage`**.
 - Do not download `.sig`, `.json`, `.txt`, extension archives, or `.app.tar.gz` files unless you specifically need update verification or browser-extension recovery.
@@ -140,7 +139,7 @@ The Full Setup installer is recommended for most users. It includes yt-dlp, FFmp
 5. In Youwee, open **Settings → Dependencies**. The bundled tools should show their installed versions without requiring a separate download.
 6. Optional: open **Settings → Browser Extension** for guided Firefox, Chrome, Edge, Brave, or other Chromium-browser setup.
 
-The `.msi` package contains the same Full dependency pack and is intended for users or administrators who prefer Windows Installer deployment. Do not install both formats for the same version.
+Releases after 0.20.1-custom.9 no longer include an `.msi` package, because in-app updates always install the Setup build. If you installed an earlier `.msi`, in-app updates still work, but Windows may list Youwee twice. Uninstalling the older MSI entry also removes the app files, so run the Setup `.exe` again afterwards.
 
 #### Upgrade an existing installation
 
