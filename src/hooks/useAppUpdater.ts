@@ -204,7 +204,8 @@ export function useUpdateStall(progress: UpdateProgress | null, active: boolean)
 
 export type UpdateErrorKind = 'timeout' | 'network' | 'signature' | 'generic';
 
-// The updater rejects with a plain string, so the reason is read from its text.
+// The updater rejects with a plain string, so the reason is read from its text. A stalled download
+// hits the request deadline mid-body and surfaces only as reqwest's "error decoding response body".
 export function classifyUpdateError(err: unknown): {
   kind: UpdateErrorKind;
   detail: string | null;
@@ -212,7 +213,7 @@ export function classifyUpdateError(err: unknown): {
   const detail = (typeof err === 'string' ? err : err instanceof Error ? err.message : '').trim();
   const kind: UpdateErrorKind = /signature|minisign/i.test(detail)
     ? 'signature'
-    : /timed out|timeout/i.test(detail)
+    : /timed out|timeout|error decoding response body/i.test(detail)
       ? 'timeout'
       : /error sending request|connect|dns|resolve|network|unreachable|tls|certificate/i.test(
             detail,

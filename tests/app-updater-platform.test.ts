@@ -84,10 +84,12 @@ describe('stalled update download', () => {
 
 describe('update error reasons', () => {
   test('reads the reason from the plain string the updater rejects with', () => {
-    expect(classifyUpdateError('error decoding response body: operation timed out')).toEqual({
+    // Exact text the packaged app showed when the 15 minute download deadline hit a stalled body.
+    expect(classifyUpdateError('error decoding response body')).toEqual({
       kind: 'timeout',
-      detail: 'error decoding response body: operation timed out',
+      detail: 'error decoding response body',
     });
+    expect(classifyUpdateError('error sending request: operation timed out').kind).toBe('timeout');
     expect(
       classifyUpdateError('error sending request for url (https://example.com/latest.json)').kind,
     ).toBe('network');

@@ -62,14 +62,14 @@ test('a failed download explains the reason, where it stopped and the raw error'
       {...base}
       status="error"
       errorKind="timeout"
-      error="error decoding response body: operation timed out"
+      error="error decoding response body"
       progress={progress(0)}
     />,
   );
 
   expect(html).toContain('The update server stopped responding');
   expect(html).toContain('Stopped at 44% (68 MB of 155.3 MB)');
-  expect(html).toContain('operation timed out');
+  expect(html).toContain('error decoding response body');
   expect(html).toContain('v0.20.1-custom.9');
 });
 
