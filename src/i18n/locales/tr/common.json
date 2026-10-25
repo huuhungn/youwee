@@ -73,7 +73,11 @@
     "stoppedAt": "%{{percent}} noktasında durdu ({{downloaded}} / {{total}}).",
     "errorTimeout": "Güncelleme sunucusu yanıt vermeyi durdurdu. Bağlantınızı kontrol edip tekrar deneyin.",
     "errorNetwork": "Güncelleme sunucusuna ulaşılamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.",
-    "errorSignature": "İndirilen güncelleme imza doğrulamasını geçemediği için yüklenmedi."
+    "errorSignature": "İndirilen güncelleme imza doğrulamasını geçemediği için yüklenmedi.",
+    "runningJobs": "Hâlâ devam eden indirmeler veya işlemler var ({{count}}). Şimdi yeniden başlatmak onları durdurur.",
+    "restartWhenDone": "Bitince yeniden başlat",
+    "restartQueued": "Youwee, bunlar biter bitmez yeniden başlayacak.",
+    "waitsForRestart": "İndirmeler hâlâ sürüyor, bu yüzden güncelleme siz yeniden başlatana kadar bekleyecek."
   },
   "legalDisclaimer": {
     "title": "Sorumlu kullanım bildirimi",

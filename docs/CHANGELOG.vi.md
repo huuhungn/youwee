@@ -11,6 +11,7 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **Hộp thoại cập nhật app** - Bản cập nhật đang tải có thể chạy nền để bạn tiếp tục dùng Youwee. Cài đặt > Giới thiệu hiện tiến trình tải và mở lại được hộp thoại. Bản cập nhật tải nền sẽ chờ bạn khởi động lại thay vì tự đóng Youwee để cài. Hộp thoại cũng ghi rõ đang ở bước nào, giữ focus bàn phím trong hộp thoại nhưng không lấy focus khỏi ô bạn đang gõ, và đóng được bằng Escape.
 
 ### Sửa lỗi
+- **Khởi động lại để cài bản cập nhật** - Khi vẫn còn lượt tải hoặc xử lý đang chạy, bản cập nhật sẽ chờ thay vì cài ngay, và nút Khởi động lại cảnh báo có bao nhiêu việc sẽ bị dừng. Bạn có thể khởi động lại luôn, hoặc để Youwee tự khởi động lại ngay khi chúng xong.
 - **Tiến trình cập nhật bị treo** - Khi không nhận được dữ liệu trong 10 giây, phần tiến trình báo đang chờ kết nối thay vì giữ nguyên tốc độ cuối và thời gian còn lại không bao giờ đổi.
 - **Chi tiết lỗi cập nhật** - Lỗi cập nhật giờ nêu nguyên nhân có thể (máy chủ không phản hồi, mất kết nối hoặc chữ ký không hợp lệ), cho biết lượt tải dừng ở đâu và kèm nội dung lỗi gốc. Thông báo lỗi cũng dễ đọc hơn ở giao diện tối.
 - **Đóng hộp thoại cập nhật** - Nút Để sau và nút đóng giờ giữ bản cập nhật trong Cài đặt > Giới thiệu thay vì quên nó, và hộp thoại không còn tự mở lại vài giây sau khi bạn đóng.

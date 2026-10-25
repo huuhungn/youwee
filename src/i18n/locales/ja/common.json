@@ -73,7 +73,11 @@
     "stoppedAt": "{{percent}}%（{{downloaded}} / {{total}}）で停止しました。",
     "errorTimeout": "アップデートサーバーが応答しなくなりました。接続を確認して再試行してください。",
     "errorNetwork": "アップデートサーバーに接続できません。インターネット接続を確認して再試行してください。",
-    "errorSignature": "ダウンロードしたアップデートは署名の検証に失敗したため、インストールされませんでした。"
+    "errorSignature": "ダウンロードしたアップデートは署名の検証に失敗したため、インストールされませんでした。",
+    "runningJobs": "ダウンロードまたは処理がまだ実行中です（{{count}}）。今すぐ再起動すると停止します。",
+    "restartWhenDone": "完了後に再起動",
+    "restartQueued": "完了次第 Youwee を再起動します。",
+    "waitsForRestart": "ダウンロードが実行中のため、アップデートは再起動するまで待機します。"
   },
   "legalDisclaimer": {
     "title": "利用規約と免責事項",

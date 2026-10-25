@@ -73,7 +73,11 @@
     "stoppedAt": "已停止于 {{percent}}%（{{downloaded}} / {{total}}）。",
     "errorTimeout": "更新服务器停止响应。请检查网络连接后重试。",
     "errorNetwork": "无法连接到更新服务器。请检查网络连接后重试。",
-    "errorSignature": "下载的更新未通过签名校验，因此未安装。"
+    "errorSignature": "下载的更新未通过签名校验，因此未安装。",
+    "runningJobs": "仍有下载或处理任务在运行（{{count}}）。现在重启会中断它们。",
+    "restartWhenDone": "完成后重启",
+    "restartQueued": "它们完成后 Youwee 会立即重启。",
+    "waitsForRestart": "仍有下载在进行，更新将等到你重启时再安装。"
   },
   "legalDisclaimer": {
     "title": "负责任使用提示",

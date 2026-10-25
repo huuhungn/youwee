@@ -104,3 +104,54 @@ test('a download waiting for Restart does not promise an automatic restart', () 
 
   expect(html).not.toContain('close and reopen automatically');
 });
+
+test('restarting with downloads running warns first and offers to wait for them', () => {
+  const html = renderToStaticMarkup(
+    <UpdateDialog
+      {...base}
+      status="ready"
+      progress={null}
+      runningJobs={2}
+      onRestartWhenDone={noop}
+    />,
+  );
+
+  expect(html).toContain('still running (2)');
+  expect(html).toContain('Restart when they finish');
+  expect(html).toContain('Restart Now');
+  expect(html.match(/data-autofocus="true"[^>]*>([^<]+)</)?.[1]).toBe('Later');
+});
+
+test('a queued restart says so and does not offer to queue again', () => {
+  const html = renderToStaticMarkup(
+    <UpdateDialog
+      {...base}
+      status="ready"
+      progress={null}
+      runningJobs={1}
+      restartQueued
+      onRestartWhenDone={noop}
+    />,
+  );
+
+  expect(html).toContain('restart as soon as they finish');
+  expect(html).not.toContain('Restart when they finish');
+});
+
+test('with nothing running the ready dialog keeps a single restart action', () => {
+  const html = renderToStaticMarkup(
+    <UpdateDialog {...base} status="ready" progress={null} onRestartWhenDone={noop} />,
+  );
+
+  expect(html).not.toContain('still running');
+  expect(html).not.toContain('Restart when they finish');
+});
+
+test('a download that finishes while videos download says it will wait for Restart', () => {
+  const html = renderToStaticMarkup(
+    <UpdateDialog {...base} status="downloading" progress={progress(Date.now())} runningJobs={1} />,
+  );
+
+  expect(html).toContain('the update will wait until you restart');
+  expect(html).not.toContain('close and reopen automatically');
+});

@@ -66,8 +66,11 @@ interface UpdateDialogProps {
   errorKind: UpdateErrorKind;
   failedStep: UpdateStep;
   installAfterRestart?: boolean;
+  runningJobs?: number;
+  restartQueued?: boolean;
   onDownload: () => void;
   onRestart: () => void;
+  onRestartWhenDone?: () => void;
   onDismiss: () => void;
   onRetry: () => void;
 }
@@ -80,8 +83,11 @@ export function UpdateDialog({
   errorKind,
   failedStep,
   installAfterRestart = false,
+  runningJobs = 0,
+  restartQueued = false,
   onDownload,
   onRestart,
+  onRestartWhenDone,
   onDismiss,
   onRetry,
 }: UpdateDialogProps) {
@@ -309,18 +315,34 @@ export function UpdateDialog({
                       })}`
                     : t('update.calculating')}
             </p>
-            {autoRestarts && !installAfterRestart && (
+            {autoRestarts && !installAfterRestart && runningJobs === 0 && (
               <p className="mt-4 pt-3 border-t border-border/40 text-xs text-muted-foreground">
                 {t('update.autoRestart')}
+              </p>
+            )}
+            {runningJobs > 0 && !installing && (
+              <p className="mt-4 pt-3 border-t border-border/40 text-xs text-muted-foreground">
+                {t('update.waitsForRestart')}
               </p>
             )}
           </div>
         )}
 
         {status === 'ready' && (
-          <p id={descriptionId} className="text-sm text-muted-foreground">
-            {t('update.ready')}
-          </p>
+          <div id={descriptionId}>
+            <p className="text-sm text-muted-foreground">{t('update.ready')}</p>
+            {runningJobs > 0 && (
+              <div className="mt-4 flex gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/[0.08] p-4">
+                <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-amber-600 dark:text-amber-400" />
+                <p className="text-sm text-foreground">
+                  {t('update.runningJobs', { count: runningJobs })}{' '}
+                  {restartQueued && (
+                    <span className="text-muted-foreground">{t('update.restartQueued')}</span>
+                  )}
+                </p>
+              </div>
+            )}
+          </div>
         )}
 
         {status === 'error' && (
@@ -393,13 +415,33 @@ export function UpdateDialog({
             >
               {t('update.later')}
             </Button>
-            <Button
-              onClick={onRestart}
-              className="sm:w-2/3 h-12 rounded-xl font-bold bg-green-500 text-white hover:bg-green-600 shadow-xl shadow-green-500/20"
-            >
-              {t('update.restartNow')}
-              <RotateCcw className="w-4 h-4 ml-2" />
-            </Button>
+            {runningJobs > 0 ? (
+              <>
+                <Button
+                  variant="outline"
+                  className="sm:flex-1 h-12 rounded-xl font-semibold"
+                  onClick={onRestart}
+                >
+                  {t('update.restartNow')}
+                </Button>
+                {!restartQueued && onRestartWhenDone && (
+                  <Button
+                    onClick={onRestartWhenDone}
+                    className="sm:flex-[1.4] h-12 rounded-xl font-bold bg-green-500 text-white hover:bg-green-600 shadow-xl shadow-green-500/20"
+                  >
+                    {t('update.restartWhenDone')}
+                  </Button>
+                )}
+              </>
+            ) : (
+              <Button
+                onClick={onRestart}
+                className="sm:w-2/3 h-12 rounded-xl font-bold bg-green-500 text-white hover:bg-green-600 shadow-xl shadow-green-500/20"
+              >
+                {t('update.restartNow')}
+                <RotateCcw className="w-4 h-4 ml-2" />
+              </Button>
+            )}
           </>
         )}
 
