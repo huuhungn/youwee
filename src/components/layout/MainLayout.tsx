@@ -112,9 +112,16 @@ interface MainLayoutProps {
   children: ReactNode;
   currentPage: Page;
   onPageChange: (page: Page) => void;
+  /** i18n key of an update hint shown as a dot on the Settings button. */
+  settingsBadge?: string | null;
 }
 
-export function MainLayout({ children, currentPage, onPageChange }: MainLayoutProps) {
+export function MainLayout({
+  children,
+  currentPage,
+  onPageChange,
+  settingsBadge,
+}: MainLayoutProps) {
   return (
     <div className="h-screen flex overflow-hidden bg-background relative">
       {/* macOS: transparent drag region for overlay title bar */}
@@ -150,7 +157,11 @@ export function MainLayout({ children, currentPage, onPageChange }: MainLayoutPr
         style={isMacOS || isWindows ? { paddingTop: isMacOS ? '2.6rem' : '2rem' } : undefined}
       >
         {/* Sidebar */}
-        <Sidebar currentPage={currentPage} onPageChange={onPageChange} />
+        <Sidebar
+          currentPage={currentPage}
+          onPageChange={onPageChange}
+          settingsBadge={settingsBadge}
+        />
 
         {/* Content area */}
         <main className="flex-1 min-w-0 flex flex-col overflow-hidden rounded-2xl bg-card/30 backdrop-blur-xl border border-white/[0.08] dark:border-white/[0.05] shadow-[0_8px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.25)]">

@@ -8,9 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **Update hint in the sidebar** - While an update is available, downloading, ready to install or failed to download, the Settings button shows a dot with a tooltip, and clicking it opens Settings > About.
 - **App update dialog** - A running update download can continue in the background while you keep using Youwee. Settings > About shows its progress and can bring the dialog back. A download sent to the background waits for you to restart instead of closing Youwee to install. The dialog also names the step it is on, keeps keyboard focus inside it without taking it from a field you are typing in, and closes with Escape.
 
 ### Fixed
+- **Stalled update download** - Once an update download stalls, the dialog offers Retry now and Cancel instead of making you wait up to 15 minutes, and no longer promises an automatic restart while nothing is arriving.
+- **Update dialog details** - The original update error text sits behind a Details toggle with a copy button, durations use the units of the app language, and status lines are easier to read. When the dialog opens while you type, Tab now moves into it instead of the page behind it.
 - **Restarting to install an update** - When downloads or processing jobs are still running, the update waits instead of installing straight away, and Restart warns how many jobs it would stop. You can restart anyway, or let Youwee restart as soon as they finish.
 - **Stalled update progress** - When no data arrives for 10 seconds, the update progress says it is waiting for the connection instead of showing the last speed and a time remaining that never changes.
 - **Update error details** - Update errors now name the likely cause (no response, no connection or a failed signature check), show where the download stopped and include the original error text. The message is also readable in dark mode.

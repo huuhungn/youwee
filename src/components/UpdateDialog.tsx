@@ -2,6 +2,7 @@ import {
   AlertTriangle,
   ArrowRight,
   Check,
+  Copy,
   Download,
   RefreshCw,
   Rocket,
@@ -9,7 +10,7 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { isTypingTarget, ModalShell, useDialogIds } from '@/components/ui/ModalShell';
@@ -41,11 +42,16 @@ export const formatBytes = (bytes: number) => {
   return `${parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`;
 };
 
-export const formatDuration = (seconds: number) => {
-  if (seconds < 60) return `${Math.max(1, seconds)}s`;
+// Localized short units ("12s", "12 giây", "12秒") so durations read naturally inside translated text.
+export const formatDuration = (seconds: number, locale?: string) => {
+  const unit = (value: number, unit: 'second' | 'minute') =>
+    new Intl.NumberFormat(locale, { style: 'unit', unit, unitDisplay: 'narrow' }).format(value);
+  if (seconds < 60) return unit(Math.max(1, seconds), 'second');
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
-  return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+  return remainingSeconds > 0
+    ? `${unit(minutes, 'minute')} ${unit(remainingSeconds, 'second')}`
+    : unit(minutes, 'minute');
 };
 
 export const updateProgressPercent = (progress: UpdateProgress | null) =>
@@ -73,6 +79,9 @@ interface UpdateDialogProps {
   onRestartWhenDone?: () => void;
   onDismiss: () => void;
   onRetry: () => void;
+  /** Shown once a download stalls: abandon it, or abandon it and start again. */
+  onCancelDownload?: () => void;
+  onRetryNow?: () => void;
 }
 
 export function UpdateDialog({
@@ -90,12 +99,22 @@ export function UpdateDialog({
   onRestartWhenDone,
   onDismiss,
   onRetry,
+  onCancelDownload,
+  onRetryNow,
 }: UpdateDialogProps) {
   const { t, i18n } = useTranslation('common');
   const { titleId, descriptionId } = useDialogIds();
   const stalledSeconds = useUpdateStall(progress, status === 'downloading');
   const actionsRef = useRef<HTMLDivElement>(null);
   const statusSince = useRef(0);
+  const [copied, setCopied] = useState(false);
+
+  const copyError = () => {
+    if (!error) return;
+    void navigator.clipboard?.writeText(error);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   // Each state swaps the buttons, so move focus to the new safe action instead of losing it.
   // The dialog can open on its own, so a stray Enter never starts, retries or installs an update.
@@ -154,14 +173,16 @@ export function UpdateDialog({
       overlayClassName="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/50 backdrop-blur-md animate-in fade-in duration-500"
       className="relative w-full max-w-lg max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-3rem)] bg-background/85 backdrop-blur-2xl border border-white/10 dark:border-white/5 rounded-[2rem] shadow-[0_0_80px_-15px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in-[0.96] duration-500 ease-out-expo flex flex-col outline-none"
     >
-      {/* Ambient Glow Effects */}
-      <div
-        className={cn(
-          'absolute top-[-20%] left-[-10%] w-[70%] h-[50%] rounded-full blur-[100px] pointer-events-none',
-          status === 'error' ? 'bg-red-500/15' : 'bg-primary/20',
-        )}
-      />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[50%] bg-purple-500/10 rounded-full blur-[100px] pointer-events-none" />
+      {/* Ambient Glow Effects, clipped on their own so focusing a button can never scroll the panel */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+          className={cn(
+            'absolute top-[-20%] left-[-10%] w-[70%] h-[50%] rounded-full blur-[100px]',
+            status === 'error' ? 'bg-red-500/15' : 'bg-primary/20',
+          )}
+        />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[50%] bg-purple-500/10 rounded-full blur-[100px]" />
+      </div>
 
       <button
         type="button"
@@ -301,21 +322,21 @@ export function UpdateDialog({
             </div>
             <p
               className={cn(
-                'text-xs font-medium tabular-nums',
+                'text-[13px] font-medium tabular-nums',
                 stalled ? 'text-amber-600 dark:text-amber-400' : 'text-muted-foreground',
               )}
             >
               {installing
                 ? t('update.verifying')
                 : stalled
-                  ? t('update.stalled', { time: formatDuration(stalledSeconds) })
+                  ? t('update.stalled', { time: formatDuration(stalledSeconds, i18n.language) })
                   : progress && progress.bytesPerSecond > 0 && progress.etaSeconds !== null
                     ? `${formatBytes(progress.bytesPerSecond)}/s · ${t('update.timeRemaining', {
-                        time: formatDuration(progress.etaSeconds),
+                        time: formatDuration(progress.etaSeconds, i18n.language),
                       })}`
                     : t('update.calculating')}
             </p>
-            {autoRestarts && !installAfterRestart && runningJobs === 0 && (
+            {autoRestarts && !installAfterRestart && runningJobs === 0 && !stalled && (
               <p className="mt-4 pt-3 border-t border-border/40 text-xs text-muted-foreground">
                 {t('update.autoRestart')}
               </p>
@@ -352,7 +373,7 @@ export function UpdateDialog({
           >
             <p className="text-sm font-medium text-foreground">{t(UPDATE_ERROR_KEYS[errorKind])}</p>
             {failedStep === 'download' && progress && progress.total > 0 && (
-              <p className="mt-1.5 text-xs text-muted-foreground tabular-nums">
+              <p className="mt-1.5 text-[13px] text-muted-foreground tabular-nums">
                 {t('update.stoppedAt', {
                   percent: progressPercent,
                   downloaded: formatBytes(progress.downloaded),
@@ -360,10 +381,27 @@ export function UpdateDialog({
                 })}
               </p>
             )}
+            {/* The updater's raw English message helps bug reports but means little to most users */}
             {error && (
-              <p className="mt-3 pt-3 border-t border-red-500/15 font-mono text-[11px] leading-relaxed text-muted-foreground break-words select-text">
-                {error}
-              </p>
+              <details className="mt-3 pt-3 border-t border-red-500/15">
+                <summary className="cursor-pointer select-none text-xs font-medium text-muted-foreground hover:text-foreground rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  {t('update.details')}
+                </summary>
+                <div className="mt-2 flex items-start gap-2">
+                  <p className="flex-1 min-w-0 font-mono text-xs leading-relaxed text-muted-foreground break-words select-text">
+                    {error}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={copyError}
+                    aria-label={t('update.copyDetails')}
+                    title={copied ? t('update.copied') : t('update.copyDetails')}
+                    className="shrink-0 p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              </details>
             )}
           </div>
         )}
@@ -395,14 +433,34 @@ export function UpdateDialog({
         )}
 
         {status === 'downloading' && (
-          <Button
-            data-autofocus
-            variant="secondary"
-            className="w-full h-12 rounded-xl font-semibold"
-            onClick={hideDownload}
-          >
-            {t('update.hide')}
-          </Button>
+          <>
+            {stalled && onCancelDownload && (
+              <Button
+                variant="ghost"
+                className="sm:w-1/4 h-12 rounded-xl font-medium"
+                onClick={onCancelDownload}
+              >
+                {t('actions.cancel')}
+              </Button>
+            )}
+            <Button
+              data-autofocus
+              variant="secondary"
+              className="sm:flex-1 w-full h-12 rounded-xl font-semibold"
+              onClick={hideDownload}
+            >
+              {t('update.hide')}
+            </Button>
+            {stalled && onRetryNow && (
+              <Button
+                onClick={onRetryNow}
+                className="sm:flex-1 h-12 rounded-xl font-bold bg-foreground text-background hover:bg-foreground/90"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                {t('update.retryNow')}
+              </Button>
+            )}
+          </>
         )}
 
         {status === 'ready' && (

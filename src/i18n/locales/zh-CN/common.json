@@ -77,7 +77,15 @@
     "runningJobs": "仍有下载或处理任务在运行（{{count}}）。现在重启会中断它们。",
     "restartWhenDone": "完成后重启",
     "restartQueued": "它们完成后 Youwee 会立即重启。",
-    "waitsForRestart": "仍有下载在进行，更新将等到你重启时再安装。"
+    "waitsForRestart": "仍有下载在进行，更新将等到你重启时再安装。",
+    "retryNow": "立即重试",
+    "details": "详情",
+    "copyDetails": "复制详情",
+    "copied": "已复制",
+    "badgeAvailable": "有可用更新",
+    "badgeDownloading": "正在下载更新",
+    "badgeReady": "更新已就绪：重启以安装",
+    "badgeFailed": "更新下载失败"
   },
   "legalDisclaimer": {
     "title": "负责任使用提示",

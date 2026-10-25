@@ -77,7 +77,15 @@
     "runningJobs": "Ainda há downloads ou processamentos em andamento ({{count}}). Reiniciar agora vai interrompê-los.",
     "restartWhenDone": "Reiniciar quando terminarem",
     "restartQueued": "O Youwee vai reiniciar assim que terminarem.",
-    "waitsForRestart": "Ainda há downloads em andamento, então a atualização vai esperar até você reiniciar."
+    "waitsForRestart": "Ainda há downloads em andamento, então a atualização vai esperar até você reiniciar.",
+    "retryNow": "Tentar novamente agora",
+    "details": "Detalhes",
+    "copyDetails": "Copiar detalhes",
+    "copied": "Copiado",
+    "badgeAvailable": "Atualização disponível",
+    "badgeDownloading": "Baixando atualização",
+    "badgeReady": "Atualização pronta: reinicie para instalar",
+    "badgeFailed": "Falha ao baixar a atualização"
   },
   "legalDisclaimer": {
     "title": "Aviso de uso responsável",

@@ -77,7 +77,15 @@
     "runningJobs": "Todavía hay descargas o tareas de procesamiento en curso ({{count}}). Reiniciar ahora las detendrá.",
     "restartWhenDone": "Reiniciar cuando terminen",
     "restartQueued": "Youwee se reiniciará en cuanto terminen.",
-    "waitsForRestart": "Todavía hay descargas en curso, así que la actualización esperará a que reinicies."
+    "waitsForRestart": "Todavía hay descargas en curso, así que la actualización esperará a que reinicies.",
+    "retryNow": "Reintentar ahora",
+    "details": "Detalles",
+    "copyDetails": "Copiar detalles",
+    "copied": "Copiado",
+    "badgeAvailable": "Actualización disponible",
+    "badgeDownloading": "Descargando actualización",
+    "badgeReady": "Actualización lista: reinicia para instalar",
+    "badgeFailed": "Falló la descarga de la actualización"
   },
   "legalDisclaimer": {
     "title": "Aviso de uso responsable",

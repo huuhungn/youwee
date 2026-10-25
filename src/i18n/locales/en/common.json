@@ -77,7 +77,15 @@
     "runningJobs": "Downloads or processing jobs are still running ({{count}}). Restarting now will stop them.",
     "restartWhenDone": "Restart when they finish",
     "restartQueued": "Youwee will restart as soon as they finish.",
-    "waitsForRestart": "Downloads are still running, so the update will wait until you restart."
+    "waitsForRestart": "Downloads are still running, so the update will wait until you restart.",
+    "retryNow": "Retry now",
+    "details": "Details",
+    "copyDetails": "Copy details",
+    "copied": "Copied",
+    "badgeAvailable": "Update available",
+    "badgeDownloading": "Downloading update",
+    "badgeReady": "Update ready: restart to install",
+    "badgeFailed": "Update download failed"
   },
   "legalDisclaimer": {
     "title": "Responsible use notice",

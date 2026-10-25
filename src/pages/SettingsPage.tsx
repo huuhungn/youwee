@@ -216,7 +216,7 @@ function AboutSettingsContent({
   highlightId: string | null;
 }) {
   const { t } = useTranslation('settings');
-  const { t: tCommon } = useTranslation('common');
+  const { t: tCommon, i18n } = useTranslation('common');
   const { settings, updateAutoCheckUpdate } = useDownload();
   const { mode } = useTheme();
   const [copied, setCopied] = useState(false);
@@ -343,7 +343,7 @@ function AboutSettingsContent({
                     </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">{t('about.appDesc')}</p>
-                  <div className="text-xs text-muted-foreground mt-1">
+                  <div className="text-[13px] text-muted-foreground mt-1">
                     {isAppChecking ? (
                       <span className="flex items-center gap-1.5">
                         <Loader2 className="w-3 h-3 animate-spin text-primary" />
@@ -370,7 +370,9 @@ function AboutSettingsContent({
                                 version: updater.updateInfo.version,
                                 percent: downloadPercent,
                               })
-                            : tCommon('update.stalled', { time: formatDuration(stalledSeconds) })}
+                            : tCommon('update.stalled', {
+                                time: formatDuration(stalledSeconds, i18n.language),
+                              })}
                         </span>
                         <div className="mt-2 h-1.5 w-56 max-w-full rounded-full bg-muted overflow-hidden">
                           <div

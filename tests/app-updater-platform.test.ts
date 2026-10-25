@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+import { formatDuration } from '../src/components/UpdateDialog';
 import {
   calculateUpdateTransferStats,
   classifyUpdateError,
@@ -8,6 +9,7 @@ import {
   UPDATE_DOWNLOAD_TIMEOUT_MS,
   UPDATE_STALL_MS,
   type UpdateProgress,
+  updateBadgeKey,
   updaterRestartsAutomatically,
   updateStalledSeconds,
 } from '../src/hooks/useAppUpdater';
@@ -133,5 +135,27 @@ describe('update transfer statistics', () => {
 
     expect(stats.bytesPerSecond).toBe(1_700_000);
     expect(stats.etaSeconds).toBe(5);
+  });
+});
+
+describe('update hints outside the dialog', () => {
+  test('the Settings badge follows updates that need the user', () => {
+    expect(updateBadgeKey('available', 'check')).toBe('update.badgeAvailable');
+    expect(updateBadgeKey('downloading', 'check')).toBe('update.badgeDownloading');
+    expect(updateBadgeKey('ready', 'download')).toBe('update.badgeReady');
+    expect(updateBadgeKey('error', 'download')).toBe('update.badgeFailed');
+    // A failed background check is usually just being offline.
+    expect(updateBadgeKey('error', 'check')).toBeNull();
+    expect(updateBadgeKey('up-to-date', 'check')).toBeNull();
+    expect(updateBadgeKey('idle', 'download')).toBeNull();
+  });
+
+  test('durations use the interface language units', () => {
+    expect(formatDuration(12, 'en')).toBe('12s');
+    expect(formatDuration(185, 'en')).toBe('3m 5s');
+    expect(formatDuration(120, 'en')).toBe('2m');
+    expect(formatDuration(0, 'en')).toBe('1s');
+    expect(formatDuration(12, 'vi')).toBe('12 giây');
+    expect(formatDuration(185, 'zh-CN')).toBe('3分钟 5秒');
   });
 });

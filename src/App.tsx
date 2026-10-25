@@ -28,6 +28,7 @@ import { SummarySessionProvider } from '@/contexts/SummarySessionProvider';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
 import { UniversalProvider } from '@/contexts/UniversalContext';
 import { UpdaterProvider, useUpdater } from '@/contexts/UpdaterContext';
+import { updateBadgeKey } from '@/hooks/useAppUpdater';
 import { useExternalDownloadLinks } from '@/hooks/useExternalDownloadLinks';
 import { usePluginExecutionToasts } from '@/hooks/usePluginExecutionToasts';
 import { useTelegramRemoteCommands } from '@/hooks/useTelegramRemoteCommands';
@@ -72,6 +73,16 @@ function AppContent() {
     setSettingsInitialSection(section);
     setCurrentPage('settings');
   }, []);
+
+  const settingsBadge = updateBadgeKey(updater.status, updater.failedStep);
+  // While an update needs the user, the Settings button opens straight to its card in About.
+  const changePage = useCallback(
+    (page: Page) => {
+      if (page === 'settings' && settingsBadge) openSettingsPage('about');
+      else setCurrentPage(page);
+    },
+    [settingsBadge, openSettingsPage],
+  );
 
   const openDependenciesSettings = useCallback(() => {
     openSettingsPage('dependencies');
@@ -168,7 +179,7 @@ function AppContent() {
 
   return (
     <>
-      <MainLayout currentPage={currentPage} onPageChange={setCurrentPage}>
+      <MainLayout currentPage={currentPage} onPageChange={changePage} settingsBadge={settingsBadge}>
         {currentPage === 'youtube' && (
           <DownloadPage
             onNavigateToSettings={() => openSettingsPage('general')}
@@ -231,6 +242,8 @@ function AppContent() {
           onRestart={updater.restartApp}
           onDismiss={updater.dismissUpdate}
           onRetry={updater.retryUpdate}
+          onCancelDownload={updater.cancelDownload}
+          onRetryNow={updater.restartDownload}
         />
       )}
 

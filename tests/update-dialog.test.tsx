@@ -56,6 +56,35 @@ test('a silent connection replaces the frozen speed and time remaining', () => {
   expect(html).not.toContain('remaining');
 });
 
+test('a stalled download offers Retry now and Cancel and drops the automatic restart note', () => {
+  const live = renderToStaticMarkup(
+    <UpdateDialog
+      {...base}
+      status="downloading"
+      progress={progress(Date.now())}
+      onCancelDownload={noop}
+      onRetryNow={noop}
+    />,
+  );
+  expect(live).not.toContain('Retry now');
+  expect(live).not.toContain('>Cancel<');
+
+  const html = renderToStaticMarkup(
+    <UpdateDialog
+      {...base}
+      status="downloading"
+      progress={progress(Date.now() - 30_000)}
+      onCancelDownload={noop}
+      onRetryNow={noop}
+    />,
+  );
+  expect(html).toContain('Retry now');
+  expect(html).toContain('>Cancel<');
+  expect(html).not.toContain(common.update.autoRestart);
+  // The safe default stays on the background action.
+  expect(html).toMatch(/<button[^>]*data-autofocus[^>]*>Continue in background</);
+});
+
 test('a failed download explains the reason, where it stopped and the raw error', () => {
   const html = renderToStaticMarkup(
     <UpdateDialog
@@ -69,7 +98,10 @@ test('a failed download explains the reason, where it stopped and the raw error'
 
   expect(html).toContain('The update server stopped responding');
   expect(html).toContain('Stopped at 44% (68 MB of 155.3 MB)');
-  expect(html).toContain('error decoding response body');
+  expect(html).toMatch(
+    /<details[^>]*><summary[^>]*>Details<\/summary>.*error decoding response body/s,
+  );
+  expect(html).toContain('aria-label="Copy details"');
   expect(html).toContain('v0.20.1-custom.9');
 });
 
