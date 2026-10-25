@@ -53,6 +53,7 @@ import { Switch } from '@/components/ui/switch';
 import { useDownload } from '@/contexts/DownloadContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useUpdater } from '@/contexts/UpdaterContext';
+import { updateRefreshAction } from '@/hooks/useAppUpdater';
 import { cn } from '@/lib/utils';
 
 export function SettingsPage({
@@ -362,31 +363,15 @@ function AboutSettingsContent({
               </div>
               <div className="flex items-center gap-1.5 flex-shrink-0">
                 {isAppUpdateAvailable && (
-                  <Button
-                    size="sm"
-                    onClick={updater.downloadAndInstall}
-                    disabled={updater.status === 'downloading' || updater.status === 'ready'}
-                    className="gap-1.5"
-                  >
-                    {updater.status === 'downloading' || updater.status === 'ready' ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        {updater.status === 'downloading'
-                          ? `${updater.progress ? Math.round((updater.progress.downloaded / updater.progress.total) * 100) : 0}%`
-                          : t('about.restarting')}
-                      </>
-                    ) : (
-                      <>
-                        <Download className="w-4 h-4" />
-                        {t('about.update')}
-                      </>
-                    )}
+                  <Button size="sm" onClick={updater.downloadAndInstall} className="gap-1.5">
+                    <Download className="w-4 h-4" />
+                    {t('about.update')}
                   </Button>
                 )}
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={updater.checkForUpdate}
+                  onClick={updateRefreshAction(updater.status, updater)}
                   disabled={isAppChecking}
                   title={t('about.checkForUpdates')}
                   className="h-9 w-9"

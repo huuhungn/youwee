@@ -5,6 +5,7 @@ import {
   runUpdateRetry,
   UPDATE_CHECK_TIMEOUT_MS,
   UPDATE_DOWNLOAD_TIMEOUT_MS,
+  updateRefreshAction,
   updaterRestartsAutomatically,
 } from '../src/hooks/useAppUpdater';
 
@@ -51,6 +52,20 @@ describe('update retry', () => {
     const a = actions();
     await runUpdateRetry('check', a);
     expect(a.calls).toEqual(['check']);
+  });
+});
+
+describe('settings update refresh button', () => {
+  const actions = { checkForUpdate: 'check', retryUpdate: 'retry' };
+
+  test('retries the failed step while an update error is showing', () => {
+    expect(updateRefreshAction('error', actions)).toBe('retry');
+  });
+
+  test('checks for updates in every other state', () => {
+    for (const status of ['idle', 'up-to-date', 'available', 'installed'] as const) {
+      expect(updateRefreshAction(status, actions)).toBe('check');
+    }
   });
 });
 
