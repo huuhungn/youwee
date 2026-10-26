@@ -184,7 +184,7 @@ export const UPDATE_STALL_MS = 10_000;
 
 /** Whole seconds since the last bytes arrived, or null while data is still flowing. */
 export function updateStalledSeconds(progress: UpdateProgress | null, now: number) {
-  if (!progress || progress.phase !== 'downloading') return null;
+  if (progress?.phase !== 'downloading') return null;
   const idleMs = now - progress.updatedAt;
   return idleMs >= UPDATE_STALL_MS ? Math.floor(idleMs / 1000) : null;
 }
