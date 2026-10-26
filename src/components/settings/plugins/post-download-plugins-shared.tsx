@@ -208,7 +208,9 @@ export const DEFAULT_CREATE_PLUGIN_FORM: CreatePluginFormState = {
   configFields: [],
 };
 
-const LUCIDE_ICON_REGISTRY = LucideIcons as Record<string, LucideIcon | unknown>;
+const LUCIDE_ICON_REGISTRY = LucideIcons as Record<string, unknown>;
+// Icons are forwardRef objects, not functions; aliases point to the same objects as `icons`.
+const LUCIDE_ICONS = new Set<unknown>(Object.values(LucideIcons.icons));
 
 export function summarizeRequestedPermissions(
   plugin: PluginSummary | PluginPackageInspection,
@@ -357,13 +359,12 @@ function resolvePluginManifestIcon(icon: string | null | undefined): LucideIcon 
   if (!trimmed) return null;
 
   const direct = LUCIDE_ICON_REGISTRY[trimmed];
-  if (typeof direct === 'function') {
+  if (LUCIDE_ICONS.has(direct)) {
     return direct as LucideIcon;
   }
 
-  const normalized = toLucideIconName(trimmed);
-  const resolved = LUCIDE_ICON_REGISTRY[normalized];
-  return typeof resolved === 'function' ? (resolved as LucideIcon) : null;
+  const resolved = LUCIDE_ICON_REGISTRY[toLucideIconName(trimmed)];
+  return LUCIDE_ICONS.has(resolved) ? (resolved as LucideIcon) : null;
 }
 
 export function renderPluginManifestIcon(
