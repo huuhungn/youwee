@@ -256,7 +256,7 @@ mod tests {
 
     fn ffmpeg_zip(include_ffprobe: bool) -> Vec<u8> {
         let mut archive = zip::ZipWriter::new(Cursor::new(Vec::new()));
-        let options = zip::write::FileOptions::default();
+        let options = zip::write::SimpleFileOptions::default();
         archive.start_file("bin/ffmpeg", options).unwrap();
         archive.write_all(b"ffmpeg").unwrap();
         if include_ffprobe {

@@ -7,6 +7,9 @@ Youwee 的所有重要更改都将记录在此文件中。
 
 ## [Unreleased]
 
+### 变更
+- **Rust 依赖** - 后端依赖库已与上游同步（reqwest 0.13、rusqlite 0.39、zip 8、sha2 0.11、base64 0.23、ed25519-dalek 3，以及 Tauri 的 log、dialog、single-instance 插件）。不应有行为变化。
+
 ## [0.20.1-custom.10] - 2026-10-26
 
 ### 变更
