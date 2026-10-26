@@ -142,6 +142,8 @@
     "renameSave": "Enregistrer",
     "renameCancel": "Annuler",
     "renameFailed": "Échec du renommage du fichier",
+    "downloadOne": "Télécharger celui-ci",
+    "savesAs": "Enregistré sous : {{name}}",
     "upcomingLive": {
       "hint": "Live pas encore commencé",
       "schedule": "Planifier"
