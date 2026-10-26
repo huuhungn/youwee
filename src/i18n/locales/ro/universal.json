@@ -134,6 +134,8 @@
     "renameSave": "Salvați",
     "renameCancel": "Anulează",
     "renameFailed": "Nu s-a putut redenumi fișierul",
+    "downloadOne": "Descarcă acesta",
+    "savesAs": "Se salvează ca: {{name}}",
     "fetchingTranscript": "Se preia transcrierea...",
     "generating": "Se generează...",
     "showMore": "Arată mai multe",

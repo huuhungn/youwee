@@ -7,6 +7,9 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Sửa lỗi
+- **Hàng đợi Universal hiện mã chuỗi thô** - Nút Tải mục này và dòng Lưu thành trên các mục hàng đợi Universal hiện `queue.downloadOne` và `queue.savesAs` thay vì nhãn.
+
 ## [0.20.1-custom.12] - 2026-10-26
 
 ### Thêm mới

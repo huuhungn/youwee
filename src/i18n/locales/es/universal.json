@@ -137,6 +137,8 @@
     "renameSave": "Guardar",
     "renameCancel": "Cancelar",
     "renameFailed": "Error al renombrar el archivo",
+    "downloadOne": "Descargar este",
+    "savesAs": "Se guardará como: {{name}}",
     "fetchingTranscript": "Obteniendo transcripción...",
     "generating": "Generando...",
     "showMore": "Mostrar más",

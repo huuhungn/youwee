@@ -137,6 +137,8 @@
     "renameSave": "Lưu",
     "renameCancel": "Hủy",
     "renameFailed": "Đổi tên file thất bại",
+    "downloadOne": "Tải mục này",
+    "savesAs": "Lưu thành: {{name}}",
     "fetchingTranscript": "Đang lấy phụ đề...",
     "generating": "Đang tạo...",
     "showMore": "Xem thêm",

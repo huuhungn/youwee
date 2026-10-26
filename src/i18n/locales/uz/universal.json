@@ -134,6 +134,8 @@
     "renameSave": "Saqlash",
     "renameCancel": "Bekor qilish",
     "renameFailed": "Fayl nomini o‘zgartirib bo‘lmadi",
+    "downloadOne": "Shuni yuklab olish",
+    "savesAs": "Saqlanadi: {{name}}",
     "fetchingTranscript": "Transkript olinmoqda...",
     "generating": "Yaratilmoqda...",
     "showMore": "Koʻproq koʻrsatish",
