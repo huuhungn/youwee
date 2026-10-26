@@ -8,7 +8,7 @@ describe('queue filename', () => {
     expect(sanitizeQueueFilename('notes...')).toBe('notes');
     expect(sanitizeQueueFilename('..\\..\\evil')).toBe('.. .. evil');
     expect(sanitizeQueueFilename('   ')).toBe('');
-    expect(sanitizeQueueFilename('a'.repeat(300))).toHaveLength(180);
+    expect(sanitizeQueueFilename('a'.repeat(300))).toHaveLength(150);
   });
 
   test('builds a literal yt-dlp template', () => {

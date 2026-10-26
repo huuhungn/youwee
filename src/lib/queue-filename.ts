@@ -9,7 +9,8 @@ export function sanitizeQueueFilename(name: string): string {
     .trim()
     .replace(TYPED_MEDIA_EXTENSION, '')
     .replace(/[. ]+$/, '')
-    .slice(0, 180)
+    // Leaves room for the " [yw-…]" label inside yt-dlp's 180-character filename limit.
+    .slice(0, 150)
     .trim();
 }
 

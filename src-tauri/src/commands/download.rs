@@ -1731,12 +1731,19 @@ fn apply_output_collision_suffix(mut template: String, suffix: Option<&str>) -> 
     template
 }
 
-fn constrain_title_template_for_output(template: String, output_directory: &str) -> String {
-    if !cfg!(target_os = "windows") {
+fn constrain_title_template_for_output(
+    template: String,
+    output_directory: &str,
+    collision_suffix: Option<&str>,
+) -> String {
+    // The " [suffix]" label must fit inside --trim-filenames, or yt-dlp cuts it off.
+    let reserved = collision_suffix.map_or(0, |suffix| suffix.len() + 3);
+    if !cfg!(target_os = "windows") && reserved == 0 {
         return template;
     }
 
-    let title_limit = calc_trim_filenames_bytes(output_directory);
+    let title_limit =
+        (calc_trim_filenames_bytes(output_directory) as usize).saturating_sub(reserved);
     template.replace("%(title)s", &format!("%(title).{title_limit}B"))
 }
 
@@ -2722,6 +2729,7 @@ pub async fn download_video(
             collision_suffix.as_deref(),
         ),
         &output_directory,
+        collision_suffix.as_deref(),
     );
 
     // Use a temp file to capture the final filepath from yt-dlp.
@@ -5383,10 +5391,21 @@ mod tests {
         let template = constrain_title_template_for_output(
             build_output_template(Some(DEFAULT_FILENAME_TEMPLATE.to_string()), "", false, &[]),
             output_directory,
+            None,
         );
         let explicit_precision = constrain_title_template_for_output(
             "%(title).120B.%(ext)s".to_string(),
             output_directory,
+            None,
+        );
+        // 180 minus " [yw-12345678]", so --trim-filenames never cuts the marker.
+        assert_eq!(
+            constrain_title_template_for_output(
+                "%(title)s [yw-12345678].%(ext)s".to_string(),
+                output_directory,
+                Some("yw-12345678"),
+            ),
+            "%(title).166B [yw-12345678].%(ext)s"
         );
 
         if cfg!(target_os = "windows") {

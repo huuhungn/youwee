@@ -7,6 +7,13 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Thêm mới
+- **Đổi tên trước khi tải** - Có thể đổi tên các mục trong hàng đợi trước khi tải; mục đó hiện tên file sẽ được lưu.
+- **Tải lẻ một mục** - Mỗi mục trong hàng đợi có nút Tải mục này để chỉ tải riêng mục đó, không chạy cả hàng đợi.
+
+### Sửa lỗi
+- **Các video trùng tiêu đề ghi đè lên nhau** - Các video khác nhau nhưng trùng tiêu đề, lưu cùng một thư mục, giờ được giữ đủ từng file và đánh số như trình duyệt ("Tiêu đề (2).mp4"), thay vì file tải sau cùng thay thế các file trước. Tải lại từ Thư viện vẫn thay đúng file của chính nó.
+
 ## [0.20.1-custom.11] - 2026-10-26
 
 ### Thay đổi
