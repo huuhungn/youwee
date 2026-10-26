@@ -7,6 +7,8 @@ Youwee 的所有重要更改都将记录在此文件中。
 
 ## [Unreleased]
 
+## [0.20.1-custom.11] - 2026-10-26
+
 ### 变更
 - **Rust 依赖** - 后端依赖库已与上游同步（reqwest 0.13、rusqlite 0.39、zip 8、sha2 0.11、base64 0.23、ed25519-dalek 3，以及 Tauri 的 log、dialog、single-instance 插件）。不应有行为变化。
 - **前端工具和依赖库** - 已与上游同步：TypeScript 7、Vite 8、Biome 2.5、i18next 26、react-i18next 17 和 lucide-react 1.x。Lucide 1.x 不再包含品牌图标，因此 YouTube 页面及其空状态改用视频播放器图标代替 YouTube 标志。
