@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Rust dependencies** - Updated the backend libraries to match upstream (reqwest 0.13, rusqlite 0.39, zip 8, sha2 0.11, base64 0.23, ed25519-dalek 3, and the Tauri log, dialog and single-instance plugins). No behavior change is intended.
 - **Frontend tooling and libraries** - Updated to match upstream: TypeScript 7, Vite 8, Biome 2.5, i18next 26, react-i18next 17 and lucide-react 1.x. Lucide 1.x has no brand icons, so the YouTube page and its empty state use a video player icon instead of the YouTube logo.
 
+### Fixed
+- **Plugin icons** - Plugins and Plugin Store entries now show the icon their manifest names instead of always showing the puzzle icon.
+
 ## [0.20.1-custom.10] - 2026-10-26
 
 ### Changed
