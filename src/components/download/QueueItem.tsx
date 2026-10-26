@@ -6,6 +6,7 @@ import {
   CircleSlash,
   Clock,
   Copy,
+  Download,
   FolderOpen,
   HardDrive,
   Lightbulb,
@@ -115,6 +116,7 @@ interface QueueItemProps {
   onSelectOutputFolder: (id: string) => Promise<void>;
   onRename: (id: string, newName: string) => Promise<void>;
   onViewLogs: () => void;
+  onDownloadOne?: (id: string) => void;
   onScheduleUpcomingLive?: (config: ScheduleConfig) => void;
 }
 
@@ -128,6 +130,7 @@ export function QueueItem({
   onSelectOutputFolder,
   onRename,
   onViewLogs,
+  onDownloadOne,
   onScheduleUpcomingLive,
 }: QueueItemProps) {
   const { t } = useTranslation('download');
@@ -182,6 +185,7 @@ export function QueueItem({
   const isError = item.status === 'error';
   const isPending = item.status === 'pending';
   const isSkipped = item.status === 'skipped';
+  const canRename = isPending || isError || (isCompleted && !!item.completedFilepath);
   const retryState = item.retryState;
   const isUpcomingLiveError = item.errorCode === 'YT_UPCOMING_LIVE';
 
@@ -230,10 +234,10 @@ export function QueueItem({
   }, []);
 
   const handleOpenRenameEditor = useCallback(() => {
-    setRenameName(item.title);
+    setRenameName(item.customFilename ?? item.title);
     setRenameError(null);
     setShowRenameEditor(true);
-  }, [item.title]);
+  }, [item.customFilename, item.title]);
 
   const handleOpenCompletedFileLocation = useCallback(async () => {
     if (!item.completedFilepath) return;
@@ -628,7 +632,18 @@ export function QueueItem({
               {copiedUrl ? t('queue.copied') : t('queue.copyUrl')}
             </button>
 
-            {isCompleted && item.completedFilepath && (
+            {(isPending || isError) && onDownloadOne && !disabled && (
+              <button
+                type="button"
+                onClick={() => onDownloadOne(item.id)}
+                className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md border border-dashed border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-colors font-medium"
+              >
+                <Download className="w-3 h-3" />
+                {t('queue.downloadOne')}
+              </button>
+            )}
+
+            {canRename && (
               <button
                 type="button"
                 onClick={handleOpenRenameEditor}
@@ -758,7 +773,13 @@ export function QueueItem({
           </div>
         )}
 
-        {showRenameEditor && isCompleted && (
+        {item.customFilename && !isCompleted && !showRenameEditor && (
+          <p className="mt-1 text-[11px] text-muted-foreground truncate">
+            {t('queue.savesAs', { name: item.customFilename })}
+          </p>
+        )}
+
+        {showRenameEditor && canRename && (
           <div className="flex items-center gap-2 mt-2 p-2 rounded-lg bg-muted/50 border border-border/50">
             <Pencil className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
             <input

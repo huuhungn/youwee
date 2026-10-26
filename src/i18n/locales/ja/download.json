@@ -221,6 +221,8 @@
     "renameSave": "保存",
     "renameCancel": "キャンセル",
     "renameFailed": "ファイル名の変更に失敗しました",
+    "downloadOne": "これをダウンロード",
+    "savesAs": "保存名: {{name}}",
     "fetchingTranscript": "文字起こしを取得中...",
     "generating": "要約を生成中...",
     "showMore": "さらに表示",

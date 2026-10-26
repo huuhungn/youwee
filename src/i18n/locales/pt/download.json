@@ -227,6 +227,8 @@
     "renameSave": "Salvar",
     "renameCancel": "Cancelar",
     "renameFailed": "Falha ao renomear o arquivo",
+    "downloadOne": "Baixar este",
+    "savesAs": "Salvar como: {{name}}",
     "upcomingLive": {
       "hint": "Live ainda não começou",
       "schedule": "Agendar"
