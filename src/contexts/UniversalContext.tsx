@@ -287,7 +287,8 @@ interface UniversalContextType {
   clearAll: () => void;
   clearCompleted: () => void;
   reconcileCompletedFiles: () => Promise<void>;
-  startDownload: (onlyIds?: readonly string[]) => Promise<void>;
+  startDownload: () => Promise<void>;
+  startDownloadItems: (ids: readonly string[]) => Promise<void>;
   stopDownload: () => Promise<void>;
   updateQuality: (quality: Quality) => void;
   updateFormat: (format: Format) => void;
@@ -1274,9 +1275,12 @@ export function UniversalProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const startDownload = useCallback(async (onlyIds?: readonly string[]) => {
-    // Some callers pass a click event; only an id list limits the run to those items.
-    const onlyIdSet = Array.isArray(onlyIds) ? new Set(onlyIds) : null;
+  // Limits the next run to these items; read and cleared when that run starts.
+  const nextRunOnlyIdsRef = useRef<ReadonlySet<string> | null>(null);
+
+  const startDownload = useCallback(async () => {
+    const onlyIdSet = nextRunOnlyIdsRef.current;
+    nextRunOnlyIdsRef.current = null;
     const isRunnable = (item: DownloadItem) =>
       (item.status === 'pending' || item.status === 'error') &&
       (!onlyIdSet || onlyIdSet.has(item.id));
@@ -1635,6 +1639,14 @@ export function UniversalProvider({ children }: { children: ReactNode }) {
     settings,
   ]);
 
+  const startDownloadItems = useCallback(
+    (ids: readonly string[]) => {
+      nextRunOnlyIdsRef.current = new Set(ids);
+      return startDownload();
+    },
+    [startDownload],
+  );
+
   const stopDownload = useCallback(async () => {
     try {
       await invoke('stop_download');
@@ -1809,6 +1821,7 @@ export function UniversalProvider({ children }: { children: ReactNode }) {
       clearCompleted,
       reconcileCompletedFiles,
       startDownload,
+      startDownloadItems,
       stopDownload,
       updateQuality,
       updateFormat,
@@ -1845,6 +1858,7 @@ export function UniversalProvider({ children }: { children: ReactNode }) {
       clearCompleted,
       reconcileCompletedFiles,
       startDownload,
+      startDownloadItems,
       stopDownload,
       updateQuality,
       updateFormat,

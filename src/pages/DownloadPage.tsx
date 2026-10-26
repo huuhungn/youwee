@@ -50,6 +50,7 @@ export function DownloadPage({ onNavigateToSettings, onNavigateToLogs }: Downloa
     clearCompleted,
     reconcileCompletedFiles,
     startDownload,
+    startDownloadItems,
     stopDownload,
     updateQuality,
     updateFormat,
@@ -219,7 +220,7 @@ export function DownloadPage({ onNavigateToSettings, onNavigateToLogs }: Downloa
               onUpdateTimeRange={updateItemTimeRange}
               onSelectOutputFolder={selectItemOutputFolder}
               onRename={renameItem}
-              onDownloadOne={(id) => void startDownload([id])}
+              onDownloadOne={(id) => void startDownloadItems([id])}
               onViewLogs={onNavigateToLogs}
               onClearCompleted={clearCompleted}
               onScheduleUpcomingLive={schedule.setSchedule}

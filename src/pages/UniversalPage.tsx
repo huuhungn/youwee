@@ -45,6 +45,7 @@ export function UniversalPage({ onNavigateToSettings, onNavigateToLogs }: Univer
     clearCompleted,
     reconcileCompletedFiles,
     startDownload,
+    startDownloadItems,
     stopDownload,
     updateQuality,
     updateFormat,
@@ -165,7 +166,7 @@ export function UniversalPage({ onNavigateToSettings, onNavigateToLogs }: Univer
             onUpdateTimeRange={updateItemTimeRange}
             onSelectOutputFolder={selectItemOutputFolder}
             onRename={renameItem}
-            onDownloadOne={(id) => void startDownload([id])}
+            onDownloadOne={(id) => void startDownloadItems([id])}
             onViewLogs={onNavigateToLogs}
             onClearCompleted={clearCompleted}
             onScheduleUpcomingLive={schedule.setSchedule}
