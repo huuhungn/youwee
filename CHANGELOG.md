@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Rust dependencies** - Updated the backend libraries to match upstream (reqwest 0.13, rusqlite 0.39, zip 8, sha2 0.11, base64 0.23, ed25519-dalek 3, and the Tauri log, dialog and single-instance plugins). No behavior change is intended.
+
 ## [0.20.1-custom.10] - 2026-10-26
 
 ### Changed

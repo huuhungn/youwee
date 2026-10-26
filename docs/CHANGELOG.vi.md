@@ -7,6 +7,9 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Thay đổi
+- **Thư viện Rust** - Cập nhật các thư viện phía backend theo bản gốc (reqwest 0.13, rusqlite 0.39, zip 8, sha2 0.11, base64 0.23, ed25519-dalek 3 và các plugin log, dialog, single-instance của Tauri). Không chủ ý thay đổi hành vi.
+
 ## [0.20.1-custom.10] - 2026-10-26
 
 ### Thay đổi
