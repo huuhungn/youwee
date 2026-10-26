@@ -7,6 +7,8 @@ Youwee 的所有重要更改都将记录在此文件中。
 
 ## [Unreleased]
 
+## [0.20.1-custom.13] - 2026-10-26
+
 ### 修复
 - **Universal 队列显示原始文本键** - Universal 队列项目上的“下载此项”按钮和“保存为”一行显示的是 `queue.downloadOne` 和 `queue.savesAs`，而不是对应的文字。
 

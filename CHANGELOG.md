@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.20.1-custom.13] - 2026-10-26
+
 ### Fixed
 - **Universal queue showed raw text keys** - The Download this button and the Saves as line on Universal queue items showed `queue.downloadOne` and `queue.savesAs` instead of their labels.
 
