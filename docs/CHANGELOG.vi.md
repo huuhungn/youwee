@@ -7,6 +7,8 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.20.1-custom.12] - 2026-10-26
+
 ### Thêm mới
 - **Đổi tên trước khi tải** - Có thể đổi tên các mục trong hàng đợi trước khi tải; mục đó hiện tên file sẽ được lưu.
 - **Tải lẻ một mục** - Mỗi mục trong hàng đợi có nút Tải mục này để chỉ tải riêng mục đó, không chạy cả hàng đợi.
