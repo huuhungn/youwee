@@ -221,6 +221,8 @@
     "renameSave": "บันทึก",
     "renameCancel": "ยกเลิก",
     "renameFailed": "เปลี่ยนชื่อไฟล์ไม่สำเร็จ",
+    "downloadOne": "ดาวน์โหลดรายการนี้",
+    "savesAs": "บันทึกเป็น: {{name}}",
     "fetchingTranscript": "กำลังดึงทรานสคริปต์...",
     "generating": "กำลังสร้าง...",
     "showMore": "แสดงเพิ่มเติม",

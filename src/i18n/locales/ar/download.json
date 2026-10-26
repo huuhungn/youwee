@@ -221,6 +221,8 @@
     "renameSave": "حفظ",
     "renameCancel": "إلغاء",
     "renameFailed": "تعذر إعادة تسمية الملف",
+    "downloadOne": "تنزيل هذا",
+    "savesAs": "سيُحفظ باسم: {{name}}",
     "fetchingTranscript": "جارٍ جلب النص التفريغي...",
     "generating": "جارٍ الإنشاء...",
     "showMore": "عرض المزيد",

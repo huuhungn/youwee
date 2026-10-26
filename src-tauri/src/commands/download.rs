@@ -1609,23 +1609,113 @@ fn build_output_template(
     )
 }
 
+// A `yw-…` suffix only keeps a job's files apart while it runs; it is removed on completion.
+const KEEP_BOTH_SUFFIX_PREFIX: &str = "yw-";
+
+/// Suffix added to the output template. `copy-…` stays in the final name.
+/// The default `keep` policy never replaces another file that has the same name.
 fn output_collision_suffix(policy: Option<&str>, job_id: &str) -> Result<Option<String>, String> {
-    match policy.unwrap_or("overwrite") {
+    let short_id: String = job_id
+        .chars()
+        .filter(|character| character.is_ascii_alphanumeric())
+        .take(8)
+        .collect();
+    match policy.unwrap_or("keep") {
         "overwrite" => Ok(None),
-        "unique" => {
-            let suffix: String = job_id
-                .chars()
-                .filter(|character| character.is_ascii_alphanumeric())
-                .take(8)
-                .collect();
-            Ok(Some(if suffix.is_empty() {
-                "copy".to_string()
-            } else {
-                format!("copy-{suffix}")
-            }))
-        }
+        "keep" => Ok(Some(format!("{KEEP_BOTH_SUFFIX_PREFIX}{short_id}"))),
+        "unique" => Ok(Some(if short_id.is_empty() {
+            "copy".to_string()
+        } else {
+            format!("copy-{short_id}")
+        })),
         value => Err(format!("Unsupported output collision policy: {value}")),
     }
+}
+
+fn is_keep_both_suffix(suffix: &str) -> bool {
+    suffix.starts_with(KEEP_BOTH_SUFFIX_PREFIX)
+}
+
+/// Gives a finished job's files their final names, like a browser does: the plain name when it
+/// is free, otherwise " (2)", " (3)"... The same number is used for the video and its side files.
+fn finalize_keep_both_outputs(
+    output_paths: &mut [String],
+    final_filepath: &mut Option<String>,
+    suffix: &str,
+) {
+    static FINALIZE_LOCK: Mutex<()> = Mutex::new(());
+    let _guard = FINALIZE_LOCK
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner());
+
+    let label = format!(" [{suffix}]");
+    let directories: HashSet<PathBuf> = output_paths
+        .iter()
+        .chain(final_filepath.iter())
+        .filter(|path| path.contains(&label))
+        .filter_map(|path| Path::new(path).parent().map(Path::to_path_buf))
+        .collect();
+    let marked: Vec<PathBuf> = directories
+        .iter()
+        .filter_map(|directory| std::fs::read_dir(directory).ok())
+        .flatten()
+        .flatten()
+        .map(|entry| entry.path())
+        .filter(|path| {
+            path.is_file()
+                && path
+                    .file_name()
+                    .is_some_and(|name| name.to_string_lossy().contains(&label))
+        })
+        .collect();
+    if marked.is_empty() {
+        return;
+    }
+
+    let target_for = |path: &Path, replacement: &str| {
+        let name = path.file_name().unwrap_or_default().to_string_lossy();
+        path.with_file_name(name.replacen(&label, replacement, 1))
+    };
+    let Some(replacement) = (1..=999)
+        .map(|number| {
+            if number == 1 {
+                String::new()
+            } else {
+                format!(" ({number})")
+            }
+        })
+        .find(|replacement| {
+            marked
+                .iter()
+                .all(|path| !target_for(path, replacement).exists())
+        })
+    else {
+        return;
+    };
+
+    let mut renamed = HashSet::new();
+    for path in &marked {
+        match std::fs::rename(path, target_for(path, &replacement)) {
+            Ok(()) => {
+                renamed.insert(path.file_name().unwrap_or_default().to_os_string());
+            }
+            Err(error) => log::warn!("Could not give {} its final name: {error}", path.display()),
+        }
+    }
+    // Match by file name: yt-dlp may print the directory differently from read_dir.
+    let map_path = |path: &mut String| {
+        let current = Path::new(path.as_str());
+        if current
+            .file_name()
+            .is_some_and(|name| renamed.contains(name))
+        {
+            *path = target_for(current, &replacement)
+                .to_string_lossy()
+                .to_string();
+        }
+    };
+    output_paths.iter_mut().for_each(map_path);
+    final_filepath.iter_mut().for_each(map_path);
 }
 
 fn apply_output_collision_suffix(mut template: String, suffix: Option<&str>) -> String {
@@ -1641,12 +1731,19 @@ fn apply_output_collision_suffix(mut template: String, suffix: Option<&str>) -> 
     template
 }
 
-fn constrain_title_template_for_output(template: String, output_directory: &str) -> String {
-    if !cfg!(target_os = "windows") {
+fn constrain_title_template_for_output(
+    template: String,
+    output_directory: &str,
+    collision_suffix: Option<&str>,
+) -> String {
+    // The " [suffix]" label must fit inside --trim-filenames, or yt-dlp cuts it off.
+    let reserved = collision_suffix.map_or(0, |suffix| suffix.len() + 3);
+    if !cfg!(target_os = "windows") && reserved == 0 {
         return template;
     }
 
-    let title_limit = calc_trim_filenames_bytes(output_directory);
+    let title_limit =
+        (calc_trim_filenames_bytes(output_directory) as usize).saturating_sub(reserved);
     template.replace("%(title)s", &format!("%(title).{title_limit}B"))
 }
 
@@ -2632,6 +2729,7 @@ pub async fn download_video(
             collision_suffix.as_deref(),
         ),
         &output_directory,
+        collision_suffix.as_deref(),
     );
 
     // Use a temp file to capture the final filepath from yt-dlp.
@@ -3007,7 +3105,9 @@ pub async fn download_video(
                 &output_directory,
                 &metadata,
                 &item_prefix,
-                collision_suffix.as_deref(),
+                collision_suffix
+                    .as_deref()
+                    .filter(|suffix| !is_keep_both_suffix(suffix)),
             );
             if final_folder.exists() {
                 let _ = tokio::fs::remove_dir_all(&staging_folder).await;
@@ -3679,6 +3779,16 @@ pub async fn download_video(
                                 &recovered_filepaths,
                                 &final_filepath,
                             );
+                            if let Some(suffix) = collision_suffix
+                                .as_deref()
+                                .filter(|s| is_keep_both_suffix(s))
+                            {
+                                finalize_keep_both_outputs(
+                                    &mut output_paths,
+                                    &mut final_filepath,
+                                    suffix,
+                                );
+                            }
                             if h264_compatibility_enabled {
                                 if let Err(error) = apply_h264_compatibility_to_outputs(
                                     &app,
@@ -4350,6 +4460,12 @@ async fn handle_tokio_download(
             &recovered_filepaths,
             &final_filepath,
         );
+        if let Some(suffix) = collision_suffix
+            .as_deref()
+            .filter(|s| is_keep_both_suffix(s))
+        {
+            finalize_keep_both_outputs(&mut output_paths, &mut final_filepath, suffix);
+        }
         if h264_compatibility_enabled {
             if let Err(error) =
                 apply_h264_compatibility_to_outputs(&app, &mut output_paths, &url).await
@@ -5275,10 +5391,21 @@ mod tests {
         let template = constrain_title_template_for_output(
             build_output_template(Some(DEFAULT_FILENAME_TEMPLATE.to_string()), "", false, &[]),
             output_directory,
+            None,
         );
         let explicit_precision = constrain_title_template_for_output(
             "%(title).120B.%(ext)s".to_string(),
             output_directory,
+            None,
+        );
+        // 180 minus " [yw-12345678]", so --trim-filenames never cuts the marker.
+        assert_eq!(
+            constrain_title_template_for_output(
+                "%(title)s [yw-12345678].%(ext)s".to_string(),
+                output_directory,
+                Some("yw-12345678"),
+            ),
+            "%(title).166B [yw-12345678].%(ext)s"
         );
 
         if cfg!(target_os = "windows") {
@@ -5387,6 +5514,70 @@ mod tests {
         assert_eq!(last, Some(chapter.to_string_lossy().to_string()));
         std::fs::remove_dir_all(&root).ok();
         std::fs::remove_file(outside).ok();
+    }
+
+    #[test]
+    fn same_title_downloads_keep_every_file_with_numbered_names() {
+        let root = recovery_test_root("keep-both");
+        let first = root.join("Same title [yw-aaaa1111].mp4");
+        let first_subtitle = root.join("Same title [yw-aaaa1111].vi.srt");
+        std::fs::write(&first, b"first").unwrap();
+        std::fs::write(&first_subtitle, b"sub").unwrap();
+        let mut first_paths = vec![first.to_string_lossy().to_string()];
+        let mut first_final = Some(first_paths[0].clone());
+        finalize_keep_both_outputs(&mut first_paths, &mut first_final, "yw-aaaa1111");
+
+        assert_eq!(
+            first_paths,
+            vec![root.join("Same title.mp4").to_string_lossy().to_string()]
+        );
+        assert_eq!(first_final.as_deref(), Some(first_paths[0].as_str()));
+        assert!(root.join("Same title.vi.srt").is_file());
+
+        // A later video with the same title, and a stray (2) subtitle, must not replace anything.
+        std::fs::write(root.join("Same title (2).vi.srt"), b"other").unwrap();
+        let second = root.join("Same title [yw-bbbb2222].mp4");
+        let second_subtitle = root.join("Same title [yw-bbbb2222].vi.srt");
+        std::fs::write(&second, b"second").unwrap();
+        std::fs::write(&second_subtitle, b"sub2").unwrap();
+        let mut second_paths = vec![second.to_string_lossy().to_string()];
+        let mut second_final = None;
+        finalize_keep_both_outputs(&mut second_paths, &mut second_final, "yw-bbbb2222");
+
+        let third = root.join("Same title (3).mp4");
+        assert_eq!(second_paths, vec![third.to_string_lossy().to_string()]);
+        assert_eq!(std::fs::read(&third).unwrap(), b"second");
+        assert_eq!(
+            std::fs::read(root.join("Same title (3).vi.srt")).unwrap(),
+            b"sub2"
+        );
+        assert_eq!(
+            std::fs::read(root.join("Same title.mp4")).unwrap(),
+            b"first"
+        );
+        assert_eq!(
+            std::fs::read(root.join("Same title (2).vi.srt")).unwrap(),
+            b"other"
+        );
+        std::fs::remove_dir_all(&root).ok();
+    }
+
+    #[test]
+    fn keep_both_is_the_default_collision_policy() {
+        assert_eq!(
+            output_collision_suffix(None, "12345678-90ab")
+                .unwrap()
+                .as_deref(),
+            Some("yw-12345678")
+        );
+        assert_eq!(
+            output_collision_suffix(Some("keep"), "12345678-90ab")
+                .unwrap()
+                .as_deref(),
+            Some("yw-12345678")
+        );
+        assert!(is_keep_both_suffix("yw-12345678"));
+        assert!(!is_keep_both_suffix("copy-12345678"));
     }
 
     #[test]

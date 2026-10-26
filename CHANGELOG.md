@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Rename before downloading** - Queued items can be renamed before they download; the item shows the name it will be saved as.
+- **Download one item** - Each queued item has a Download this button that starts only that item, without the rest of the queue.
+
+### Fixed
+- **Same-title downloads overwrote each other** - Different videos with the same title saved to the same folder now keep every file, numbered like a browser does ("Title (2).mp4"), instead of the last download replacing the others. Re-downloading from the Library still replaces its own file.
+
 ## [0.20.1-custom.11] - 2026-10-26
 
 ### Changed

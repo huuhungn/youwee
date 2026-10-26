@@ -45,6 +45,7 @@ export function UniversalPage({ onNavigateToSettings, onNavigateToLogs }: Univer
     clearCompleted,
     reconcileCompletedFiles,
     startDownload,
+    startDownloadItems,
     stopDownload,
     updateQuality,
     updateFormat,
@@ -60,7 +61,7 @@ export function UniversalPage({ onNavigateToSettings, onNavigateToLogs }: Univer
     retryFailedDownload,
     updateItemTimeRange,
     selectItemOutputFolder,
-    renameCompletedItem,
+    renameItem,
   } = useUniversal();
 
   const { ffmpegStatus } = useDependencies();
@@ -164,7 +165,8 @@ export function UniversalPage({ onNavigateToSettings, onNavigateToLogs }: Univer
             onRemove={removeItem}
             onUpdateTimeRange={updateItemTimeRange}
             onSelectOutputFolder={selectItemOutputFolder}
-            onRename={renameCompletedItem}
+            onRename={renameItem}
+            onDownloadOne={(id) => void startDownloadItems([id])}
             onViewLogs={onNavigateToLogs}
             onClearCompleted={clearCompleted}
             onScheduleUpcomingLive={schedule.setSchedule}

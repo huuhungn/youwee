@@ -170,7 +170,7 @@ export interface DownloadRetryState {
   remainingSeconds: number;
 }
 
-export type OutputCollisionPolicy = 'overwrite' | 'unique';
+export type OutputCollisionPolicy = 'overwrite' | 'unique' | 'keep';
 
 export interface DownloadItem {
   id: string;
@@ -204,6 +204,7 @@ export interface DownloadItem {
   completedFilepath?: string; // Absolute path of downloaded file
   completedHistoryId?: string; // Related history entry id after completion
   outputCollisionPolicy?: OutputCollisionPolicy;
+  customFilename?: string; // Name chosen before download, without extension
   // Source detection
   extractor?: string; // e.g. "youtube", "tiktok", "instagram"
   mediaKind?: 'video' | 'image_gallery';

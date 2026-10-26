@@ -70,6 +70,7 @@ import {
   refreshPluginWorkflowSnapshots,
   refreshPostDownloadWorkflowSteps,
 } from '@/lib/post-download-plugins';
+import { customFilenameTemplate, sanitizeQueueFilename } from '@/lib/queue-filename';
 import { QueueRunGuard } from '@/lib/queue-run-guard';
 import { extractUrls } from '@/lib/sources';
 import type {
@@ -306,6 +307,7 @@ interface DownloadContextType {
   clearCompleted: () => void;
   reconcileCompletedFiles: () => Promise<void>;
   startDownload: () => Promise<void>;
+  startDownloadItems: (ids: readonly string[]) => Promise<void>;
   stopDownload: () => Promise<void>;
   updateSettings: (updates: Partial<DownloadSettings>) => void;
   updateQuality: (quality: Quality) => void;
@@ -373,7 +375,7 @@ interface DownloadContextType {
   updateItemTimeRange: (id: string, start?: string, end?: string) => void;
   selectItemOutputFolder: (id: string) => Promise<void>;
   // Rename completed file
-  renameCompletedItem: (id: string, newName: string) => Promise<void>;
+  renameItem: (id: string, newName: string) => Promise<void>;
 }
 
 const DownloadContext = createContext<DownloadContextType | null>(null);
@@ -1627,10 +1629,19 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
     [updateItemOutputPath],
   );
 
-  const renameCompletedItem = useCallback(async (id: string, newName: string) => {
+  const renameItem = useCallback(async (id: string, newName: string) => {
     const item = itemsRef.current.find((i) => i.id === id);
+    if (item?.status === 'pending' || item?.status === 'error') {
+      const customFilename = sanitizeQueueFilename(newName) || undefined;
+      setItems((currentItems) =>
+        currentItems.map((currentItem) =>
+          currentItem.id === id ? { ...currentItem, customFilename } : currentItem,
+        ),
+      );
+      return;
+    }
     if (item?.status !== 'completed') {
-      throw new Error('Only completed items can be renamed');
+      throw new Error('Only queued or completed items can be renamed');
     }
 
     const filepath = item.completedFilepath;
@@ -1684,9 +1695,16 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  // Limits the next run to these items; read and cleared when that run starts.
+  const nextRunOnlyIdsRef = useRef<ReadonlySet<string> | null>(null);
+
   const startDownload = useCallback(async () => {
-    const hasPendingItems = () =>
-      itemsRef.current.some((item) => item.status === 'pending' || item.status === 'error');
+    const onlyIdSet = nextRunOnlyIdsRef.current;
+    nextRunOnlyIdsRef.current = null;
+    const isRunnable = (item: DownloadItem) =>
+      (item.status === 'pending' || item.status === 'error') &&
+      (!onlyIdSet || onlyIdSet.has(item.id));
+    const hasPendingItems = () => itemsRef.current.some(isRunnable);
 
     if (!hasPendingItems()) return;
 
@@ -1702,7 +1720,7 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
     // Reset only pending/error items, keep completed items and playlist info as-is
     setItems((items) =>
       items.map((item) => {
-        if (item.status === 'pending' || item.status === 'error') {
+        if (isRunnable(item)) {
           return {
             ...item,
             status: 'pending' as const,
@@ -1760,7 +1778,9 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
             id: item.id,
             url: item.url,
             outputPath: itemSettings?.outputPath || settings.outputPath,
-            filenameTemplate: itemSettings?.filenameTemplate ?? settings.filenameTemplate,
+            filenameTemplate: item.customFilename
+              ? customFilenameTemplate(item.customFilename)
+              : (itemSettings?.filenameTemplate ?? settings.filenameTemplate),
             skipExisting: itemSettings?.skipExisting ?? settings.skipExisting,
             organizeBySource: itemSettings?.organizeBySource ?? settings.organizeBySource,
             quality: itemSettings?.quality ?? settings.quality,
@@ -1826,7 +1846,7 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
                 : null,
             // Restore the exact history row when re-downloading a missing output.
             historyId: item.completedHistoryId || null,
-            outputCollisionPolicy: item.outputCollisionPolicy ?? 'overwrite',
+            outputCollisionPolicy: item.outputCollisionPolicy ?? 'keep',
             // Title from video info fetch
             title: item.title || null,
             // Thumbnail from video info fetch
@@ -1972,7 +1992,7 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
       const claimNextItem = (): DownloadItem | null => {
         const next = itemsRef.current.find(
           (candidate) =>
-            (candidate.status === 'pending' || candidate.status === 'error') &&
+            isRunnable(candidate) &&
             !claimedIds.has(candidate.id) &&
             !processedIds.has(candidate.id),
         );
@@ -1984,7 +2004,7 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
       const hasUnclaimedPendingItems = () =>
         itemsRef.current.some(
           (candidate) =>
-            (candidate.status === 'pending' || candidate.status === 'error') &&
+            isRunnable(candidate) &&
             !claimedIds.has(candidate.id) &&
             !processedIds.has(candidate.id),
         );
@@ -2030,6 +2050,14 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
       }
     }
   }, [enqueueFailedWorkflowForItem, settings, cookieSettings, proxySettings]);
+
+  const startDownloadItems = useCallback(
+    (ids: readonly string[]) => {
+      nextRunOnlyIdsRef.current = new Set(ids);
+      return startDownload();
+    },
+    [startDownload],
+  );
 
   const stopDownload = useCallback(async () => {
     try {
@@ -2417,6 +2445,7 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
       clearCompleted,
       reconcileCompletedFiles,
       startDownload,
+      startDownloadItems,
       stopDownload,
       updateSettings,
       updateQuality,
@@ -2462,7 +2491,7 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
       // Per-item time range
       updateItemTimeRange,
       selectItemOutputFolder,
-      renameCompletedItem,
+      renameItem,
     }),
     [
       items,
@@ -2487,6 +2516,7 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
       clearCompleted,
       reconcileCompletedFiles,
       startDownload,
+      startDownloadItems,
       stopDownload,
       updateSettings,
       updateQuality,
@@ -2529,7 +2559,7 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
       filterDownloadedDuplicateCandidates,
       updateItemTimeRange,
       selectItemOutputFolder,
-      renameCompletedItem,
+      renameItem,
     ],
   );
 

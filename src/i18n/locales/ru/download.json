@@ -227,6 +227,8 @@
     "renameSave": "Сохранить",
     "renameCancel": "Отмена",
     "renameFailed": "Не удалось переименовать файл",
+    "downloadOne": "Скачать это",
+    "savesAs": "Сохранить как: {{name}}",
     "upcomingLive": {
       "hint": "Трансляция еще не началась",
       "schedule": "Запланировать"

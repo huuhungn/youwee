@@ -221,6 +221,8 @@
     "renameSave": "Kaydet",
     "renameCancel": "İptal",
     "renameFailed": "Dosya yeniden adlandırılamadı",
+    "downloadOne": "Bunu indir",
+    "savesAs": "Kaydedilecek ad: {{name}}",
     "fetchingTranscript": "Transkript alınıyor...",
     "generating": "Oluşturuluyor...",
     "showMore": "Daha fazlasını göster",

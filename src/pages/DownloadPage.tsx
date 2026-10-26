@@ -50,6 +50,7 @@ export function DownloadPage({ onNavigateToSettings, onNavigateToLogs }: Downloa
     clearCompleted,
     reconcileCompletedFiles,
     startDownload,
+    startDownloadItems,
     stopDownload,
     updateQuality,
     updateFormat,
@@ -71,7 +72,7 @@ export function DownloadPage({ onNavigateToSettings, onNavigateToLogs }: Downloa
     retryFailedDownload,
     updateItemTimeRange,
     selectItemOutputFolder,
-    renameCompletedItem,
+    renameItem,
   } = useDownload();
 
   const { ffmpegStatus } = useDependencies();
@@ -218,7 +219,8 @@ export function DownloadPage({ onNavigateToSettings, onNavigateToLogs }: Downloa
               onRemove={removeItem}
               onUpdateTimeRange={updateItemTimeRange}
               onSelectOutputFolder={selectItemOutputFolder}
-              onRename={renameCompletedItem}
+              onRename={renameItem}
+              onDownloadOne={(id) => void startDownloadItems([id])}
               onViewLogs={onNavigateToLogs}
               onClearCompleted={clearCompleted}
               onScheduleUpcomingLive={schedule.setSchedule}
