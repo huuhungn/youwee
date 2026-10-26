@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.20.1-custom.12] - 2026-10-26
+
 ### Added
 - **Rename before downloading** - Queued items can be renamed before they download; the item shows the name it will be saved as.
 - **Download one item** - Each queued item has a Download this button that starts only that item, without the rest of the queue.
