@@ -22,5 +22,5 @@ export function useChannels() {
   return context;
 }
 
-export { detectPlatform, isSupportedPlatform };
 export type { ChannelsContextType, VideoDownloadState };
+export { detectPlatform, isSupportedPlatform };

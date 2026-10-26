@@ -157,7 +157,7 @@ export function SummarySessionProvider({ children }: { children: ReactNode }) {
         if (!isCurrentRequest()) return;
 
         const videoInfo = videoInfoResponse.info;
-        if (!videoInfo || !videoInfo.title) {
+        if (!videoInfo?.title) {
           throw new Error('Failed to fetch video information');
         }
 
