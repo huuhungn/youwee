@@ -18,6 +18,13 @@ function normalizeQueueItem(item: DownloadItem): DownloadItem {
     downloadedSize: isTransient ? undefined : item.downloadedSize,
     elapsedTime: isTransient ? undefined : item.elapsedTime,
     retryState: undefined,
+    // Persisted queues have no explicit replacement intent: Library replacement calls
+    // download_video directly. Legacy recovery overwrite must not survive an upgrade,
+    // even when progress or a later failure has cleared OUTPUT_FILE_MISSING.
+    outputCollisionPolicy:
+      item.outputCollisionPolicy === 'overwrite' || item.errorCode === 'OUTPUT_FILE_MISSING'
+        ? 'keep'
+        : item.outputCollisionPolicy,
   };
 }
 
@@ -39,7 +46,8 @@ function resetCompletedItemForMissingOutput(item: DownloadItem): DownloadItem {
     completedResolution: undefined,
     completedFormat: undefined,
     completedFilepath: undefined,
-    outputCollisionPolicy: 'overwrite',
+    // A missing output must be re-created without clobbering a different same-title file.
+    outputCollisionPolicy: 'keep',
   };
 }
 
