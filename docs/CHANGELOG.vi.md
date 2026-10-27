@@ -7,6 +7,11 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.20.1-custom.14] - 2026-10-27
+
+### Sửa lỗi
+- **Lượt tải phục hồi vẫn có thể ghi đè video khác** - Tải lại mục lịch sử có file đầu ra bị mất giờ giữ nguyên các file trùng tên đang tồn tại. Khi khôi phục hàng đợi cũ, app cũng bỏ chính sách ghi đè cũ, kể cả sau khi lượt tải hoặc bước lấy thông tin bị gián đoạn, hay lỗi tiếp theo đã xoá dấu hiệu thiếu file. File mới nhận hậu tố như "Tiêu đề (2).mp4"; ID lịch sử và thao tác chủ động thay thế từ Thư viện vẫn giữ nguyên.
+
 ## [0.20.1-custom.13] - 2026-10-26
 
 ### Sửa lỗi

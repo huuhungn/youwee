@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.20.1-custom.14] - 2026-10-27
+
+### Fixed
+- **Recovered downloads could still overwrite another video** - Re-downloading a history item whose output file is missing now keeps existing same-name files. Restored legacy queues also discard their old overwrite policy, including after interrupted downloads, metadata fetching, or later errors cleared the missing-file marker. New files receive a numbered suffix such as "Title (2).mp4"; history IDs and deliberate replacement from the Library remain unchanged.
+
 ## [0.20.1-custom.13] - 2026-10-26
 
 ### Fixed
