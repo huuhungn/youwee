@@ -105,14 +105,42 @@ describe('resolveDownloadedDuplicateCandidates', () => {
     };
   }
 
-  test('restores the newest missing history row instead of creating a duplicate', () => {
-    const result = resolveDownloadedDuplicateCandidates([candidate], [duplicate(false)]);
+  test('restores a missing same-title history row without overwriting another URL', () => {
+    const firstCandidate = {
+      url: 'https://www.facebook.com/reel/1993888957884849',
+      title: 'Same title',
+      duplicateIdentity: {
+        canonicalUrl: 'https://www.facebook.com/reel/1993888957884849',
+      },
+    } satisfies DownloadDuplicateCandidate;
+    const secondCandidate = {
+      url: 'https://www.facebook.com/reel/1049019984826548',
+      title: 'Same title',
+      duplicateIdentity: {
+        canonicalUrl: 'https://www.facebook.com/reel/1049019984826548',
+      },
+    } satisfies DownloadDuplicateCandidate;
+    const firstMatch = {
+      ...duplicate(false),
+      canonicalUrl: 'https://www.facebook.com/reel/1993888957884849',
+      historyId: 'history-first',
+    };
+    const secondMatch = {
+      ...duplicate(false),
+      canonicalUrl: 'https://www.facebook.com/reel/1049019984826548',
+      historyId: 'history-second',
+    };
+
+    const result = resolveDownloadedDuplicateCandidates(
+      [firstCandidate, secondCandidate],
+      [firstMatch, secondMatch],
+    );
 
     expect(result.existing).toEqual([]);
-    expect(result.available[0]).toMatchObject({
-      historyId: 'history-123',
-      outputCollisionPolicy: 'overwrite',
-    });
+    expect(result.available).toEqual([
+      { ...firstCandidate, historyId: 'history-first', outputCollisionPolicy: 'keep' },
+      { ...secondCandidate, historyId: 'history-second', outputCollisionPolicy: 'keep' },
+    ]);
   });
 
   test('keeps an existing file behind the duplicate review boundary', () => {

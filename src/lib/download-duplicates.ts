@@ -92,7 +92,8 @@ export function resolveDownloadedDuplicateCandidates<T extends DownloadDuplicate
       available.push({
         ...candidate,
         historyId: duplicate.historyId,
-        outputCollisionPolicy: 'overwrite',
+        // A missing history output does not reserve its name for this download.
+        outputCollisionPolicy: 'keep',
       });
     }
   }

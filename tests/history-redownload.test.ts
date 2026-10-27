@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+import { readFile } from 'node:fs/promises';
 import { buildHistoryRedownloadIdentity } from '@/contexts/HistoryContext';
 import type { HistoryEntry } from '@/lib/types';
 
@@ -23,5 +24,14 @@ describe('Library history re-download identity', () => {
       thumbnail: 'https://example.com/thumbnail.jpg',
       source: 'facebook',
     });
+  });
+
+  test('keeps explicit Library redownload overwrite behavior', async () => {
+    const source = await readFile(
+      new URL('../src/contexts/HistoryContext.tsx', import.meta.url),
+      'utf8',
+    );
+
+    expect(source).toContain("outputCollisionPolicy: 'overwrite'");
   });
 });
