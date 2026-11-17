@@ -58,5 +58,7 @@ describe('cookie error translations', () => {
     for (const code of ['YT_BOT_CHECK', 'YT_COOKIE_ACCESS_DENIED', 'YT_COOKIE_PROFILE_NOT_FOUND']) {
       expect(typeof messages.backendErrors[code]).toBe('string');
     }
+    // Shown as a toast on every OS; the macOS Full Disk Access steps live in the dialog.
+    expect(messages.backendErrors.YT_COOKIE_ACCESS_DENIED).not.toContain('macOS');
   });
 });

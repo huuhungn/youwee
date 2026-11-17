@@ -113,7 +113,7 @@
     "YT_SKIPPED_UPCOMING_LIVE": "Canlı yayınları atla özelliği etkin olduğundan yaklaşan canlı yayın atlandı.",
     "YT_UPCOMING_LIVE": "Bu canlı etkinlik henüz başlamadı. Başladıktan sonra tekrar deneyin veya Canlı yayınları atla seçeneğini etkinleştirin.",
     "YT_COOKIE_DB_LOCKED": "Tarayıcı çerez veritabanı kilitli. Tarayıcıyı kapatıp yeniden deneyin veya çerez dosyası modunu kullanın.",
-    "YT_COOKIE_ACCESS_DENIED": "macOS, Youwee'nin tarayıcı çerezlerini okumasını engelledi. Sistem Ayarları → Gizlilik ve Güvenlik'te Youwee için Tam Disk Erişimi'ni açın ve Youwee'yi yeniden başlatın.",
+    "YT_COOKIE_ACCESS_DENIED": "Sistem, Youwee'nin tarayıcı profil klasörünü okumasını engelledi. Youwee'ye erişim izni verin veya Çerez Dosyası modunu kullanın.",
     "YT_COOKIE_PROFILE_NOT_FOUND": "Tarayıcı çerez veritabanı bulunamadı. Ayarlar → Ağ ve Kimlik Doğrulama bölümünde başka bir profil seçin veya Çerez Dosyası modunu kullanın.",
     "YT_FRESH_COOKIES_REQUIRED": "Yeni giriş çerezleri gereklidir. Tarayıcı oturum açma bilgilerini yenileyin ve yeniden deneyin.",
     "NETWORK_TIMEOUT": "Ağ zaman aşımı. Lütfen tekrar deneyin.",

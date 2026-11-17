@@ -114,7 +114,7 @@
     "YT_SKIPPED_UPCOMING_LIVE": "「ライブ配信をスキップ」が有効になっているため、今後のライブ配信をスキップしました。",
     "YT_UPCOMING_LIVE": "このライブイベントはまだ開始されていません。開始後に再試行するか、「ライブ配信をスキップ」を有効にしてください。",
     "YT_COOKIE_DB_LOCKED": "ブラウザの Cookie データベースがロックされています。ブラウザを閉じて再試行するか、Cookie ファイルモードを使用してください。",
-    "YT_COOKIE_ACCESS_DENIED": "macOS が Youwee によるブラウザー Cookie の読み取りをブロックしました。システム設定 → プライバシーとセキュリティ で Youwee のフルディスクアクセスをオンにし、Youwee を再起動してください。",
+    "YT_COOKIE_ACCESS_DENIED": "システムが Youwee によるブラウザープロファイルフォルダーの読み取りをブロックしました。Youwee にアクセスを許可するか、Cookie ファイルモードを使ってください。",
     "YT_COOKIE_PROFILE_NOT_FOUND": "ブラウザーの Cookie データベースが見つかりません。設定 → ネットワーク＆認証 で別のプロファイルを選ぶか、Cookie ファイルモードを使ってください。",
     "YT_FRESH_COOKIES_REQUIRED": "有効なログイン Cookie が必要です。ブラウザでのログインを更新して再試行してください。",
     "NETWORK_TIMEOUT": "ネットワークがタイムアウトしました。もう一度お試しください。",

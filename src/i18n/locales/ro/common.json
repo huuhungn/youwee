@@ -113,7 +113,7 @@
     "YT_SKIPPED_UPCOMING_LIVE": "S-a omis următorul flux live, deoarece Omiteți fluxurile live este activat.",
     "YT_UPCOMING_LIVE": "Acest eveniment live nu a început încă. Încearcă din nou după ce pornește sau activează Omite streamurile live.",
     "YT_COOKIE_DB_LOCKED": "Baza de date cookie din browser este blocată. Închideți browserul și încercați din nou sau utilizați modul fișier cookie.",
-    "YT_COOKIE_ACCESS_DENIED": "macOS a împiedicat Youwee să citească cookie-urile browserului. Activează Acces complet la disc pentru Youwee în Setări sistem → Confidențialitate și securitate, apoi repornește Youwee.",
+    "YT_COOKIE_ACCESS_DENIED": "Sistemul a împiedicat Youwee să citească folderul profilului browserului. Permite accesul pentru Youwee sau folosește modul Fișier cookie.",
     "YT_COOKIE_PROFILE_NOT_FOUND": "Baza de date de cookie-uri a browserului nu a fost găsită. Alege alt profil în Setări → Rețea și autentificare sau folosește modul Fișier cookie.",
     "YT_FRESH_COOKIES_REQUIRED": "Sunt necesare cookie-uri noi de conectare. Actualizați autentificarea browserului și reîncercați.",
     "NETWORK_TIMEOUT": "Timeout rețea. Vă rugăm să încercați din nou.",

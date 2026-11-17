@@ -2461,14 +2461,20 @@ fn build_download_error_message(exit_code: Option<i32>, recent_lines: &[String])
         .with_retryable(false);
     }
 
-    if let Some(error) = recent_lines
+    // yt-dlp reports these on its own ERROR: lines; stdout titles and filenames can contain the same words.
+    let error_lines: Vec<&String> = recent_lines
+        .iter()
+        .filter(|line| line.trim_start().starts_with("ERROR:"))
+        .collect();
+
+    if let Some(error) = error_lines
         .iter()
         .find_map(|line| crate::types::classify_missing_cookie_db(line))
     {
         return error;
     }
 
-    if let Some(line) = recent_lines
+    if let Some(line) = error_lines
         .iter()
         .find(|line| crate::types::is_bot_check_message(line))
     {
@@ -5889,6 +5895,33 @@ mod tests {
 
         assert_eq!(wire.code, crate::types::code::YT_COOKIE_PROFILE_NOT_FOUND);
         assert_eq!(wire.retryable, Some(false));
+    }
+
+    #[test]
+    fn bot_check_and_cookie_db_match_only_error_lines() {
+        let title_line = r#"[download] Destination: I'm not a bot - could not find chrome cookies database in "x".mp4"#;
+        let error = build_download_error_message(
+            Some(1),
+            &[
+                title_line.to_string(),
+                "ERROR: unable to download video data: <urlopen error [Errno 11001] getaddrinfo failed>".to_string(),
+            ],
+        );
+        let wire = error.to_wire();
+
+        assert_eq!(wire.code, crate::types::code::NETWORK_REQUEST_FAILED);
+        assert_eq!(wire.retryable, Some(true));
+
+        let error = build_download_error_message(
+            Some(1),
+            &[
+                title_line.to_string(),
+                "ERROR: [youtube] mlvbJxzN958: Sign in to confirm you're not a bot. Use --cookies-from-browser or --cookies for the authentication.".to_string(),
+            ],
+        );
+
+        assert_eq!(error.code(), crate::types::code::YT_BOT_CHECK);
+        assert!(error.message().starts_with("ERROR: [youtube]"));
     }
 
     #[test]

@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Filename metadata position** - Settings → Download can now place the selected filename metadata before (default) or after the title. Playlist and queue numbering still comes first, so files keep sorting in order.
 
+### Fixed
+- **Video titles could trigger the wrong cookie or bot-check error** - A download that failed for another reason (network, FFmpeg) was reported as YouTube's bot check, which skips auto-retry, when its title or filename contained "not a bot". The bot-check and missing cookie database errors now come only from yt-dlp's own `ERROR:` lines.
+- **Blocked cookie folder error mentioned macOS on every system** - The error message now says the system blocked reading the browser profile folder. The Full Disk Access steps stay in the macOS dialog.
+
 ## [0.20.1-custom.15] - 2026-11-17
 
 ### Fixed

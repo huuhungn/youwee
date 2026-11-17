@@ -114,7 +114,7 @@
     "YT_SKIPPED_UPCOMING_LIVE": "Directo programado omitido porque la opción 'Omitir directos' está activada.",
     "YT_UPCOMING_LIVE": "Este evento en directo aún no ha comenzado. Inténtalo de nuevo cuando empiece o activa 'Omitir directos'.",
     "YT_COOKIE_DB_LOCKED": "La base de datos de cookies del navegador está bloqueada. Cierra el navegador y reinténtalo, o usa el modo de archivo de cookies.",
-    "YT_COOKIE_ACCESS_DENIED": "macOS impidió que Youwee leyera las cookies del navegador. Activa Acceso total al disco para Youwee en Ajustes del Sistema → Privacidad y seguridad y reinicia Youwee.",
+    "YT_COOKIE_ACCESS_DENIED": "El sistema impidió que Youwee leyera la carpeta del perfil del navegador. Permite el acceso a Youwee o usa el modo Archivo de cookies.",
     "YT_COOKIE_PROFILE_NOT_FOUND": "No se encontró la base de datos de cookies del navegador. Elige otro perfil en Ajustes → Red y autenticación o usa el modo Archivo de cookies.",
     "YT_FRESH_COOKIES_REQUIRED": "Se requieren cookies de inicio de sesión recientes. Actualiza la sesión en el navegador y reinténtalo.",
     "NETWORK_TIMEOUT": "Tiempo de espera de red agotado. Por favor, inténtalo de nuevo.",

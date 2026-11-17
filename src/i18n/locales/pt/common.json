@@ -114,7 +114,7 @@
     "YT_UPCOMING_LIVE": "Este evento ao vivo ainda não começou. Tente novamente depois que começar ou ative Ignorar lives.",
     "YT_NO_SUBTITLES": "Não há legendas disponíveis para este vídeo.",
     "YT_COOKIE_DB_LOCKED": "O banco de dados de cookies do navegador está bloqueado. Feche o navegador e tente novamente, ou use o modo de arquivo de cookies.",
-    "YT_COOKIE_ACCESS_DENIED": "O macOS impediu o Youwee de ler os cookies do navegador. Ative o Acesso Total ao Disco para o Youwee em Ajustes do Sistema → Privacidade e Segurança e reinicie o Youwee.",
+    "YT_COOKIE_ACCESS_DENIED": "O sistema impediu o Youwee de ler a pasta do perfil do navegador. Permita o acesso do Youwee ou use o modo Arquivo de cookies.",
     "YT_COOKIE_PROFILE_NOT_FOUND": "Banco de cookies do navegador não encontrado. Escolha outro perfil em Configurações → Rede e Autenticação ou use o modo Arquivo de cookies.",
     "YT_FRESH_COOKIES_REQUIRED": "São necessários cookies de login recentes. Atualize o login do navegador e tente novamente.",
     "NETWORK_TIMEOUT": "Tempo limite da rede esgotado. Tente novamente.",

@@ -114,7 +114,7 @@
     "YT_SKIPPED_UPCOMING_LIVE": "Skipped upcoming livestream because Skip live streams is enabled.",
     "YT_UPCOMING_LIVE": "This live event has not started yet. Try again after it starts, or enable Skip live streams.",
     "YT_COOKIE_DB_LOCKED": "Browser cookie database is locked. Close the browser and retry, or use cookie file mode.",
-    "YT_COOKIE_ACCESS_DENIED": "macOS blocked Youwee from reading browser cookies. Turn on Full Disk Access for Youwee in System Settings → Privacy & Security, then restart Youwee.",
+    "YT_COOKIE_ACCESS_DENIED": "The system blocked Youwee from reading the browser profile folder. Allow Youwee to access it, or use Cookie File mode.",
     "YT_COOKIE_PROFILE_NOT_FOUND": "Browser cookie database not found. Choose another browser profile in Settings → Network & Auth, or use Cookie File mode.",
     "YT_FRESH_COOKIES_REQUIRED": "Fresh login cookies are required. Refresh browser login and retry.",
     "NETWORK_TIMEOUT": "Network timeout. Please try again.",
