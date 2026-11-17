@@ -44,6 +44,10 @@
     "message": "Deseja usar esta nova pasta de download para {{count}} item(ns) na fila que ainda não começaram ou não foram concluídos?",
     "confirm": "Atualizar itens"
   },
+  "queueFinished": {
+    "title": "Downloads finalizados",
+    "body": "{{done}} concluído(s), {{failed}} com falha"
+  },
   "update": {
     "available": "Atualização Disponível",
     "error": "Erro de Atualização",

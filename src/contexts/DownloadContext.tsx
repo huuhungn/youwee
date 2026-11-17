@@ -74,6 +74,7 @@ import {
   refreshPluginWorkflowSnapshots,
   refreshPostDownloadWorkflowSteps,
 } from '@/lib/post-download-plugins';
+import { markQueueStopped } from '@/lib/queue-feedback';
 import { customFilenameTemplate, sanitizeQueueFilename } from '@/lib/queue-filename';
 import { QueueRunGuard } from '@/lib/queue-run-guard';
 import { extractUrls } from '@/lib/sources';
@@ -2067,6 +2068,7 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
   );
 
   const stopDownload = useCallback(async () => {
+    markQueueStopped();
     try {
       await invoke('stop_download');
     } catch (error) {

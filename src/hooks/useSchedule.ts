@@ -5,6 +5,7 @@ import {
   sendNotification,
 } from '@tauri-apps/plugin-notification';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { markScheduledQueueStart } from '@/lib/queue-feedback';
 
 export interface ScheduleConfig {
   startAt: number; // Unix timestamp ms
@@ -68,7 +69,7 @@ export function formatTime(timestamp: number): string {
 }
 
 /** Send a desktop notification (fire-and-forget, never throws) */
-async function notify(title: string, body: string) {
+export async function notify(title: string, body: string) {
   try {
     let granted = await isPermissionGranted();
     if (!granted) {
@@ -140,6 +141,7 @@ export function useSchedule({
       // Check start time
       if (now >= schedule.startAt && !startTriggeredRef.current && !isDownloading) {
         startTriggeredRef.current = true;
+        markScheduledQueueStart();
         onStartRef.current();
         const label = sourceLabel ? ` (${sourceLabel})` : '';
         notify('Youwee', `Scheduled download started${label}`);

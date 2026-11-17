@@ -44,6 +44,10 @@
     "message": "Bu yeni indirme klasörünü henüz başlamamış veya tamamlanmamış {{count}} sıraya alınmış öğeler için kullanmak istiyor musunuz?",
     "confirm": "Öğeleri güncelle"
   },
+  "queueFinished": {
+    "title": "İndirmeler bitti",
+    "body": "{{done}} tamamlandı, {{failed}} başarısız"
+  },
   "update": {
     "available": "Güncelleme Mevcut",
     "error": "Güncelleme Hatası",

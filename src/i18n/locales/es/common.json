@@ -44,6 +44,10 @@
     "message": "¿Deseas utilizar esta nueva carpeta de descarga para los {{count}} elemento(s) en cola que aún no han comenzado o completado?",
     "confirm": "Actualizar elementos"
   },
+  "queueFinished": {
+    "title": "Descargas finalizadas",
+    "body": "{{done}} completadas, {{failed}} con error"
+  },
   "update": {
     "available": "Actualización disponible",
     "error": "Error de actualización",
