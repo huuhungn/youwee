@@ -137,7 +137,9 @@
     "WHISPER_API_ERROR": "Whisper API エラー。",
     "WHISPER_NO_API_KEY": "Whisper API キーが設定されていません。",
     "WHISPER_UNSUPPORTED_FORMAT": "Whisper でサポートされていない音声フォーマットです。",
-    "TIKTOK_LIVE_OFFLINE": "この TikTok Live は現在配信されていません。"
+    "TIKTOK_LIVE_OFFLINE": "この TikTok Live は現在配信されていません。",
+    "YT_COOKIE_ACCESS_DENIED": "macOS が Youwee によるブラウザー Cookie の読み取りをブロックしました。システム設定 → プライバシーとセキュリティ で Youwee のフルディスクアクセスをオンにし、Youwee を再起動してください。",
+    "YT_COOKIE_PROFILE_NOT_FOUND": "ブラウザーの Cookie データベースが見つかりません。設定 → ネットワーク＆認証 で別のプロファイルを選ぶか、Cookie ファイルモードを使ってください。"
   },
   "windowControls": {
     "minimize": "最小化",
@@ -150,5 +152,51 @@
     "description_one": "キューから {{count}} 件を削除します。元に戻せません。",
     "description_other": "キューから {{count}} 件を削除します。元に戻せません。",
     "confirm": "すべて消去"
+  },
+  "cookieErrorDialog": {
+    "db_locked": {
+      "title": "Cookie にアクセスできません",
+      "subtitle": "ブラウザーが Cookie へのアクセスをブロックしています",
+      "heading": "{{browser}} が起動しています",
+      "body": "Chromium 系ブラウザーは起動中に Cookie データベースをロックします。{{browser}} を完全に終了してから再試行してください。",
+      "step1": "{{browser}} のウィンドウをすべて閉じる",
+      "step2": "{{browser}} がバックグラウンドで動いていないか確認する（システムトレイ）",
+      "step3": "下の「ダウンロードを再試行」をクリック"
+    },
+    "access_denied": {
+      "title": "ブラウザーの Cookie を読み取れません",
+      "subtitle": "macOS が {{browser}} のデータへのアクセスをブロックしています",
+      "heading": "macOS のプライバシー保護が Youwee をブロックしています",
+      "body": "{{browser}} の Cookie を読み取るには、Youwee にフルディスクアクセスが必要です。ブラウザーを閉じても解決しません。",
+      "step1": "システム設定 → プライバシーとセキュリティ → フルディスクアクセス を開く",
+      "step2": "Youwee をオンにする（開発ビルドの場合は起動に使うターミナルアプリをオン）",
+      "step3": "Youwee を終了して再度開き、再試行する"
+    },
+    "access_denied_other": {
+      "title": "ブラウザーの Cookie を読み取れません",
+      "subtitle": "{{browser}} のデータへのアクセスが拒否されました",
+      "heading": "システムがブラウザープロファイルへのアクセスを拒否しました",
+      "body": "Youwee には {{browser}} のプロファイルフォルダーを読む権限がありません。",
+      "step1": "ユーザーが {{browser}} のプロファイルフォルダーを読めるか確認する",
+      "step2": "セキュリティソフトが Youwee をブロックしていないか確認する",
+      "step3": "再試行するか、Cookie ファイルモードを使う"
+    },
+    "profile_not_found": {
+      "title": "ブラウザープロファイルが見つかりません",
+      "subtitle": "選択したプロファイルに {{browser}} の Cookie がありません",
+      "heading": "選択した {{browser}} プロファイルが見つかりません",
+      "body": "設定で選んだ {{browser}} プロファイルの Cookie データベースが見つかりません。プロファイルが削除または名前変更された可能性があります。",
+      "step1": "{{browser}} で chrome://version（Firefox は about:profiles）を開き、使用中のプロファイルを確認する",
+      "step2": "設定 → ネットワーク＆認証 でそのプロファイルを選ぶ",
+      "step3": "ダウンロードを再試行する"
+    },
+    "stepsTitle": "解決方法:",
+    "alternativeLabel": "代替手段:",
+    "alternative": "設定 → ネットワーク＆認証 の「Cookie ファイル」モードを使い、ブラウザー拡張機能で Cookie を書き出してください。",
+    "retry": "ダウンロードを再試行",
+    "goToSettings": "設定を開く",
+    "chooseProfile": "ブラウザープロファイルを選ぶ",
+    "openPrivacySettings": "プライバシー設定を開く",
+    "dismiss": "閉じる"
   }
 }

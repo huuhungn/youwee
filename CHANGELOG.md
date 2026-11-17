@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - **YouTube bot check message** - Show a dedicated error when YouTube asks to "confirm you're not a bot", pointing to cookies in Settings → Network & Auth or a network/proxy change, instead of the misleading "This video requires sign-in" message
 - **Age-restricted YouTube quality notice** - Log a clear explanation when YouTube requires account age-verification for an age-restricted video, which limits yt-dlp to low-quality formats (usually 360p) instead of silently downloading them
+- **Browser cookie errors** - When Youwee can't read browser cookies, the dialog now shows the real cause: macOS blocking access (with a button to open Full Disk Access settings), a missing browser profile, or a locked database. Before, a missing or blocked profile was reported as "Chrome is currently open", so closing the browser never helped. The dialog is now translated
+- **Browser cookie errors** - When Youwee can't read browser cookies, the dialog now shows the real cause: macOS blocking access (with a button to open Full Disk Access settings), a missing browser profile, or a locked database. Before, a missing or blocked profile was reported as "Chrome is currently open", so closing the browser never helped. The dialog is now translated
 
 ## [0.20.1-custom.14] - 2026-10-27
 

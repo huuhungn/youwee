@@ -2445,6 +2445,13 @@ fn build_download_error_message(exit_code: Option<i32>, recent_lines: &[String])
         .with_retryable(false);
     }
 
+    if let Some(error) = recent_lines
+        .iter()
+        .find_map(|line| crate::types::classify_missing_cookie_db(line))
+    {
+        return error;
+    }
+
     if let Some(line) = recent_lines
         .iter()
         .find(|line| crate::types::is_bot_check_message(line))
@@ -3590,6 +3597,7 @@ pub async fn download_video(
                     CommandEvent::Stdout(line_bytes) => {
                         let line = decode_process_output(&line_bytes);
                         push_recent_output(&mut recent_output, &line);
+                        log_youtube_age_verification_notice(&line, &age_verification_logged, &url);
 
                         // Parse playlist item info
                         if line.contains("Downloading item") {
@@ -3602,7 +3610,6 @@ pub async fn download_video(
                                 }
                             }
                         }
-                        log_youtube_age_verification_notice(&line, &age_verification_logged, &url);
 
                         // Extract title from [download] messages
                         // Handles both: "Destination: /path/file.mp4" and "/path/file.mp4 has already been downloaded"
@@ -3618,12 +3625,6 @@ pub async fn download_video(
                                     title_from_download_filename(current_title, filename);
                             }
                         }
-                        log_youtube_age_verification_notice(
-                            &stderr_line,
-                            &age_verification_logged,
-                            &url,
-                        );
-
                         if let Some(filepath) = filepath_from_download_output(&line) {
                             final_filepath = Some(filepath);
                         }
@@ -3709,6 +3710,11 @@ pub async fn download_video(
                         let stderr_line = decode_process_output(&bytes);
                         let stderr_line = stderr_line.trim().to_string();
                         push_recent_output(&mut recent_output, &stderr_line);
+                        log_youtube_age_verification_notice(
+                            &stderr_line,
+                            &age_verification_logged,
+                            &url,
+                        );
 
                         if let Some((percent, speed, eta, pi, pc, downloaded_size, elapsed_time)) =
                             parse_progress(&stderr_line)
@@ -5762,6 +5768,18 @@ mod tests {
                 .and_then(|params| params.get("exitCode").cloned()),
             Some(serde_json::Value::from(15))
         );
+    }
+
+    #[test]
+    fn missing_browser_cookie_db_is_not_reported_as_locked() {
+        let error = build_download_error_message(
+            Some(1),
+            &[r#"ERROR: could not find chrome cookies database in "/nonexistent-youwee-test/Chrome/Profile 3""#.to_string()],
+        );
+        let wire = error.to_wire();
+
+        assert_eq!(wire.code, crate::types::code::YT_COOKIE_PROFILE_NOT_FOUND);
+        assert_eq!(wire.retryable, Some(false));
     }
 
     #[test]

@@ -137,7 +137,9 @@
     "WHISPER_NO_API_KEY": "Clé API Whisper non configurée.",
     "WHISPER_UNSUPPORTED_FORMAT": "Format audio non pris en charge par Whisper.",
     "ARIA2_NOT_FOUND": "aria2c est introuvable. Installez aria2 et assurez-vous que aria2c est disponible dans PATH.",
-    "TIKTOK_LIVE_OFFLINE": "Ce TikTok Live n’est pas actif actuellement."
+    "TIKTOK_LIVE_OFFLINE": "Ce TikTok Live n’est pas actif actuellement.",
+    "YT_COOKIE_ACCESS_DENIED": "macOS a empêché Youwee de lire les cookies du navigateur. Activez l'accès complet au disque pour Youwee dans Réglages Système → Confidentialité et sécurité, puis redémarrez Youwee.",
+    "YT_COOKIE_PROFILE_NOT_FOUND": "Base de cookies du navigateur introuvable. Choisissez un autre profil dans Paramètres → Réseau et auth ou utilisez le mode Fichier de cookies."
   },
   "windowControls": {
     "minimize": "Réduire",
@@ -150,5 +152,51 @@
     "description_one": "Cela supprime {{count}} élément de la file. Action irréversible.",
     "description_other": "Cela supprime {{count}} éléments de la file. Action irréversible.",
     "confirm": "Tout effacer"
+  },
+  "cookieErrorDialog": {
+    "db_locked": {
+      "title": "Échec de l'accès aux cookies",
+      "subtitle": "Le navigateur bloque l'accès aux cookies",
+      "heading": "{{browser}} est ouvert",
+      "body": "Les navigateurs Chromium verrouillent leur base de cookies pendant leur exécution. Fermez complètement {{browser}} puis réessayez.",
+      "step1": "Fermez toutes les fenêtres de {{browser}}",
+      "step2": "Vérifiez que {{browser}} ne tourne pas en arrière-plan (zone de notification)",
+      "step3": "Cliquez sur « Relancer le téléchargement » ci-dessous"
+    },
+    "access_denied": {
+      "title": "Impossible de lire les cookies du navigateur",
+      "subtitle": "macOS bloque l'accès aux données de {{browser}}",
+      "heading": "La protection de la vie privée de macOS bloque Youwee",
+      "body": "Youwee a besoin de l'accès complet au disque pour lire les cookies de {{browser}}. Fermer le navigateur n'y changera rien.",
+      "step1": "Ouvrez Réglages Système → Confidentialité et sécurité → Accès complet au disque",
+      "step2": "Activez Youwee (pour une version de développement, activez le terminal qui le lance)",
+      "step3": "Quittez puis rouvrez Youwee, et réessayez"
+    },
+    "access_denied_other": {
+      "title": "Impossible de lire les cookies du navigateur",
+      "subtitle": "Accès aux données de {{browser}} refusé",
+      "heading": "Le système a refusé l'accès au profil du navigateur",
+      "body": "Youwee n'a pas l'autorisation de lire le dossier du profil {{browser}}.",
+      "step1": "Vérifiez que votre compte peut lire le dossier du profil {{browser}}",
+      "step2": "Assurez-vous qu'aucun logiciel de sécurité ne bloque Youwee",
+      "step3": "Réessayez ou utilisez le mode Fichier de cookies"
+    },
+    "profile_not_found": {
+      "title": "Profil du navigateur introuvable",
+      "subtitle": "Aucun cookie {{browser}} dans le profil choisi",
+      "heading": "Le profil {{browser}} sélectionné est introuvable",
+      "body": "Youwee ne trouve pas la base de cookies du profil {{browser}} choisi dans les réglages. Il a peut-être été supprimé ou renommé.",
+      "step1": "Dans {{browser}}, ouvrez chrome://version (ou about:profiles dans Firefox) pour voir le profil utilisé",
+      "step2": "Choisissez ce profil dans Paramètres → Réseau et auth",
+      "step3": "Relancez le téléchargement"
+    },
+    "stepsTitle": "Pour résoudre le problème :",
+    "alternativeLabel": "Autre solution :",
+    "alternative": "Utilisez le mode « Fichier de cookies » dans Paramètres → Réseau et auth pour exporter les cookies avec une extension.",
+    "retry": "Relancer le téléchargement",
+    "goToSettings": "Aller aux paramètres",
+    "chooseProfile": "Choisir le profil du navigateur",
+    "openPrivacySettings": "Ouvrir les réglages de confidentialité",
+    "dismiss": "Fermer"
   }
 }
