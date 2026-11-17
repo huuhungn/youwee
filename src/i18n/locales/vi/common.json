@@ -105,6 +105,7 @@
     "YT_AGE_RESTRICTED": "Video bị giới hạn độ tuổi. Hãy bật xác thực trong Cài đặt.",
     "YT_MEMBERS_ONLY": "Video chỉ dành cho thành viên. Hãy dùng tài khoản đã đăng ký.",
     "YT_SIGNIN_REQUIRED": "Video yêu cầu đăng nhập. Hãy bật xác thực trong Cài đặt.",
+    "YT_BOT_CHECK": "YouTube yêu cầu xác minh bạn không phải bot. Hãy bật cookie từ trình duyệt đã đăng nhập (hoặc file cookie) trong Cài đặt → Mạng & Xác thực, hoặc đổi mạng/proxy rồi thử lại.",
     "YT_GEO_RESTRICTED": "Video không khả dụng tại khu vực của bạn.",
     "YT_VIDEO_UNAVAILABLE": "Video hiện không khả dụng.",
     "YT_NO_SUBTITLES": "Video này không có phụ đề.",
@@ -113,6 +114,8 @@
     "YT_SKIPPED_UPCOMING_LIVE": "Đã bỏ qua live sắp diễn ra vì tùy chọn Bỏ qua live đang bật.",
     "YT_UPCOMING_LIVE": "Live này chưa bắt đầu. Hãy thử lại sau khi live bắt đầu, hoặc bật Bỏ qua live.",
     "YT_COOKIE_DB_LOCKED": "Cơ sở dữ liệu cookie của trình duyệt đang bị khóa. Hãy đóng trình duyệt rồi thử lại, hoặc dùng chế độ file cookie.",
+    "YT_COOKIE_ACCESS_DENIED": "macOS đã chặn Youwee đọc cookie trình duyệt. Hãy bật Truy cập toàn bộ ổ đĩa cho Youwee trong Cài đặt hệ thống → Quyền riêng tư & Bảo mật rồi khởi động lại Youwee.",
+    "YT_COOKIE_PROFILE_NOT_FOUND": "Không tìm thấy cơ sở dữ liệu cookie của trình duyệt. Hãy chọn profile khác trong Cài đặt → Mạng & Xác thực hoặc dùng chế độ Cookie File.",
     "YT_FRESH_COOKIES_REQUIRED": "Cần cookie đăng nhập mới. Hãy đăng nhập lại trên trình duyệt rồi thử lại.",
     "NETWORK_TIMEOUT": "Hết thời gian chờ mạng. Vui lòng thử lại.",
     "NETWORK_REQUEST_FAILED": "Yêu cầu mạng thất bại. Vui lòng kiểm tra kết nối và thử lại.",
@@ -149,5 +152,51 @@
     "description_one": "Thao tác này xóa {{count}} mục khỏi hàng đợi và không thể hoàn tác.",
     "description_other": "Thao tác này xóa {{count}} mục khỏi hàng đợi và không thể hoàn tác.",
     "confirm": "Xóa tất cả"
+  },
+  "cookieErrorDialog": {
+    "db_locked": {
+      "title": "Không truy cập được cookie",
+      "subtitle": "Trình duyệt đang chặn truy cập cookie",
+      "heading": "{{browser}} đang mở",
+      "body": "Các trình duyệt Chromium khoá cơ sở dữ liệu cookie khi đang chạy. Hãy đóng hẳn {{browser}} rồi thử lại.",
+      "step1": "Đóng tất cả cửa sổ {{browser}}",
+      "step2": "Đảm bảo {{browser}} không còn chạy nền (kiểm tra khay hệ thống)",
+      "step3": "Bấm \"Thử tải lại\" bên dưới"
+    },
+    "access_denied": {
+      "title": "Không đọc được cookie trình duyệt",
+      "subtitle": "macOS đang chặn truy cập dữ liệu {{browser}}",
+      "heading": "Bảo vệ quyền riêng tư của macOS đang chặn Youwee",
+      "body": "Youwee cần quyền Truy cập toàn bộ ổ đĩa để đọc cookie của {{browser}}. Đóng trình duyệt sẽ không giải quyết được.",
+      "step1": "Mở Cài đặt hệ thống → Quyền riêng tư & Bảo mật → Truy cập toàn bộ ổ đĩa",
+      "step2": "Bật Youwee (nếu chạy bản dev, bật cho ứng dụng terminal dùng để chạy app)",
+      "step3": "Thoát hẳn rồi mở lại Youwee, sau đó thử lại"
+    },
+    "access_denied_other": {
+      "title": "Không đọc được cookie trình duyệt",
+      "subtitle": "Bị từ chối truy cập dữ liệu {{browser}}",
+      "heading": "Hệ thống từ chối truy cập profile trình duyệt",
+      "body": "Youwee không có quyền đọc thư mục profile của {{browser}}.",
+      "step1": "Kiểm tra tài khoản của bạn có quyền đọc thư mục profile của {{browser}}",
+      "step2": "Đảm bảo không có phần mềm bảo mật nào chặn Youwee",
+      "step3": "Thử lại, hoặc dùng chế độ Cookie File"
+    },
+    "profile_not_found": {
+      "title": "Không tìm thấy profile trình duyệt",
+      "subtitle": "Profile đã chọn không có cookie {{browser}}",
+      "heading": "Không tìm thấy profile {{browser}} đã chọn",
+      "body": "Youwee không tìm thấy cơ sở dữ liệu cookie của profile {{browser}} đã chọn trong cài đặt. Profile có thể đã bị xoá hoặc đổi tên.",
+      "step1": "Trong {{browser}}, mở chrome://version (hoặc about:profiles trên Firefox) để xem profile bạn đang dùng",
+      "step2": "Chọn đúng profile đó trong Cài đặt → Mạng & Xác thực",
+      "step3": "Thử tải lại"
+    },
+    "stepsTitle": "Cách khắc phục:",
+    "alternativeLabel": "Cách khác:",
+    "alternative": "Dùng chế độ \"Cookie File\" trong Cài đặt → Mạng & Xác thực để xuất cookie bằng tiện ích trình duyệt.",
+    "retry": "Thử tải lại",
+    "goToSettings": "Mở Cài đặt",
+    "chooseProfile": "Chọn profile trình duyệt",
+    "openPrivacySettings": "Mở cài đặt Quyền riêng tư",
+    "dismiss": "Bỏ qua"
   }
 }

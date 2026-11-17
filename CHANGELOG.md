@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.20.1-custom.15] - 2026-11-17
+
+### Fixed
+- **YouTube bot check looked like a sign-in error** - "Sign in to confirm you're not a bot" now has its own message, which points to cookies from a signed-in browser or a different network or proxy, instead of the generic "requires sign-in" error. Ported from upstream v0.21.0.
+- **Age-restricted YouTube videos came down in 360p without a reason** - The log now explains when YouTube requires account age-verification for an age-restricted video, which limits yt-dlp to low-quality formats (usually 360p). Ported from upstream v0.21.0.
+- **Cookie dialog blamed an open browser for every cookie problem** - When the selected browser profile has no cookie database, or the system blocks reading it (macOS privacy, Full Disk Access), the dialog now says so and offers the matching action: choose another profile, or open Privacy Settings on macOS. The "browser is open" dialog stays for the Windows lock and App-Bound/DPAPI decryption failures. The dialog is translated in all 13 languages. Ported from upstream v0.21.0.
+
 ## [0.20.1-custom.14] - 2026-10-27
 
 ### Fixed
