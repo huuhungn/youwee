@@ -5,10 +5,10 @@
   },
   "missing": {
     "title": "gallery-dl is required",
-    "checking": "Checking system gallery-dl...",
-    "description": "Install gallery-dl on your system to download galleries, collections, and creator feeds.",
+    "checking": "Verificando gallery-dl...",
+    "description": "O Youwee precisa do gallery-dl para baixar galerias, coleções e feeds de criadores.",
     "refresh": "Refresh status",
-    "openDependencies": "Open Dependencies",
+    "openDependencies": "Abrir configurações de dependências",
     "installGuide": "Install guide"
   },
   "actions": {

@@ -59,6 +59,22 @@ pub(super) fn select_dependency_path_for_source(
     }
 }
 
+/// Percent to report for a streamed dependency download, or `None` until it has
+/// moved at least 5% (or reached 100%) since `last_percent`, so progress events
+/// stay sparse. Unknown sizes (`total == 0`) report nothing.
+pub(crate) fn dependency_download_percent(
+    downloaded: u64,
+    total: u64,
+    last_percent: u8,
+) -> Option<u8> {
+    if total == 0 {
+        return None;
+    }
+    let percent = ((downloaded as f64 / total as f64) * 100.0).min(100.0) as u8;
+    (percent >= last_percent.saturating_add(5) || (percent == 100 && last_percent != 100))
+        .then_some(percent)
+}
+
 pub use ai::*;
 pub(crate) use browser_cookies::*;
 pub use deno::*;
@@ -74,7 +90,10 @@ pub use ytdlp_args::*;
 
 #[cfg(test)]
 mod tests {
-    use super::{select_dependency_path_for_source, select_preferred_dependency_path};
+    use super::{
+        dependency_download_percent, select_dependency_path_for_source,
+        select_preferred_dependency_path,
+    };
     use crate::types::DependencySource;
     use std::path::PathBuf;
 
@@ -122,5 +141,26 @@ mod tests {
             ),
             None
         );
+    }
+
+    #[test]
+    fn download_percent_reports_in_five_percent_steps() {
+        assert_eq!(dependency_download_percent(4, 100, 0), None);
+        assert_eq!(dependency_download_percent(5, 100, 0), Some(5));
+        assert_eq!(dependency_download_percent(9, 100, 5), None);
+        assert_eq!(dependency_download_percent(37, 100, 5), Some(37));
+    }
+
+    #[test]
+    fn download_percent_reports_completion_once() {
+        assert_eq!(dependency_download_percent(100, 100, 98), Some(100));
+        assert_eq!(dependency_download_percent(100, 100, 100), None);
+        // A server that sends more than Content-Length still caps at 100%.
+        assert_eq!(dependency_download_percent(150, 100, 98), Some(100));
+    }
+
+    #[test]
+    fn download_percent_stays_silent_for_unknown_size() {
+        assert_eq!(dependency_download_percent(1_000_000, 0, 0), None);
     }
 }

@@ -2,12 +2,15 @@ use std::path::{Path, PathBuf};
 use std::process::Stdio;
 use std::time::Duration;
 
+use futures_util::StreamExt;
 use serde::Serialize;
 use tauri::{AppHandle, Manager};
 use tokio::process::Command;
 
 use super::verify_sha256;
-use super::{get_packaged_dependency_path, select_preferred_dependency_path};
+use super::{
+    dependency_download_percent, get_packaged_dependency_path, select_preferred_dependency_path,
+};
 use crate::types::{BackendError, GalleryDlStatus};
 use crate::utils::{find_system_binary, unix_system_binary_dirs, CommandExt};
 
@@ -129,6 +132,7 @@ pub async fn check_gallerydl_internal(app: &AppHandle) -> Result<GalleryDlStatus
             is_system: false,
             is_bundled: false,
             install_hint: Some(gallerydl_install_hint()),
+            can_install: gallerydl_asset_name().is_some(),
         });
     };
 
@@ -158,6 +162,7 @@ pub async fn check_gallerydl_internal(app: &AppHandle) -> Result<GalleryDlStatus
         is_system: get_system_gallerydl_path().as_ref() == Some(&binary_path),
         is_bundled: get_packaged_gallerydl_path(app).as_ref() == Some(&binary_path),
         install_hint: None,
+        can_install: gallerydl_asset_name().is_some(),
     })
 }
 
@@ -421,8 +426,11 @@ fn find_asset_checksum(checksums: &str, asset: &str) -> Option<String> {
 
 /// Download gallery-dl into the app's own bin directory, mirroring how yt-dlp
 /// is installed: fetch the checksum list first and refuse any binary that does
-/// not match it.
-pub async fn install_gallerydl_internal(app: &AppHandle) -> Result<String, String> {
+/// not match it. `emit_progress(stage, percent, downloaded, total)` reports each stage.
+pub async fn install_gallerydl_internal(
+    app: &AppHandle,
+    emit_progress: impl Fn(&str, u8, u64, u64),
+) -> Result<String, String> {
     let asset = gallerydl_asset_name().ok_or_else(|| {
         BackendError::from_message(
             "Youwee cannot download gallery-dl for this platform. Install it with your package manager instead."
@@ -452,6 +460,7 @@ pub async fn install_gallerydl_internal(app: &AppHandle) -> Result<String, Strin
                 .to_wire_string()
         })?;
 
+    emit_progress("checksum", 0, 0, 0);
     let checksums_url = format!("{GALLERYDL_DOWNLOAD_BASE_URL}/SHA256SUMS");
     let checksums_response = client.get(&checksums_url).send().await.map_err(|error| {
         BackendError::from_message(format!("Failed to download gallery-dl checksums: {error}"))
@@ -475,6 +484,7 @@ pub async fn install_gallerydl_internal(app: &AppHandle) -> Result<String, Strin
         BackendError::from_message(format!("Checksum not found for {asset}")).to_wire_string()
     })?;
 
+    emit_progress("downloading", 0, 0, 0);
     let download_url = format!("{GALLERYDL_DOWNLOAD_BASE_URL}/{asset}");
     let response = client.get(&download_url).send().await.map_err(|error| {
         BackendError::from_message(format!("Failed to download gallery-dl: {error}"))
@@ -489,11 +499,24 @@ pub async fn install_gallerydl_internal(app: &AppHandle) -> Result<String, Strin
         .to_wire_string());
     }
 
-    let bytes = response.bytes().await.map_err(|error| {
-        BackendError::from_message(format!("Failed to read gallery-dl download: {error}"))
-            .to_wire_string()
-    })?;
+    let total_size = response.content_length().unwrap_or(0);
+    let mut bytes: Vec<u8> = Vec::new();
+    let mut last_percent: u8 = 0;
+    let mut stream = response.bytes_stream();
+    while let Some(chunk) = stream.next().await {
+        let chunk = chunk.map_err(|error| {
+            BackendError::from_message(format!("Failed to read gallery-dl download: {error}"))
+                .to_wire_string()
+        })?;
+        bytes.extend_from_slice(&chunk);
+        let downloaded = bytes.len() as u64;
+        if let Some(percent) = dependency_download_percent(downloaded, total_size, last_percent) {
+            last_percent = percent;
+            emit_progress("downloading", percent, downloaded, total_size);
+        }
+    }
 
+    emit_progress("verifying", 100, bytes.len() as u64, total_size);
     if !verify_sha256(&bytes, &expected_hash) {
         return Err(BackendError::from_message(
             "Security error: gallery-dl SHA256 checksum verification failed.".to_string(),
@@ -538,12 +561,16 @@ pub async fn install_gallerydl_internal(app: &AppHandle) -> Result<String, Strin
                 .to_wire_string()
         })?;
 
+    emit_progress("complete", 100, bytes.len() as u64, total_size);
     Ok(target_path.to_string_lossy().to_string())
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{find_asset_checksum, gallerydl_install_hint, parse_gallerydl_update_check};
+    use super::{
+        find_asset_checksum, gallerydl_asset_name, gallerydl_install_hint,
+        parse_gallerydl_update_check,
+    };
 
     #[test]
     fn parses_available_nightly_update() {
@@ -609,6 +636,19 @@ mod tests {
             Some("6d126c4aecc27104b0cb86b029227a18e507357fc4ac4acf80737dc0e1152993")
         );
         assert!(find_asset_checksum(sums, "gallery-dl.dmg").is_none());
+    }
+
+    #[test]
+    fn install_is_offered_only_where_an_official_build_exists() {
+        // Codeberg publishes gallery-dl.exe, gallery-dl_x86.exe and gallery-dl.bin only.
+        let supported = cfg!(any(
+            all(
+                target_os = "windows",
+                any(target_arch = "x86_64", target_arch = "x86")
+            ),
+            all(target_os = "linux", target_arch = "x86_64")
+        ));
+        assert_eq!(gallerydl_asset_name().is_some(), supported);
     }
 
     #[test]

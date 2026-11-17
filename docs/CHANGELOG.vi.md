@@ -10,13 +10,19 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Thêm mới
 - **Vị trí metadata trong tên file** - Cài đặt → Tải xuống giờ cho phép đặt metadata đã chọn trước (mặc định) hoặc sau tiêu đề. Số thứ tự playlist và hàng đợi vẫn đứng đầu nên các file vẫn xếp đúng thứ tự.
 - **Thông báo khi hàng đợi tải xong và tiến độ trên thanh tác vụ** - Khi hàng đợi bạn tự bắt đầu tải xong lúc Youwee không ở cửa sổ đang chọn, một thông báo trên màn hình cho biết số mục đã xong và số mục thất bại. Bấm Dừng thì không gửi thông báo này, còn lượt tải theo lịch vẫn dùng thông báo riêng. Biểu tượng trên thanh tác vụ giờ hiển thị tiến độ chung của hàng đợi và chuyển sang trạng thái lỗi khi có mục thất bại.
+- **Hộp thoại thiết lập để tải chất lượng cao nhất** - Ở lần mở đầu tiên, hộp thoại thiết lập chỉ tự hiện khi thật sự thiếu thứ gì đó: chưa cài FFmpeg, hoặc kênh yt-dlp bạn đã chọn bị mất file. Bản cài đầy đủ, như bộ cài Windows Full, sẽ mở thẳng vào app. Mỗi bước đều hiển thị tiến độ tải, và sau khi bạn đóng hộp thoại hoặc chọn Để sau, nó sẽ không tự hiện lại, trừ khi lúc đó Youwee chưa kiểm tra được yt-dlp; khi ấy hộp thoại sẽ hỏi lại ở lần mở app tiếp theo. Nút "Thiết lập chất lượng cao" trong Hướng dẫn tải mở hộp thoại bất cứ lúc nào, kể cả bước tùy chọn chuyển yt-dlp từ bản đi kèm sang kênh Ổn định. Port từ upstream v0.21.0.
+- **Cài gallery-dl ngay trên trang Gallery** - Khi thiếu gallery-dl trên Windows hoặc Linux x86_64, trang Gallery giờ có nút "Cài gallery-dl". Quá trình cài hiển thị các bước kiểm tra checksum, tải và xác minh ngay trên trang đó và trong Cài đặt → Phụ thuộc. Trên macOS và Linux ARM, nơi không có bản chính thức, nút này không còn hiện ra. Port từ upstream v0.21.0.
 
 ### Thay đổi
 - **Cập nhật phụ thuộc** - Nâng Tauri lên 2.12 (các crate Rust và gói JS cùng lúc), React 19.3, Vite 8.3, i18next 27, react-i18next 18, Biome 2.6, rusqlite 0.42 và zip 9.5, cùng các phụ thuộc frontend và Rust khác. Phiên bản Rust tối thiểu giờ là 1.90.
+- **Tải yt-dlp theo kênh có hiển thị tiến độ** - Khi tải yt-dlp kênh Ổn định, Nightly hoặc Master trong Cài đặt → Phụ thuộc, giờ có hiển thị các bước kiểm tra checksum, phần trăm đã tải và xác minh, giống như FFmpeg và Deno.
 
 ### Sửa lỗi
 - **Tiêu đề video có thể gây báo nhầm lỗi cookie hoặc kiểm tra bot** - Lượt tải thất bại vì lý do khác (mạng, FFmpeg) bị báo là kiểm tra bot của YouTube, nên không được tự thử lại, khi tiêu đề hoặc tên file chứa "not a bot". Lỗi kiểm tra bot và lỗi thiếu cơ sở dữ liệu cookie giờ chỉ được nhận diện từ các dòng `ERROR:` của yt-dlp.
 - **Lỗi bị chặn thư mục cookie nhắc đến macOS trên mọi hệ điều hành** - Thông báo lỗi giờ cho biết hệ thống đã chặn đọc thư mục profile trình duyệt. Các bước bật Truy cập toàn bộ ổ đĩa chỉ còn trong hộp thoại trên macOS.
+- **Nút "Mở cài đặt Phụ thuộc" trên trang Gallery mở nhầm mục Chung** - Nút này giờ mở đúng Cài đặt → Phụ thuộc. Port từ upstream v0.21.0.
+- **Hộp thoại cập nhật có thể đè lên hộp thoại phụ thuộc** - Khi có bản cập nhật ngay sau lúc mở app, hộp thoại cập nhật có thể che hộp thoại Deno, FFmpeg hoặc hộp thoại thiết lập. Giờ chỉ hiện một hộp thoại, hộp thoại còn lại hiện sau khi hộp thoại này đóng.
+- **Hộp thoại cài Deno hiện lại ngay sau khi đóng** - Nếu lần cài Deno đầu tiên thất bại, đóng hộp thoại thì nó mở lại ngay lập tức, và các lời nhắc phụ thuộc bị chặn suốt phiên đó. Giờ đóng là đóng hẳn.
 
 ## [0.20.1-custom.15] - 2026-11-17
 

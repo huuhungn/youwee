@@ -89,7 +89,10 @@
           "hdr": "HDR"
         }
       }
-    }
+    },
+    "guideYtdlpStableTitle": "Folosește yt-dlp Stable",
+    "guideYtdlpStableText": "yt-dlp inclus poate rămâne în urma YouTube. Treci pe Stable din Setări > Dependente pentru a evita descărcările eșuate sau de calitate scăzută.",
+    "guideSetupQuality": "Configurează calitatea înaltă"
   },
   "page": {
     "quickSettings": "Setări rapide",

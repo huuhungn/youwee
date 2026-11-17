@@ -701,7 +701,9 @@
     "packagedWithYouwee": "Packaged with Youwee",
     "refreshInstalledVersions": "Refresh installed versions",
     "refreshDependencyStatus": "Refresh dependency status",
-    "checkingDependencyStatus": "Checking dependency status..."
+    "checkingDependencyStatus": "Checking dependency status...",
+    "checkingChecksum": "Nazorat summasi tekshirilmoqda...",
+    "installGallerydl": "gallery-dl ni oʻrnatish"
   },
   "network": {
     "title": "Tarmoq va autentifikatsiya",

@@ -40,6 +40,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useDependencies } from '@/contexts/DependenciesContext';
 import { useDownload } from '@/contexts/DownloadContext';
+import { formatDependencyProgressLabel } from '@/lib/dependency-progress';
 import { resolveManagedDependencyUpdateState } from '@/lib/dependency-update-state';
 import type { DependencySource, YtdlpChannel } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -74,6 +75,7 @@ export function DependenciesSection({ highlightId }: DependenciesSectionProps) {
     channelError,
     channelDownloadSuccess,
     isAutoDownloadingYtdlp,
+    ytdlpDownloadProgress,
     setYtdlpSource,
     setYtdlpChannel,
     refreshAllYtdlpVersions,
@@ -112,6 +114,7 @@ export function DependenciesSection({ highlightId }: DependenciesSectionProps) {
     galleryDlError,
     galleryDlSuccess,
     galleryDlUpdateInfo,
+    galleryDlDownloadProgress,
     checkGalleryDl,
     checkGalleryDlUpdate,
     updateGalleryDl,
@@ -391,11 +394,15 @@ export function DependenciesSection({ highlightId }: DependenciesSectionProps) {
                     {isChannelDownloading ? (
                       <span className="flex items-center gap-1 text-primary">
                         <Loader2 className="w-3 h-3 animate-spin" />
-                        {isAutoDownloadingYtdlp
-                          ? t('dependencies.downloadingYtdlp')
-                          : needsDownload()
-                            ? t('dependencies.installing')
-                            : t('dependencies.updating')}
+                        {formatDependencyProgressLabel(
+                          t,
+                          ytdlpDownloadProgress,
+                          isAutoDownloadingYtdlp
+                            ? t('dependencies.downloadingYtdlp')
+                            : needsDownload()
+                              ? t('dependencies.installing')
+                              : t('dependencies.updating'),
+                        )}
                       </span>
                     ) : channelDownloadSuccess ? (
                       <span className="text-emerald-500">{t('dependencies.updated')}</span>
@@ -613,17 +620,13 @@ export function DependenciesSection({ highlightId }: DependenciesSectionProps) {
                     {ffmpegDownloading ? (
                       <span className="flex items-center gap-1 text-primary">
                         <Loader2 className="w-3 h-3 animate-spin" />
-                        {ffmpegDownloadProgress
-                          ? ffmpegDownloadProgress.stage === 'downloading'
-                            ? `${t('dependencies.downloading')} ${ffmpegDownloadProgress.percent}%`
-                            : ffmpegDownloadProgress.stage === 'extracting'
-                              ? t('dependencies.extracting')
-                              : ffmpegDownloadProgress.stage === 'verifying'
-                                ? t('dependencies.verifying')
-                                : t('dependencies.installing')
-                          : ffmpegUpdateInfo?.has_update
+                        {formatDependencyProgressLabel(
+                          t,
+                          ffmpegDownloadProgress,
+                          ffmpegUpdateInfo?.has_update
                             ? t('dependencies.updating')
-                            : t('dependencies.installing')}
+                            : t('dependencies.installing'),
+                        )}
                       </span>
                     ) : ffmpegCheckingUpdate ? (
                       <span className="flex items-center gap-1 text-muted-foreground">
@@ -792,15 +795,13 @@ export function DependenciesSection({ highlightId }: DependenciesSectionProps) {
                     {denoDownloading ? (
                       <span className="flex items-center gap-1 text-primary">
                         <Loader2 className="w-3 h-3 animate-spin" />
-                        {denoDownloadProgress
-                          ? denoDownloadProgress.stage === 'downloading'
-                            ? `${t('dependencies.downloading')} ${denoDownloadProgress.percent}%`
-                            : denoDownloadProgress.stage === 'extracting'
-                              ? t('dependencies.extracting')
-                              : t('dependencies.installing')
-                          : denoUpdateInfo?.has_update
+                        {formatDependencyProgressLabel(
+                          t,
+                          denoDownloadProgress,
+                          denoUpdateInfo?.has_update
                             ? t('dependencies.updating')
-                            : t('dependencies.installing')}
+                            : t('dependencies.installing'),
+                        )}
                       </span>
                     ) : denoCheckingUpdate ? (
                       <span className="flex items-center gap-1 text-muted-foreground">
@@ -921,7 +922,13 @@ export function DependenciesSection({ highlightId }: DependenciesSectionProps) {
                     {galleryDlUpdating ? (
                       <span className="flex items-center gap-1 text-primary">
                         <Loader2 className="w-3 h-3 animate-spin" />
-                        {t('dependencies.updating')}
+                        {formatDependencyProgressLabel(
+                          t,
+                          galleryDlDownloadProgress,
+                          galleryDlStatus?.installed
+                            ? t('dependencies.updating')
+                            : t('dependencies.installing'),
+                        )}
                       </span>
                     ) : galleryDlLoading ? (
                       <span className="flex items-center gap-1 text-muted-foreground">
@@ -960,7 +967,7 @@ export function DependenciesSection({ highlightId }: DependenciesSectionProps) {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {galleryDlStatus && !galleryDlStatus.installed && (
+                {galleryDlStatus && !galleryDlStatus.installed && galleryDlStatus.can_install && (
                   <Button size="sm" onClick={installGalleryDl} disabled={galleryDlUpdating}>
                     {galleryDlUpdating ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
