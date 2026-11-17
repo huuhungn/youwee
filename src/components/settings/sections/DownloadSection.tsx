@@ -32,6 +32,7 @@ import {
 } from '@/lib/filename-metadata';
 import {
   type FilenameMetadataField,
+  type FilenameMetadataPosition,
   SPONSORBLOCK_CATEGORIES,
   type SponsorBlockAction,
   type SponsorBlockCategory,
@@ -187,10 +188,14 @@ export function DownloadSection({ highlightId }: DownloadSectionProps) {
     resolution: '1080p',
     videoId: 'dQw4w9WgXcQ',
   };
-  const filenameMetadataPreview = [
-    ...settings.filenameMetadataFields.map((field) => previewParts[field]),
-    'My Video.mp4',
-  ].join('_');
+  const filenameMetadataPreviewParts = settings.filenameMetadataFields.map(
+    (field) => previewParts[field],
+  );
+  const filenameMetadataPreview =
+    settings.filenameMetadataPosition === 'suffix'
+      ? `${['My Video', ...filenameMetadataPreviewParts].join('_')}.mp4`
+      : [...filenameMetadataPreviewParts, 'My Video.mp4'].join('_');
+  const filenameMetadataPositions: FilenameMetadataPosition[] = ['prefix', 'suffix'];
 
   const updateFilenameMetadataEnabled = (filenameMetadataEnabled: boolean) => {
     updateSettings({
@@ -299,6 +304,30 @@ export function DownloadSection({ highlightId }: DownloadSectionProps) {
 
           {settings.filenameMetadataEnabled && (
             <div className="space-y-3 border-b border-border/50 px-4 pb-4 pt-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs text-muted-foreground">
+                  {t('download.filenameMetadataPosition')}
+                </span>
+                {filenameMetadataPositions.map((position) => {
+                  const selected = settings.filenameMetadataPosition === position;
+                  return (
+                    <button
+                      key={position}
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => updateSettings({ filenameMetadataPosition: position })}
+                      className={cn(
+                        'rounded-md border border-dashed px-2.5 py-1 text-xs font-medium transition-colors',
+                        selected
+                          ? 'border-primary/50 bg-primary/10 text-primary'
+                          : 'border-border/70 bg-background/70 text-muted-foreground hover:border-primary/40 hover:text-foreground',
+                      )}
+                    >
+                      {t(`download.filenameMetadataPositions.${position}`)}
+                    </button>
+                  );
+                })}
+              </div>
               <div className="flex flex-wrap gap-2">
                 {FILENAME_METADATA_FIELDS.map((field) => {
                   const selected = settings.filenameMetadataFields.includes(field);

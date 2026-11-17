@@ -526,7 +526,7 @@
     "skipExisting": "Skip Existing Files",
     "skipExistingDesc": "Do not overwrite a completed file with the same name",
     "filenameMetadata": "Filename metadata",
-    "filenameMetadataDesc": "Add selected video details before the title",
+    "filenameMetadataDesc": "Tanlangan video maʼlumotlarini fayl nomiga qoʻshing",
     "filenameMetadataFields": {
       "uploadDate": "Upload date",
       "viewCount": "View count",
@@ -534,6 +534,11 @@
       "duration": "Duration",
       "resolution": "Resolution",
       "videoId": "Video ID"
+    },
+    "filenameMetadataPosition": "Joylashuv",
+    "filenameMetadataPositions": {
+      "prefix": "Sarlavhadan oldin",
+      "suffix": "Sarlavhadan keyin"
     }
   },
   "remoteDownload": {

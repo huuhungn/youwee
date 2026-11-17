@@ -1,4 +1,4 @@
-import type { FilenameMetadataField } from '@/lib/types';
+import type { FilenameMetadataField, FilenameMetadataPosition } from '@/lib/types';
 
 export const DEFAULT_FILENAME_METADATA_FIELDS: FilenameMetadataField[] = [
   'uploadDate',
@@ -30,6 +30,10 @@ export function sanitizeFilenameMetadataFields(value: unknown): FilenameMetadata
     }
   }
   return fields;
+}
+
+export function sanitizeFilenameMetadataPosition(value: unknown): FilenameMetadataPosition {
+  return value === 'suffix' ? 'suffix' : 'prefix';
 }
 
 export function resolveFilenameMetadataSettings(
