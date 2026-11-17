@@ -63,7 +63,7 @@ export function nextQueueRun(
   if (!run) return { run: null, finished: null };
   if (
     marks.stoppedAt >= run.startedAt ||
-    marks.scheduledAt >= run.startedAt - SCHEDULED_START_WINDOW_MS
+    Math.abs(marks.scheduledAt - run.startedAt) <= SCHEDULED_START_WINDOW_MS
   ) {
     return { run: null, finished: null };
   }

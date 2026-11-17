@@ -61,6 +61,13 @@ describe('queue finished notification', () => {
     ).toEqual({ done: 1, failed: 0 });
   });
 
+  test('a schedule that fires during a manual run does not silence it', () => {
+    const run: QueueRun = { startedAt: 1000, completed: 0, error: 0 };
+    expect(
+      nextQueueRun(run, false, totals(2, 0), { ...noMarks, scheduledAt: 60_000 }, 90_000).finished,
+    ).toEqual({ done: 2, failed: 0 });
+  });
+
   test('a run that changed nothing is not announced', () => {
     const run: QueueRun = { startedAt: 1000, completed: 3, error: 0 };
     expect(nextQueueRun(run, false, totals(1, 0), noMarks, 2000).finished).toBeNull();
