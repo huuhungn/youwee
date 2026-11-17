@@ -560,3 +560,43 @@ pub(super) async fn prepare_plugin_package(
 ) -> Result<PreparedPackage, String> {
     prepared_from_ywp_file(Path::new(&source.value))
 }
+
+#[cfg(test)]
+mod tests {
+    use std::io::Write;
+
+    use zip::write::SimpleFileOptions;
+    use zip::ZipWriter;
+
+    use super::extract_zip_to_temp;
+
+    #[test]
+    fn extract_zip_to_temp_keeps_entries_inside_the_extraction_root() {
+        let escape = format!("youwee-zip-escape-{}.txt", uuid::Uuid::new_v4());
+        let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+        for name in [
+            format!("../{escape}"),
+            format!("nested/../../{escape}"),
+            "/absolute.txt".to_string(),
+            "nested/ok.txt".to_string(),
+        ] {
+            writer
+                .start_file(name.as_str(), SimpleFileOptions::default())
+                .unwrap();
+            writer.write_all(b"data").unwrap();
+        }
+        let bytes = writer.finish().unwrap().into_inner();
+
+        let root = extract_zip_to_temp(&bytes, "zip-slip-test").unwrap();
+        let outside = root.parent().unwrap().join(&escape);
+        let observed = (
+            root.join("nested").join("ok.txt").is_file(),
+            root.join("absolute.txt").is_file(),
+            outside.exists(),
+        );
+        let _ = std::fs::remove_dir_all(&root);
+        let _ = std::fs::remove_file(&outside);
+
+        assert_eq!(observed, (true, true, false));
+    }
+}
