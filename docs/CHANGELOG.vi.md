@@ -10,12 +10,12 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Thêm mới
 - **Vị trí metadata trong tên file** - Cài đặt → Tải xuống giờ cho phép đặt metadata đã chọn trước (mặc định) hoặc sau tiêu đề. Số thứ tự playlist và hàng đợi vẫn đứng đầu nên các file vẫn xếp đúng thứ tự.
 
+### Thay đổi
+- **Cập nhật phụ thuộc** - Nâng Tauri lên 2.12 (các crate Rust và gói JS cùng lúc), React 19.3, Vite 8.3, i18next 27, react-i18next 18, Biome 2.6, rusqlite 0.42 và zip 9.5, cùng các phụ thuộc frontend và Rust khác. Phiên bản Rust tối thiểu giờ là 1.90.
+
 ### Sửa lỗi
 - **Tiêu đề video có thể gây báo nhầm lỗi cookie hoặc kiểm tra bot** - Lượt tải thất bại vì lý do khác (mạng, FFmpeg) bị báo là kiểm tra bot của YouTube, nên không được tự thử lại, khi tiêu đề hoặc tên file chứa "not a bot". Lỗi kiểm tra bot và lỗi thiếu cơ sở dữ liệu cookie giờ chỉ được nhận diện từ các dòng `ERROR:` của yt-dlp.
 - **Lỗi bị chặn thư mục cookie nhắc đến macOS trên mọi hệ điều hành** - Thông báo lỗi giờ cho biết hệ thống đã chặn đọc thư mục profile trình duyệt. Các bước bật Truy cập toàn bộ ổ đĩa chỉ còn trong hộp thoại trên macOS.
-
-### Thay đổi
-- **Cập nhật phụ thuộc** - Nâng Tauri lên 2.12 (các crate Rust và gói JS cùng lúc), React 19.3, Vite 8.3, i18next 27, Biome 2.6, rusqlite 0.42 và zip 9.5, cùng các phụ thuộc frontend và Rust khác. Phiên bản Rust tối thiểu giờ là 1.90. Biome giờ luôn dùng xuống dòng LF, nên lint không còn lỗi trên các bản checkout Windows chuyển file sang CRLF.
 
 ## [0.20.1-custom.15] - 2026-11-17
 

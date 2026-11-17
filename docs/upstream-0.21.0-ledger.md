@@ -1,6 +1,6 @@
 # Upstream 0.21.0 disposition ledger
 
-Status: the three error-message `port` rows (`9b63b1a`, `df8ac79`, `610d73c`) were adapted on branch `chore/upstream-0.21.0-port` and ship in `0.20.1-custom.15`. `7d815e1` was ported afterwards on `port/upstream-0.21.0-filename-position`, and `05cb871` on `chore/upstream-0.21.0-deps`. Every other row is ledger only: 3 `port` rows and 4 `adapt` rows stay open for a later wave, and 17 `record` rows are closed.
+Status: the three error-message `port` rows (`9b63b1a`, `df8ac79`, `610d73c`) were adapted on branch `chore/upstream-0.21.0-port` and ship in `0.20.1-custom.15`. `7d815e1` was ported afterwards on `port/upstream-0.21.0-filename-position`, and `05cb871` on `chore/upstream-0.21.0-deps`. Every other row is ledger only: 4 `port` rows and 3 `adapt` rows stay open for a later wave, and 17 `record` rows are closed.
 
 - Fork base: `a4c24f8` (`0.20.1-custom.14`, `origin/main`)
 - Upstream tip: `5fed7ac` (`v0.21.0`, 2026-11-13)
@@ -16,8 +16,8 @@ The fork diverges on purpose, so nothing here is merged or cherry-picked as is. 
 
 | Disposition | Count | Meaning |
 | --- | ---: | --- |
-| port | 7 | Missing behavior or missing file. 4 ported (3 in `0.20.1-custom.15`, `7d815e1` afterwards), 3 open or not replayed. |
-| adapt | 5 | Fork has the area. Diff upstream against the fork and take only the missing delta. 1 ported (`05cb871`), 4 open. |
+| port | 7 | Missing behavior or missing file. 3 ported (in `0.20.1-custom.15`), 4 open or not replayed. |
+| adapt | 5 | Fork has the area. Diff upstream against the fork and take only the missing delta. 2 ported (`7d815e1`, `05cb871`), 3 open. |
 | record | 17 | Changelog, upstream version identity, or merge commits with no own content. |
 | Total | 29 | |
 
@@ -47,7 +47,7 @@ Diff these against the fork before editing. Do not replace the fork copy wholesa
 | `bb2ab09` | 2026-11-12 | feat: add first-run setup dialog for yt-dlp Stable and FFmpeg | The fork has `FFmpegDialog.tsx`, `DenoDialog.tsx` and `DependenciesContext`. **Open, ledger only.** Upstream replaces `FFmpegDialog` with a combined `SetupDialog` and changes `dependencies.rs`; the fork's bundled-dependency pack and Deno setup flow must stay, so this needs its own design pass. |
 | `581dba3` | 2026-11-12 | feat: install gallery-dl from the app | The fork already installs gallery-dl in the app from Codeberg, verified against `SHA256SUMS`, with a Homebrew hint on macOS (`services/gallerydl.rs`; keep list). **Open, ledger only.** Remaining delta: `gallerydl-download-progress` events, the install entry on the Gallery page, and the Gallery "Open Dependencies" button, which still opens `openSettingsPage('general')` in `src/App.tsx` (upstream changelog `682b7ab`). |
 | `fd8dd62` | 2026-11-13 | feat: add inline download buttons to X video posts in browser extension | The fork extension already lists `x.com` and `twitter.com` hosts and video selectors in `extensions/youwee-webext/src/shared.js`. **Open, ledger only.** Upstream adds inline buttons on X posts (`content.js`, `content.css`); adapt against the fork's extension and recheck Chromium and Firefox builds. |
-| `05cb871` | 2026-11-13 | chore: update dependencies | The fork matches upstream's previous dependency wave (PR #28, PR #29). **Ported** on branch `chore/upstream-0.21.0-deps` as its own upgrade wave. Tauri 2.12 (Rust crates and the `@tauri-apps` JS packages together), rusqlite 0.42, zip 9.5, Biome 2.6 (exact pin, Markdown and YAML formatting off), Vite 8.3, React 19.3 and the other frontend bumps, with the zip 9 call-site fixes in `utils/extract.rs` and `services/plugin/package.rs` and `TFunction` typing in `HistoryItem.tsx` and `post-download-plugins-shared.tsx`. Fork-only dependencies and `rust-version` handling follow the fork's Cargo.toml (`1.90` now), and the app version is unchanged. |
+| `05cb871` | 2026-11-13 | chore: update dependencies | The fork matches upstream's previous dependency wave (PR #28, PR #29). **Ported** on branch `chore/upstream-0.21.0-deps` as its own upgrade wave. Tauri 2.12 (Rust crates and the `@tauri-apps` JS packages together), rusqlite 0.42, zip 9.5, Biome 2.6 (exact pin, Markdown and YAML formatter and linter off, `lineEnding` `lf` in place of the fork's earlier `auto`), Vite 8.3, React 19.3 and the other frontend bumps, with the zip 9 call-site fixes in `utils/extract.rs` and `services/plugin/package.rs` and `TFunction` typing in `HistoryItem.tsx` and `post-download-plugins-shared.tsx`. Fork-only dependencies and `rust-version` handling follow the fork's Cargo.toml (`1.90` now), and the app version is unchanged. |
 
 ## Record
 
