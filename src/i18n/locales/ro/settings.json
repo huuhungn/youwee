@@ -701,7 +701,9 @@
     "packagedWithYouwee": "Packaged with Youwee",
     "refreshInstalledVersions": "Refresh installed versions",
     "refreshDependencyStatus": "Refresh dependency status",
-    "checkingDependencyStatus": "Checking dependency status..."
+    "checkingDependencyStatus": "Checking dependency status...",
+    "checkingChecksum": "Se verifică suma de control...",
+    "installGallerydl": "Instalează gallery-dl"
   },
   "network": {
     "title": "Rețea și autentificare",

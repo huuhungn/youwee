@@ -95,6 +95,8 @@ interface DependenciesContextType {
   channelError: string | null;
   channelDownloadSuccess: boolean;
   isAutoDownloadingYtdlp: boolean; // True when auto-downloading stable on first launch
+  ytdlpDownloadingChannel: YtdlpChannel | null; // Channel binary currently being downloaded
+  ytdlpDownloadProgress: DownloadProgress | null;
 
   // FFmpeg state
   ffmpegSource: DependencySource;
@@ -120,13 +122,13 @@ interface DependenciesContextType {
     channel: YtdlpChannel,
     options?: { silent?: boolean },
   ) => Promise<YtdlpChannelUpdateInfo | null>;
-  downloadChannelBinary: (channel: YtdlpChannel) => Promise<void>;
+  downloadChannelBinary: (channel: YtdlpChannel) => Promise<boolean>;
 
   // FFmpeg actions
   setFfmpegSource: (source: DependencySource) => Promise<void>;
   checkFfmpeg: () => Promise<void>;
   checkFfmpegUpdate: () => Promise<void>;
-  downloadFfmpeg: () => Promise<void>;
+  downloadFfmpeg: () => Promise<boolean>;
 
   // Deno state
   denoStatus: DenoStatus | null;
@@ -152,6 +154,7 @@ interface DependenciesContextType {
   galleryDlError: string | null;
   galleryDlSuccess: boolean;
   galleryDlUpdateInfo: GalleryDlUpdateInfo | null;
+  galleryDlDownloadProgress: DownloadProgress | null;
   checkGalleryDl: () => Promise<GalleryDlStatus | null>;
   checkGalleryDlUpdate: () => Promise<void>;
   updateGalleryDl: () => Promise<void>;
@@ -182,6 +185,8 @@ export function DependenciesProvider({ children }: { children: ReactNode }) {
   const [channelError, setChannelError] = useState<string | null>(null);
   const [channelDownloadSuccess, setChannelDownloadSuccess] = useState(false);
   const [isAutoDownloadingYtdlp, setIsAutoDownloadingYtdlp] = useState(false);
+  const [ytdlpDownloadingChannel, setYtdlpDownloadingChannel] = useState<YtdlpChannel | null>(null);
+  const [ytdlpDownloadProgress, setYtdlpDownloadProgress] = useState<DownloadProgress | null>(null);
 
   // FFmpeg state
   const [ffmpegSource, setFfmpegSourceState] = useState<DependencySource>('auto');
@@ -213,6 +218,8 @@ export function DependenciesProvider({ children }: { children: ReactNode }) {
   const [galleryDlError, setGalleryDlError] = useState<string | null>(null);
   const [galleryDlSuccess, setGalleryDlSuccess] = useState(false);
   const [galleryDlUpdateInfo, setGalleryDlUpdateInfo] = useState<GalleryDlUpdateInfo | null>(null);
+  const [galleryDlDownloadProgress, setGalleryDlDownloadProgress] =
+    useState<DownloadProgress | null>(null);
 
   // Load yt-dlp version (only once on first mount)
   const refreshYtdlpVersion = useCallback(async () => {
@@ -308,8 +315,10 @@ export function DependenciesProvider({ children }: { children: ReactNode }) {
   // Download channel binary
   const downloadChannelBinary = useCallback(
     async (channel: YtdlpChannel) => {
-      if (channel === 'bundled') return; // Bundled doesn't need download
+      if (channel === 'bundled') return true; // Bundled doesn't need download
       setIsChannelDownloading(true);
+      setYtdlpDownloadingChannel(channel);
+      setYtdlpDownloadProgress(null);
       setChannelError(null);
       setChannelDownloadSuccess(false);
       try {
@@ -330,10 +339,14 @@ export function DependenciesProvider({ children }: { children: ReactNode }) {
         });
         // Hide success message after 3 seconds
         setTimeout(() => setChannelDownloadSuccess(false), 3000);
+        return true;
       } catch (err) {
         setChannelError(localizeUnknownError(err));
+        return false;
       } finally {
         setIsChannelDownloading(false);
+        setYtdlpDownloadingChannel(null);
+        setYtdlpDownloadProgress(null);
       }
     },
     [refreshAllYtdlpVersions, refreshYtdlpVersion, ytdlpChannel],
@@ -413,8 +426,10 @@ export function DependenciesProvider({ children }: { children: ReactNode }) {
       setTimeout(() => setFfmpegSuccess(false), 3000);
       // Refresh to get full status
       await checkFfmpeg();
+      return true;
     } catch (err) {
       setFfmpegError(localizeUnknownError(err));
+      return false;
     } finally {
       setFfmpegDownloading(false);
     }
@@ -538,6 +553,7 @@ export function DependenciesProvider({ children }: { children: ReactNode }) {
 
   const installGalleryDl = useCallback(async () => {
     setGalleryDlUpdating(true);
+    setGalleryDlDownloadProgress(null);
     setGalleryDlError(null);
     setGalleryDlSuccess(false);
     try {
@@ -549,6 +565,7 @@ export function DependenciesProvider({ children }: { children: ReactNode }) {
       setGalleryDlError(localizeUnknownError(err));
     } finally {
       setGalleryDlUpdating(false);
+      setGalleryDlDownloadProgress(null);
     }
   }, [checkGalleryDl]);
 
@@ -578,6 +595,7 @@ export function DependenciesProvider({ children }: { children: ReactNode }) {
             if (versions.using_fallback && versions.current_channel !== 'bundled') {
               setIsAutoDownloadingYtdlp(true);
               setIsChannelDownloading(true);
+              setYtdlpDownloadingChannel(versions.current_channel as YtdlpChannel);
               try {
                 await invoke<string>('download_ytdlp_channel', {
                   channel: versions.current_channel,
@@ -596,6 +614,8 @@ export function DependenciesProvider({ children }: { children: ReactNode }) {
                 setIsAutoDownloadingYtdlp(false);
               } finally {
                 setIsChannelDownloading(false);
+                setYtdlpDownloadingChannel(null);
+                setYtdlpDownloadProgress(null);
               }
             }
           });
@@ -689,6 +709,18 @@ export function DependenciesProvider({ children }: { children: ReactNode }) {
       }),
     );
 
+    // yt-dlp channel binary and gallery-dl downloads; the caller also clears these when it ends.
+    register(
+      listen<DownloadProgress>('ytdlp-download-progress', (event) => {
+        setYtdlpDownloadProgress(event.payload.stage === 'complete' ? null : event.payload);
+      }),
+    );
+    register(
+      listen<DownloadProgress>('gallerydl-download-progress', (event) => {
+        setGalleryDlDownloadProgress(event.payload.stage === 'complete' ? null : event.payload);
+      }),
+    );
+
     // Deno download progress
     register(
       listen<DownloadProgress>('deno-download-progress', (event) => {
@@ -778,6 +810,8 @@ export function DependenciesProvider({ children }: { children: ReactNode }) {
         channelError,
         channelDownloadSuccess,
         isAutoDownloadingYtdlp,
+        ytdlpDownloadingChannel,
+        ytdlpDownloadProgress,
         setYtdlpSource,
         setYtdlpChannel,
         refreshAllYtdlpVersions,
@@ -817,6 +851,7 @@ export function DependenciesProvider({ children }: { children: ReactNode }) {
         galleryDlError,
         galleryDlSuccess,
         galleryDlUpdateInfo,
+        galleryDlDownloadProgress,
         checkGalleryDl,
         checkGalleryDlUpdate,
         updateGalleryDl,

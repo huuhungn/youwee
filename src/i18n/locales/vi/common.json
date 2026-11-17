@@ -202,5 +202,44 @@
     "chooseProfile": "Chọn profile trình duyệt",
     "openPrivacySettings": "Mở cài đặt Quyền riêng tư",
     "dismiss": "Bỏ qua"
+  },
+  "setupDialog": {
+    "title": "Tải với chất lượng cao nhất",
+    "description": "Youwee đã dùng được ngay, nhưng các bước dưới đây giúp tải được chất lượng cao nhất. Bạn có thể thay đổi bất cứ lúc nào trong Cài đặt → Phụ thuộc.",
+    "ytdlp": {
+      "title": "Chuyển yt-dlp sang kênh {{channel}}",
+      "text": "Bản yt-dlp đi kèm Youwee có thể không theo kịp các thay đổi của YouTube. Kênh Ổn định được cập nhật thường xuyên hơn nên ít lỗi tải hơn và lấy được chất lượng cao hơn.",
+      "current": "Hiện tại: bản đi kèm {{version}}",
+      "downloaded": "Đã tải bản {{channel}} {{version}} · vẫn đang dùng bản đi kèm {{bundled}}",
+      "missingFile": "Đã chọn kênh {{channel}} nhưng thiếu file · tạm dùng bản đi kèm {{bundled}}",
+      "inUse": "Đang dùng bản {{channel}} {{version}}"
+    },
+    "ffmpeg": {
+      "title": "Cài FFmpeg",
+      "text": "Video chất lượng cao (từ 1080p trở lên, 2K, 4K) có hình và tiếng tách riêng. FFmpeg ghép chúng thành một file; thiếu FFmpeg, bạn có thể chỉ tải được chất lượng thấp hơn hoặc video không có tiếng."
+    },
+    "status": {
+      "notDownloaded": "Chưa tải",
+      "downloadedNotActive": "Đã tải, chưa dùng",
+      "missingFile": "Thiếu file",
+      "inUse": "Đang dùng",
+      "notInstalled": "Chưa cài",
+      "installed": "Đã cài",
+      "downloading": "Đang tải",
+      "switching": "Đang chuyển…",
+      "failed": "Thất bại"
+    },
+    "actions": {
+      "downloadAndSwitch": "Tải và chuyển",
+      "switch": "Chuyển sang kênh {{channel}}",
+      "download": "Tải về",
+      "install": "Cài đặt",
+      "retry": "Thử lại"
+    },
+    "setUpAll": "Thiết lập tất cả",
+    "working": "Đang xử lý…",
+    "later": "Để sau",
+    "done": "Xong",
+    "openDependencies": "Mở cài đặt Phụ thuộc"
   }
 }

@@ -89,7 +89,10 @@
           "hdr": "HDR"
         }
       }
-    }
+    },
+    "guideYtdlpStableTitle": "Dùng yt-dlp kênh Ổn định",
+    "guideYtdlpStableText": "Bản yt-dlp đi kèm có thể không theo kịp các thay đổi của YouTube. Hãy chuyển sang kênh Ổn định trong Cài đặt > Phụ thuộc để tránh tải lỗi hoặc chất lượng thấp.",
+    "guideSetupQuality": "Thiết lập chất lượng cao"
   },
   "page": {
     "quickSettings": "Cài đặt nhanh",

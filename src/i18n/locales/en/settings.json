@@ -701,7 +701,9 @@
     "downloadingYtdlp": "Downloading yt-dlp...",
     "downloading": "Downloading",
     "extracting": "Extracting...",
-    "verifying": "Verifying..."
+    "verifying": "Verifying...",
+    "checkingChecksum": "Checking checksum...",
+    "installGallerydl": "Install gallery-dl"
   },
   "network": {
     "title": "Network & Authentication",

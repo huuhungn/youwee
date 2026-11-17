@@ -1,15 +1,15 @@
 use crate::services::{
     check_deno_internal, check_deno_update_internal, check_ffmpeg_internal,
     check_ffmpeg_update_internal, check_gallerydl_internal, check_gallerydl_update_internal,
-    get_all_ytdlp_versions, get_channel_api_url, get_deno_checksum_url, get_deno_download_url,
-    get_ffmpeg_download_info, get_ffmpeg_path, get_ffmpeg_source, get_latest_ffmpeg_release_info,
-    get_ytdlp_channel, get_ytdlp_channel_download_url, get_ytdlp_channel_version,
-    get_ytdlp_download_info, get_ytdlp_source, get_ytdlp_version_internal,
-    install_gallerydl_internal, parse_deno_checksum_response, parse_ffmpeg_version,
-    set_ffmpeg_source, set_ytdlp_channel, set_ytdlp_source, system_ffmpeg_upgrade_message,
-    system_ytdlp_install_hint, system_ytdlp_upgrade_message, update_gallerydl_internal,
-    verify_sha256, write_app_ffmpeg_release_version, DenoUpdateInfo, FfmpegUpdateInfo,
-    GalleryDlUpdateInfo,
+    dependency_download_percent, get_all_ytdlp_versions, get_channel_api_url,
+    get_deno_checksum_url, get_deno_download_url, get_ffmpeg_download_info, get_ffmpeg_path,
+    get_ffmpeg_source, get_latest_ffmpeg_release_info, get_ytdlp_channel,
+    get_ytdlp_channel_download_url, get_ytdlp_channel_version, get_ytdlp_download_info,
+    get_ytdlp_source, get_ytdlp_version_internal, install_gallerydl_internal,
+    parse_deno_checksum_response, parse_ffmpeg_version, set_ffmpeg_source, set_ytdlp_channel,
+    set_ytdlp_source, system_ffmpeg_upgrade_message, system_ytdlp_install_hint,
+    system_ytdlp_upgrade_message, update_gallerydl_internal, verify_sha256,
+    write_app_ffmpeg_release_version, DenoUpdateInfo, FfmpegUpdateInfo, GalleryDlUpdateInfo,
 };
 use crate::types::{
     BackendError, DenoStatus, DependencySource, FfmpegStatus, GalleryDlStatus, YtdlpAllVersions,
@@ -454,7 +454,20 @@ pub async fn download_ytdlp_channel(app: AppHandle, channel: String) -> Result<S
         }
     };
 
+    let emit_progress = |stage: &str, percent: u8, downloaded: u64, total: u64| {
+        let _ = app.emit(
+            "ytdlp-download-progress",
+            DownloadProgress {
+                stage: stage.to_string(),
+                percent,
+                downloaded,
+                total,
+            },
+        );
+    };
+
     // Download checksums
+    emit_progress("checksum", 0, 0, 0);
     let checksums_response = client
         .get(checksums_url)
         .send()
@@ -486,6 +499,7 @@ pub async fn download_ytdlp_channel(app: AppHandle, channel: String) -> Result<S
         .ok_or_else(|| format!("Checksum not found for {}", checksum_filename))?;
 
     // Download binary
+    emit_progress("downloading", 0, 0, 0);
     let response = client
         .get(download_url)
         .send()
@@ -499,12 +513,23 @@ pub async fn download_ytdlp_channel(app: AppHandle, channel: String) -> Result<S
         ));
     }
 
-    let bytes = response
-        .bytes()
-        .await
-        .map_err(|e| format!("Failed to read response: {}", e))?;
+    // Stream the body so the UI can show download progress (the binary is a few dozen MB).
+    let total_size = response.content_length().unwrap_or(0);
+    let mut bytes: Vec<u8> = Vec::new();
+    let mut last_percent: u8 = 0;
+    let mut stream = response.bytes_stream();
+    while let Some(chunk) = stream.next().await {
+        let chunk = chunk.map_err(|e| format!("Failed to read response: {}", e))?;
+        bytes.extend_from_slice(&chunk);
+        let downloaded = bytes.len() as u64;
+        if let Some(percent) = dependency_download_percent(downloaded, total_size, last_percent) {
+            last_percent = percent;
+            emit_progress("downloading", percent, downloaded, total_size);
+        }
+    }
 
     // Verify checksum
+    emit_progress("verifying", 100, bytes.len() as u64, total_size);
     if !verify_sha256(&bytes, &expected_hash) {
         return Err("Security error: SHA256 checksum verification failed.".to_string());
     }
@@ -541,6 +566,7 @@ pub async fn download_ytdlp_channel(app: AppHandle, channel: String) -> Result<S
         .await
         .map_err(|e| format!("Failed to verify installation: {}", e))?;
 
+    emit_progress("complete", 100, bytes.len() as u64, total_size);
     Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
 }
 
@@ -895,7 +921,18 @@ pub async fn update_gallerydl(app: AppHandle) -> Result<String, String> {
 
 #[tauri::command]
 pub async fn install_gallerydl(app: AppHandle) -> Result<String, String> {
-    install_gallerydl_internal(&app).await
+    install_gallerydl_internal(&app, |stage, percent, downloaded, total| {
+        let _ = app.emit(
+            "gallerydl-download-progress",
+            DownloadProgress {
+                stage: stage.to_string(),
+                percent,
+                downloaded,
+                total,
+            },
+        );
+    })
+    .await
 }
 
 #[tauri::command]

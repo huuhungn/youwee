@@ -630,7 +630,9 @@
     "confirmProceed": "Switch",
     "systemFfmpegNotFound": "System FFmpeg not found",
     "systemYtdlp": "System yt-dlp - update via package manager",
-    "systemYtdlpNotFound": "System yt-dlp not found"
+    "systemYtdlpNotFound": "System yt-dlp not found",
+    "checkingChecksum": "Проверка контрольной суммы...",
+    "installGallerydl": "Установить gallery-dl"
   },
   "network": {
     "title": "Сеть и авторизация",

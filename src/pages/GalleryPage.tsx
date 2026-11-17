@@ -1,6 +1,15 @@
-import { ExternalLink, Play, RefreshCw, Square, Trash2, TriangleAlert } from 'lucide-react';
+import {
+  Download,
+  ExternalLink,
+  Play,
+  RefreshCw,
+  Square,
+  Trash2,
+  TriangleAlert,
+} from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { DependencyProgress } from '@/components/DependencyProgress';
 import { GalleryQueueList } from '@/components/download/GalleryQueueList';
 import { GallerySettingsPanel } from '@/components/download/GallerySettingsPanel';
 import { GalleryUrlInput } from '@/components/download/GalleryUrlInput';
@@ -9,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { ConfirmClearAllDialog } from '@/components/ui/ConfirmClearAllDialog';
 import { useDependencies } from '@/contexts/DependenciesContext';
 import { useGalleryDl } from '@/contexts/GalleryDlContext';
+import { formatDependencyProgressLabel } from '@/lib/dependency-progress';
 import { cn } from '@/lib/utils';
 
 interface GalleryPageProps {
@@ -18,6 +28,7 @@ interface GalleryPageProps {
 
 export function GalleryPage({ onNavigateToSettings, onNavigateToLogs }: GalleryPageProps) {
   const { t } = useTranslation('gallery');
+  const { t: tSettings } = useTranslation('settings');
   const {
     items,
     focusedItemId,
@@ -35,7 +46,15 @@ export function GalleryPage({ onNavigateToSettings, onNavigateToLogs }: GalleryP
     stopDownload,
     updateConcurrentDownloads,
   } = useGalleryDl();
-  const { galleryDlStatus, galleryDlLoading, galleryDlError, checkGalleryDl } = useDependencies();
+  const {
+    galleryDlStatus,
+    galleryDlLoading,
+    galleryDlUpdating,
+    galleryDlError,
+    galleryDlDownloadProgress,
+    checkGalleryDl,
+    installGalleryDl,
+  } = useDependencies();
 
   const pendingCount = items.filter((i) => i.status !== 'completed').length;
   const [showClearAllConfirm, setShowClearAllConfirm] = useState(false);
@@ -79,7 +98,30 @@ export function GalleryPage({ onNavigateToSettings, onNavigateToLogs }: GalleryP
                       <RefreshCw className={cn('w-4 h-4', galleryDlLoading && 'animate-spin')} />
                     </Button>
                   </div>
+                  {galleryDlUpdating && (
+                    <div className="mt-3">
+                      <DependencyProgress
+                        label={formatDependencyProgressLabel(
+                          tSettings,
+                          galleryDlDownloadProgress,
+                          tSettings('dependencies.installing'),
+                        )}
+                        progress={galleryDlDownloadProgress}
+                      />
+                    </div>
+                  )}
                   <div className="mt-3 flex flex-wrap gap-2">
+                    {galleryDlStatus && !galleryDlUpdating && (
+                      <Button
+                        size="sm"
+                        className="h-8"
+                        onClick={() => void installGalleryDl()}
+                        disabled={galleryDlLoading}
+                      >
+                        <Download />
+                        {tSettings('dependencies.installGallerydl')}
+                      </Button>
+                    )}
                     {onNavigateToSettings && (
                       <Button
                         variant="outline"

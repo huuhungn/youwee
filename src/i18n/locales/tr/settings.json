@@ -701,7 +701,9 @@
     "packagedWithYouwee": "Packaged with Youwee",
     "refreshInstalledVersions": "Refresh installed versions",
     "refreshDependencyStatus": "Refresh dependency status",
-    "checkingDependencyStatus": "Checking dependency status..."
+    "checkingDependencyStatus": "Checking dependency status...",
+    "checkingChecksum": "Sağlama toplamı kontrol ediliyor...",
+    "installGallerydl": "gallery-dl'yi yükle"
   },
   "network": {
     "title": "Ağ ve Kimlik Doğrulama",

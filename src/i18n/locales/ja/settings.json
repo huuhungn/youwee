@@ -701,7 +701,9 @@
     "downloadingYtdlp": "yt-dlp をダウンロード中...",
     "downloading": "ダウンロード中",
     "extracting": "展開中...",
-    "verifying": "検証中..."
+    "verifying": "検証中...",
+    "checkingChecksum": "チェックサムを確認中...",
+    "installGallerydl": "gallery-dl をインストール"
   },
   "network": {
     "title": "ネットワーク＆認証",

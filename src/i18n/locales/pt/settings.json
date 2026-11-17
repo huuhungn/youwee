@@ -630,7 +630,9 @@
     "confirmProceed": "Switch",
     "systemFfmpegNotFound": "System FFmpeg not found",
     "systemYtdlp": "System yt-dlp - update via package manager",
-    "systemYtdlpNotFound": "System yt-dlp not found"
+    "systemYtdlpNotFound": "System yt-dlp not found",
+    "checkingChecksum": "Verificando checksum...",
+    "installGallerydl": "Instalar gallery-dl"
   },
   "network": {
     "title": "Rede e Autenticação",

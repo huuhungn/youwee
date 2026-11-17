@@ -10,13 +10,17 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Thêm mới
 - **Vị trí metadata trong tên file** - Cài đặt → Tải xuống giờ cho phép đặt metadata đã chọn trước (mặc định) hoặc sau tiêu đề. Số thứ tự playlist và hàng đợi vẫn đứng đầu nên các file vẫn xếp đúng thứ tự.
 - **Thông báo khi hàng đợi tải xong và tiến độ trên thanh tác vụ** - Khi hàng đợi bạn tự bắt đầu tải xong lúc Youwee không ở cửa sổ đang chọn, một thông báo trên màn hình cho biết số mục đã xong và số mục thất bại. Bấm Dừng thì không gửi thông báo này, còn lượt tải theo lịch vẫn dùng thông báo riêng. Biểu tượng trên thanh tác vụ giờ hiển thị tiến độ chung của hàng đợi và chuyển sang trạng thái lỗi khi có mục thất bại.
+- **Thiết lập lần đầu để tải chất lượng cao nhất** - Ở lần mở đầu tiên, một hộp thoại gợi ý hai bước giúp tải chất lượng cao nhất: chuyển yt-dlp từ bản đi kèm sang kênh Ổn định (người đang dùng kênh Nightly hoặc Master vẫn giữ kênh của mình) và cài FFmpeg, mỗi bước đều hiển thị tiến độ tải. Những gì Youwee đã có sẵn, như FFmpeg đóng gói trong bộ cài Windows Full, sẽ không được đề nghị cài. Sau khi bạn đóng hộp thoại hoặc chọn Để sau, nó sẽ không tự hiện lại; có thể mở lại từ Hướng dẫn tải bằng nút "Thiết lập chất lượng cao". Hộp thoại cũng chờ bước cài Deno lần đầu xong nên hai hộp thoại không bao giờ chồng lên nhau. Port từ upstream v0.21.0.
+- **Cài gallery-dl ngay trên trang Gallery** - Khi thiếu gallery-dl, trang Gallery giờ có nút "Cài gallery-dl". Quá trình cài hiển thị các bước kiểm tra checksum, tải và xác minh ngay trên trang đó và trong Cài đặt → Phụ thuộc. Port từ upstream v0.21.0.
 
 ### Thay đổi
 - **Cập nhật phụ thuộc** - Nâng Tauri lên 2.12 (các crate Rust và gói JS cùng lúc), React 19.3, Vite 8.3, i18next 27, react-i18next 18, Biome 2.6, rusqlite 0.42 và zip 9.5, cùng các phụ thuộc frontend và Rust khác. Phiên bản Rust tối thiểu giờ là 1.90.
+- **Tải yt-dlp theo kênh có hiển thị tiến độ** - Khi tải yt-dlp kênh Ổn định, Nightly hoặc Master trong Cài đặt → Phụ thuộc, giờ có hiển thị các bước kiểm tra checksum, phần trăm đã tải và xác minh, giống như FFmpeg và Deno.
 
 ### Sửa lỗi
 - **Tiêu đề video có thể gây báo nhầm lỗi cookie hoặc kiểm tra bot** - Lượt tải thất bại vì lý do khác (mạng, FFmpeg) bị báo là kiểm tra bot của YouTube, nên không được tự thử lại, khi tiêu đề hoặc tên file chứa "not a bot". Lỗi kiểm tra bot và lỗi thiếu cơ sở dữ liệu cookie giờ chỉ được nhận diện từ các dòng `ERROR:` của yt-dlp.
 - **Lỗi bị chặn thư mục cookie nhắc đến macOS trên mọi hệ điều hành** - Thông báo lỗi giờ cho biết hệ thống đã chặn đọc thư mục profile trình duyệt. Các bước bật Truy cập toàn bộ ổ đĩa chỉ còn trong hộp thoại trên macOS.
+- **Nút "Mở Dependencies" trên trang Gallery mở nhầm mục Chung** - Nút này giờ mở đúng Cài đặt → Phụ thuộc. Port từ upstream v0.21.0.
 
 ## [0.20.1-custom.15] - 2026-11-17
 
