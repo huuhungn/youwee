@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.20.1-custom.15] - 2026-11-18
+
 ### Added
 - **Filename metadata position** - Settings → Download can now place the selected filename metadata before (default) or after the title. Playlist and queue numbering still comes first, so files keep sorting in order.
 - **Queue finished notification and taskbar progress** - When a download queue you started finishes while Youwee is not focused, a desktop notification shows how many items finished and how many failed. Pressing Stop does not send it, and scheduled runs keep their own notification. The taskbar icon now shows the overall queue progress and switches to the error state once an item fails.
@@ -23,10 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Gallery "Open Dependencies" opened General settings** - The button on the Gallery page now opens Settings → Dependencies. Ported from upstream v0.21.0.
 - **Update dialog could open on top of a dependency dialog** - When an update was found right after launch, the update dialog could cover the Deno, FFmpeg or setup dialog. Only one of them is shown now, and the other follows when it closes.
 - **Deno setup dialog came back after closing it** - If the first Deno install failed, closing its dialog opened it again straight away, and dependency prompts stayed blocked for the rest of the session. Closing it now keeps it closed.
-
-## [0.20.1-custom.15] - 2026-11-17
-
-### Fixed
 - **YouTube bot check looked like a sign-in error** - "Sign in to confirm you're not a bot" now has its own message, which points to cookies from a signed-in browser or a different network or proxy, instead of the generic "requires sign-in" error. Ported from upstream v0.21.0.
 - **Age-restricted YouTube videos came down in 360p without a reason** - The log now explains when YouTube requires account age-verification for an age-restricted video, which limits yt-dlp to low-quality formats (usually 360p). Ported from upstream v0.21.0.
 - **Cookie dialog blamed an open browser for every cookie problem** - When the selected browser profile has no cookie database, or the system blocks reading it (macOS privacy, Full Disk Access), the dialog now says so and offers the matching action: choose another profile, or open Privacy Settings on macOS. The "browser is open" dialog stays for the Windows lock and App-Bound/DPAPI decryption failures. The dialog is translated in all 13 languages. Ported from upstream v0.21.0.
