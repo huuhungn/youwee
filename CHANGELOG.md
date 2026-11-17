@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **YouTube bot check message** - Show a dedicated error when YouTube asks to "confirm you're not a bot", pointing to cookies in Settings → Network & Auth or a network/proxy change, instead of the misleading "This video requires sign-in" message
+
 ## [0.20.1-custom.14] - 2026-10-27
 
 ### Fixed

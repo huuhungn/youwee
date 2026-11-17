@@ -7,6 +7,9 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Sửa lỗi
+- **Thông báo xác minh bot của YouTube** - Hiển thị lỗi riêng khi YouTube yêu cầu "xác minh bạn không phải bot", hướng dẫn bật cookie trong Cài đặt → Mạng & Xác thực hoặc đổi mạng/proxy, thay cho thông báo dễ gây hiểu nhầm "Video này yêu cầu đăng nhập"
+
 ## [0.20.1-custom.14] - 2026-10-27
 
 ### Sửa lỗi
