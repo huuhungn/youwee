@@ -44,6 +44,10 @@
     "message": "Hali boshlanmagan yoki tugallanmagan navbatdagi {{count}} element(lar)i uchun ushbu yangi yuklab olish jildidan foydalanmoqchimisiz?",
     "confirm": "Elementlarni yangilash"
   },
+  "queueFinished": {
+    "title": "Yuklab olishlar tugadi",
+    "body": "{{done}} ta tayyor, {{failed}} ta xato"
+  },
   "update": {
     "available": "Yangilanish mavjud",
     "error": "Yangilash xatosi",

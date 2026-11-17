@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **Filename metadata position** - Settings → Download can now place the selected filename metadata before (default) or after the title. Playlist and queue numbering still comes first, so files keep sorting in order.
+- **Queue finished notification and taskbar progress** - When a download queue you started finishes while Youwee is not focused, a desktop notification shows how many items finished and how many failed. Pressing Stop does not send it, and scheduled runs keep their own notification. The taskbar icon now shows the overall queue progress and switches to the error state once an item fails.
 
 ### Fixed
 - **Video titles could trigger the wrong cookie or bot-check error** - A download that failed for another reason (network, FFmpeg) was reported as YouTube's bot check, which skips auto-retry, when its title or filename contained "not a bot". The bot-check and missing cookie database errors now come only from yt-dlp's own `ERROR:` lines.

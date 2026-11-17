@@ -9,6 +9,7 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Thêm mới
 - **Vị trí metadata trong tên file** - Cài đặt → Tải xuống giờ cho phép đặt metadata đã chọn trước (mặc định) hoặc sau tiêu đề. Số thứ tự playlist và hàng đợi vẫn đứng đầu nên các file vẫn xếp đúng thứ tự.
+- **Thông báo khi hàng đợi tải xong và tiến độ trên thanh tác vụ** - Khi hàng đợi bạn tự bắt đầu tải xong lúc Youwee không ở cửa sổ đang chọn, một thông báo trên màn hình cho biết số mục đã xong và số mục thất bại. Bấm Dừng thì không gửi thông báo này, còn lượt tải theo lịch vẫn dùng thông báo riêng. Biểu tượng trên thanh tác vụ giờ hiển thị tiến độ chung của hàng đợi và chuyển sang trạng thái lỗi khi có mục thất bại.
 
 ### Sửa lỗi
 - **Tiêu đề video có thể gây báo nhầm lỗi cookie hoặc kiểm tra bot** - Lượt tải thất bại vì lý do khác (mạng, FFmpeg) bị báo là kiểm tra bot của YouTube, nên không được tự thử lại, khi tiêu đề hoặc tên file chứa "not a bot". Lỗi kiểm tra bot và lỗi thiếu cơ sở dữ liệu cookie giờ chỉ được nhận diện từ các dòng `ERROR:` của yt-dlp.

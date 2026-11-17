@@ -25,6 +25,7 @@ import {
   waitWithCancellation,
 } from '@/lib/download-retry';
 import { buildCookieProxyInvokeOptions, loadNetworkSettings } from '@/lib/network-config';
+import { markQueueStopped } from '@/lib/queue-feedback';
 import { parseUniversalUrls } from '@/lib/sources';
 import type { DownloadItem } from '@/lib/types';
 import { useDownload } from './DownloadContext';
@@ -304,6 +305,7 @@ export function GalleryDlProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const stopDownload = useCallback(async () => {
+    markQueueStopped();
     try {
       await invoke('stop_gallery_download');
     } catch (invokeError) {

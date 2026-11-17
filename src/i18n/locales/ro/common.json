@@ -44,6 +44,10 @@
     "message": "Doriți să utilizați acest nou folder de descărcare pentru articolele din coadă {{count}} care nu au început sau nu au fost încă finalizate?",
     "confirm": "Actualizați articole"
   },
+  "queueFinished": {
+    "title": "Descărcări încheiate",
+    "body": "{{done}} reușite, {{failed}} eșuate"
+  },
   "update": {
     "available": "Actualizare disponibilă",
     "error": "Eroare de actualizare",
