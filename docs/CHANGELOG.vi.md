@@ -7,6 +7,8 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.20.1-custom.15] - 2026-11-18
+
 ### Thêm mới
 - **Vị trí metadata trong tên file** - Cài đặt → Tải xuống giờ cho phép đặt metadata đã chọn trước (mặc định) hoặc sau tiêu đề. Số thứ tự playlist và hàng đợi vẫn đứng đầu nên các file vẫn xếp đúng thứ tự.
 - **Thông báo khi hàng đợi tải xong và tiến độ trên thanh tác vụ** - Khi hàng đợi bạn tự bắt đầu tải xong lúc Youwee không ở cửa sổ đang chọn, một thông báo trên màn hình cho biết số mục đã xong và số mục thất bại. Bấm Dừng thì không gửi thông báo này, còn lượt tải theo lịch vẫn dùng thông báo riêng. Biểu tượng trên thanh tác vụ giờ hiển thị tiến độ chung của hàng đợi và chuyển sang trạng thái lỗi khi có mục thất bại.
@@ -23,10 +25,6 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **Nút "Mở cài đặt Phụ thuộc" trên trang Gallery mở nhầm mục Chung** - Nút này giờ mở đúng Cài đặt → Phụ thuộc. Port từ upstream v0.21.0.
 - **Hộp thoại cập nhật có thể đè lên hộp thoại phụ thuộc** - Khi có bản cập nhật ngay sau lúc mở app, hộp thoại cập nhật có thể che hộp thoại Deno, FFmpeg hoặc hộp thoại thiết lập. Giờ chỉ hiện một hộp thoại, hộp thoại còn lại hiện sau khi hộp thoại này đóng.
 - **Hộp thoại cài Deno hiện lại ngay sau khi đóng** - Nếu lần cài Deno đầu tiên thất bại, đóng hộp thoại thì nó mở lại ngay lập tức, và các lời nhắc phụ thuộc bị chặn suốt phiên đó. Giờ đóng là đóng hẳn.
-
-## [0.20.1-custom.15] - 2026-11-17
-
-### Sửa lỗi
 - **Kiểm tra bot của YouTube bị báo như lỗi đăng nhập** - Lỗi "Sign in to confirm you're not a bot" giờ có thông báo riêng, hướng dẫn dùng cookie từ trình duyệt đã đăng nhập hoặc đổi mạng/proxy, thay cho lỗi chung "yêu cầu đăng nhập". Port từ upstream v0.21.0.
 - **Video YouTube giới hạn độ tuổi chỉ tải được 360p mà không rõ lý do** - Log giờ giải thích khi YouTube yêu cầu xác minh tuổi tài khoản cho video giới hạn độ tuổi, khiến yt-dlp chỉ lấy được định dạng chất lượng thấp (thường là 360p). Port từ upstream v0.21.0.
 - **Hộp thoại cookie luôn đổ lỗi cho trình duyệt đang mở** - Khi profile trình duyệt đã chọn không có cơ sở dữ liệu cookie, hoặc hệ thống chặn đọc thư mục đó (quyền riêng tư macOS, Truy cập toàn bộ ổ đĩa), hộp thoại giờ nói đúng nguyên nhân và đưa ra thao tác phù hợp: chọn profile khác, hoặc mở Cài đặt quyền riêng tư trên macOS. Hộp thoại "trình duyệt đang mở" vẫn dùng cho lỗi khoá cơ sở dữ liệu trên Windows và lỗi giải mã App-Bound/DPAPI. Hộp thoại đã được dịch đủ 13 ngôn ngữ. Port từ upstream v0.21.0.
