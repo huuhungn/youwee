@@ -139,6 +139,17 @@ export function isStartupDependencyStateReady(
 }
 
 /**
+ * The first-launch Deno dialog stays on screen from the auto-install until the user closes it
+ * or Deno gets installed, including through the dialog's own Try Again.
+ */
+export function isDenoFirstRunDialogOpen(
+  autoInstallFlag: boolean,
+  denoStatus: { installed: boolean } | null,
+): boolean {
+  return autoInstallFlag && denoStatus?.installed !== true;
+}
+
+/**
  * Another startup dialog owns the screen, so the dependency dialog waits: the Deno first-run
  * install (while it runs or shows its error, until the user closes it) or the app update dialog.
  */
@@ -151,14 +162,19 @@ export function isStartupDialogBlocked(blockers: {
 }
 
 /**
- * Record the setup dialog as seen without showing it when nothing is missing. Not while the
- * yt-dlp channel state is still unknown, so a failed version check cannot skip it for good.
+ * The setup dialog may be recorded as seen only once the yt-dlp channel state is known, so a
+ * failed version check cannot skip a missing channel file for good.
  */
+export function isYtdlpSetupStateKnown(state: SetupDependencyState): boolean {
+  return state.ytdlpSource === 'system' || state.ytdlpAllVersions !== null;
+}
+
+/** Record the setup dialog as seen without showing it when nothing is missing. */
 export function shouldMarkSetupDialogSeen(
   state: SetupDependencyState,
   setupSeen: boolean,
   dialog: StartupDependencyDialog | null,
 ): boolean {
   if (setupSeen || dialog?.kind === 'setup') return false;
-  return state.ytdlpSource === 'system' || state.ytdlpAllVersions !== null;
+  return isYtdlpSetupStateKnown(state);
 }

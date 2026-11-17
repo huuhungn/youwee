@@ -16,9 +16,11 @@ import {
   getYtdlpSetupState,
   getYtdlpTargetChannel,
   hasSeenSetupDialog,
+  isDenoFirstRunDialogOpen,
   isSetupItemDone,
   isStartupDependencyStateReady,
   isStartupDialogBlocked,
+  isYtdlpSetupStateKnown,
   markSetupDialogSeen,
   SETUP_DIALOG_SEEN_KEY,
   type SetupDependencyState,
@@ -247,6 +249,32 @@ describe('startup gate', () => {
     }
   });
 
+  test('Try Again that installs Deno closes its dialog and lets the other prompts through', () => {
+    const idle = { denoDownloading: false, updateDialogVisible: false };
+    // The first auto-install failed: its dialog shows the error and holds the other prompts back.
+    const failed = isDenoFirstRunDialogOpen(true, { installed: false });
+    expect(failed).toBe(true);
+    expect(isStartupDialogBlocked({ ...idle, denoFirstRunOpen: failed })).toBe(true);
+    // Try Again succeeds. The auto-install flag is still set, but Deno is installed now.
+    const installed = isDenoFirstRunDialogOpen(true, { installed: true });
+    expect(installed).toBe(false);
+    expect(isStartupDialogBlocked({ ...idle, denoFirstRunOpen: installed })).toBe(false);
+  });
+
+  test('closing the Deno dialog keeps it closed while Deno is still missing', () => {
+    // dismissDenoAutoDownload clears the auto-install flag; the error and the missing Deno stay.
+    const dismissed = isDenoFirstRunDialogOpen(false, { installed: false });
+    expect(dismissed).toBe(false);
+    expect(
+      isStartupDialogBlocked({
+        denoFirstRunOpen: dismissed,
+        denoDownloading: false,
+        updateDialogVisible: false,
+      }),
+    ).toBe(false);
+    expect(isDenoFirstRunDialogOpen(false, null)).toBe(false);
+  });
+
   test('waits while the update dialog is on screen', () => {
     expect(
       isStartupDialogBlocked({
@@ -255,6 +283,18 @@ describe('startup gate', () => {
         updateDialogVisible: true,
       }),
     ).toBe(true);
+  });
+
+  test('closing the dialog records it as seen only once yt-dlp is known', () => {
+    // The yt-dlp check failed and FFmpeg is missing, so the dialog lists only FFmpeg.
+    const unknown = state({ ytdlpAllVersions: null });
+    expect(getStartupDependencyDialog(unknown, false)).toEqual({
+      kind: 'setup',
+      items: ['ffmpeg'],
+    });
+    expect(isYtdlpSetupStateKnown(unknown)).toBe(false);
+    expect(isYtdlpSetupStateKnown(state())).toBe(true);
+    expect(isYtdlpSetupStateKnown({ ...unknown, ytdlpSource: 'system' })).toBe(true);
   });
 
   test('marks the dialog seen only when nothing is missing and yt-dlp is known', () => {

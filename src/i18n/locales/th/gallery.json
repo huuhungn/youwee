@@ -8,7 +8,7 @@
     "checking": "กำลังตรวจสอบ gallery-dl...",
     "description": "Youwee ต้องใช้ gallery-dl เพื่อดาวน์โหลดแกลเลอรี คอลเลกชัน และฟีดของครีเอเตอร์",
     "refresh": "รีเฟรชสถานะ",
-    "openDependencies": "เปิด Dependencies",
+    "openDependencies": "เปิดการตั้งค่าส่วนประกอบ",
     "installGuide": "คู่มือติดตั้ง"
   },
   "actions": {

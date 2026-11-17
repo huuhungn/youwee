@@ -40,8 +40,10 @@ import {
   getApplicableSetupItems,
   getStartupDependencyDialog,
   hasSeenSetupDialog,
+  isDenoFirstRunDialogOpen,
   isStartupDependencyStateReady,
   isStartupDialogBlocked,
+  isYtdlpSetupStateKnown,
   markSetupDialogSeen,
   onOpenSetupDialogRequest,
   type SetupDependencyState,
@@ -166,8 +168,9 @@ function AppContent() {
     channelError,
     denoChecked: denoStatus !== null || denoError !== null,
   });
+  const denoFirstRunOpen = isDenoFirstRunDialogOpen(isAutoDownloadingDeno, denoStatus);
   const startupDialogBlocked = isStartupDialogBlocked({
-    denoFirstRunOpen: isAutoDownloadingDeno,
+    denoFirstRunOpen,
     denoDownloading,
     updateDialogVisible: updater.dialogVisible && updateDialogHasContent(updater.status),
   });
@@ -209,7 +212,7 @@ function AppContent() {
   );
 
   const closeSetupDialog = useCallback(() => {
-    markSetupDialogSeen();
+    if (isYtdlpSetupStateKnown(setupStateRef.current)) markSetupDialogSeen();
     setSetupDialogItems(null);
   }, []);
 
@@ -282,29 +285,26 @@ function AppContent() {
       </MainLayout>
 
       {/* A dependency dialog on screen holds the update dialog back, so the two never stack. */}
-      {updater.dialogVisible &&
-        !isAutoDownloadingDeno &&
-        !setupDialogItems &&
-        !showFfmpegDialog && (
-          <UpdateDialog
-            status={updater.status}
-            updateInfo={updater.updateInfo}
-            progress={updater.progress}
-            error={updater.error}
-            errorKind={updater.errorKind}
-            failedStep={updater.failedStep}
-            installAfterRestart={updater.installAfterRestart}
-            runningJobs={updater.runningJobs}
-            restartQueued={updater.restartQueued}
-            onRestartWhenDone={updater.queueRestart}
-            onDownload={updater.downloadAndInstall}
-            onRestart={updater.restartApp}
-            onDismiss={updater.dismissUpdate}
-            onRetry={updater.retryUpdate}
-            onCancelDownload={updater.cancelDownload}
-            onRetryNow={updater.restartDownload}
-          />
-        )}
+      {updater.dialogVisible && !denoFirstRunOpen && !setupDialogItems && !showFfmpegDialog && (
+        <UpdateDialog
+          status={updater.status}
+          updateInfo={updater.updateInfo}
+          progress={updater.progress}
+          error={updater.error}
+          errorKind={updater.errorKind}
+          failedStep={updater.failedStep}
+          installAfterRestart={updater.installAfterRestart}
+          runningJobs={updater.runningJobs}
+          restartQueued={updater.restartQueued}
+          onRestartWhenDone={updater.queueRestart}
+          onDownload={updater.downloadAndInstall}
+          onRestart={updater.restartApp}
+          onDismiss={updater.dismissUpdate}
+          onRetry={updater.retryUpdate}
+          onCancelDownload={updater.cancelDownload}
+          onRetryNow={updater.restartDownload}
+        />
+      )}
 
       {setupDialogItems && (
         <SetupDialog
@@ -316,7 +316,7 @@ function AppContent() {
 
       {showFfmpegDialog && <FFmpegDialog onDismiss={() => setShowFfmpegDialog(false)} />}
 
-      {isAutoDownloadingDeno && <DenoDialog onDismiss={dismissDenoAutoDownload} />}
+      {denoFirstRunOpen && <DenoDialog onDismiss={dismissDenoAutoDownload} />}
       <DuplicateDownloadReviewHost />
       <MeteorTransition
         isActive={isTransitioning}
