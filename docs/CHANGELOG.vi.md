@@ -10,6 +10,10 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Thêm mới
 - **Vị trí metadata trong tên file** - Cài đặt → Tải xuống giờ cho phép đặt metadata đã chọn trước (mặc định) hoặc sau tiêu đề. Số thứ tự playlist và hàng đợi vẫn đứng đầu nên các file vẫn xếp đúng thứ tự.
 
+### Sửa lỗi
+- **Tiêu đề video có thể gây báo nhầm lỗi cookie hoặc kiểm tra bot** - Lượt tải thất bại vì lý do khác (mạng, FFmpeg) bị báo là kiểm tra bot của YouTube, nên không được tự thử lại, khi tiêu đề hoặc tên file chứa "not a bot". Lỗi kiểm tra bot và lỗi thiếu cơ sở dữ liệu cookie giờ chỉ được nhận diện từ các dòng `ERROR:` của yt-dlp.
+- **Lỗi bị chặn thư mục cookie nhắc đến macOS trên mọi hệ điều hành** - Thông báo lỗi giờ cho biết hệ thống đã chặn đọc thư mục profile trình duyệt. Các bước bật Truy cập toàn bộ ổ đĩa chỉ còn trong hộp thoại trên macOS.
+
 ## [0.20.1-custom.15] - 2026-11-17
 
 ### Sửa lỗi

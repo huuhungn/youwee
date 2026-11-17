@@ -369,7 +369,7 @@ pub fn classify_missing_cookie_db_with(
     Some(if denied {
         BackendError::new(
             code::YT_COOKIE_ACCESS_DENIED,
-            "The system blocked Youwee from reading the browser's cookie folder. On macOS, turn on Full Disk Access for Youwee in System Settings → Privacy & Security, then restart Youwee.",
+            "The system blocked Youwee from reading the browser profile folder. Allow Youwee to access it, or use Cookie File mode.",
         )
         .with_param("path", shown_path)
         .with_retryable(false)
@@ -473,6 +473,8 @@ mod cookie_db_tests {
         .expect("classified");
         assert_eq!(error.code(), code::YT_COOKIE_ACCESS_DENIED);
         assert_eq!(error.to_wire().retryable, Some(false));
+        // The same code fires on every OS; macOS-only advice lives in the dialog.
+        assert!(!error.message().contains("macOS"));
     }
 
     #[test]

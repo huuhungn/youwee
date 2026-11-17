@@ -114,7 +114,7 @@
     "YT_SKIPPED_UPCOMING_LIVE": "已跳过即将开始的直播，因为已启用“跳过直播”。",
     "YT_UPCOMING_LIVE": "该直播尚未开始。请在开始后重试，或启用“跳过直播”。",
     "YT_COOKIE_DB_LOCKED": "浏览器 Cookie 数据库已锁定。请关闭浏览器后重试，或使用 Cookie 文件模式。",
-    "YT_COOKIE_ACCESS_DENIED": "macOS 阻止了 Youwee 读取浏览器 Cookie。请在 系统设置 → 隐私与安全性 中为 Youwee 开启完全磁盘访问权限，然后重启 Youwee。",
+    "YT_COOKIE_ACCESS_DENIED": "系统阻止了 Youwee 读取浏览器配置文件文件夹。请允许 Youwee 访问该文件夹，或使用 Cookie 文件模式。",
     "YT_COOKIE_PROFILE_NOT_FOUND": "未找到浏览器 Cookie 数据库。请在 设置 → 网络与认证 中选择其他浏览器配置文件，或使用 Cookie 文件模式。",
     "YT_FRESH_COOKIES_REQUIRED": "需要最新登录 Cookie。请在浏览器重新登录后重试。",
     "NETWORK_TIMEOUT": "网络超时，请重试。",
