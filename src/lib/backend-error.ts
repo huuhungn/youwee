@@ -29,6 +29,9 @@ const NON_RETRYABLE_CODES = new Set([
   'YT_AGE_RESTRICTED',
   'YT_MEMBERS_ONLY',
   'YT_SIGNIN_REQUIRED',
+  'YT_BOT_CHECK',
+  'YT_COOKIE_ACCESS_DENIED',
+  'YT_COOKIE_PROFILE_NOT_FOUND',
   'YT_GEO_RESTRICTED',
   'DOWNLOAD_CANCELLED',
   'VALIDATION_INVALID_URL',
@@ -61,6 +64,9 @@ export function inferBackendErrorCode(message: string): string {
   if (m.includes('could not copy') && m.includes('cookie') && m.includes('database')) {
     return 'YT_COOKIE_DB_LOCKED';
   }
+  if (m.includes('could not find') && m.includes('cookies database')) {
+    return 'YT_COOKIE_PROFILE_NOT_FOUND';
+  }
   if (m.includes('fresh cookies')) return 'YT_FRESH_COOKIES_REQUIRED';
   if (m.includes('429') || m.includes('too many requests') || m.includes('rate limited')) {
     return 'YT_RATE_LIMITED';
@@ -70,6 +76,7 @@ export function inferBackendErrorCode(message: string): string {
   if (m.includes('members-only') || m.includes('member-only') || m.includes('join this channel')) {
     return 'YT_MEMBERS_ONLY';
   }
+  if (m.includes('not a bot')) return 'YT_BOT_CHECK';
   if (m.includes('sign in') || m.includes('login required')) return 'YT_SIGNIN_REQUIRED';
   if (
     m.includes('not available in your country') ||

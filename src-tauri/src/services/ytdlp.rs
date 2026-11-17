@@ -646,6 +646,14 @@ pub fn parse_ytdlp_error(stderr: &str) -> Option<BackendError> {
         );
     }
 
+    // Browser cookie database missing, or its folder blocked by the OS (macOS privacy)
+    if let Some(error) = stderr
+        .lines()
+        .find_map(crate::types::classify_missing_cookie_db)
+    {
+        return Some(error);
+    }
+
     // Browser cookie database locked / unavailable
     if stderr_lower.contains("could not copy")
         && stderr_lower.contains("cookie")
@@ -714,6 +722,17 @@ pub fn parse_ytdlp_error(stderr: &str) -> Option<BackendError> {
             BackendError::from_message(
                 "This Douyin/TikTok content requires fresh login cookies. Please refresh login in browser cookie mode, then retry."
             ),
+        );
+    }
+
+    // YouTube bot check ("Sign in to confirm you're not a bot")
+    if crate::types::is_bot_check_message(&stderr_lower) {
+        return Some(
+            BackendError::new(
+                crate::types::code::YT_BOT_CHECK,
+                "YouTube is asking to confirm you're not a bot. Enable cookies from a signed-in browser (or a cookie file) in Settings → Network & Auth, or switch network/proxy, then retry.",
+            )
+            .with_retryable(false),
         );
     }
 
@@ -1646,6 +1665,31 @@ mod tests {
         .expect("upcoming live error should be parsed");
 
         assert_eq!(error.code(), crate::types::code::YT_UPCOMING_LIVE);
+        assert_eq!(error.to_wire().retryable, Some(false));
+    }
+
+    #[test]
+    fn parse_ytdlp_error_detects_bot_check() {
+        let error = parse_ytdlp_error(
+            "ERROR: [youtube] mlvbJxzN958: Sign in to confirm you\u{2019}re not a bot. Use --cookies-from-browser or --cookies for the authentication.",
+        )
+        .expect("bot check error should be parsed");
+
+        assert_eq!(error.code(), crate::types::code::YT_BOT_CHECK);
+        assert_eq!(error.to_wire().retryable, Some(false));
+    }
+
+    #[test]
+    fn parse_ytdlp_error_reports_missing_cookie_profile_not_locked_db() {
+        let error = parse_ytdlp_error(
+            r#"ERROR: could not find chrome cookies database in "/nonexistent-youwee-test/Chrome/Profile 3""#,
+        )
+        .expect("missing cookie database should be parsed");
+
+        assert_eq!(
+            error.code(),
+            crate::types::code::YT_COOKIE_PROFILE_NOT_FOUND
+        );
         assert_eq!(error.to_wire().retryable, Some(false));
     }
 

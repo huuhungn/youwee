@@ -2435,6 +2435,21 @@ fn build_download_error_message(exit_code: Option<i32>, recent_lines: &[String])
         .with_retryable(false);
     }
 
+    if let Some(error) = recent_lines
+        .iter()
+        .find_map(|line| crate::types::classify_missing_cookie_db(line))
+    {
+        return error;
+    }
+
+    if let Some(line) = recent_lines
+        .iter()
+        .find(|line| crate::types::is_bot_check_message(line))
+    {
+        return BackendError::new(crate::types::code::YT_BOT_CHECK, line.trim())
+            .with_retryable(false);
+    }
+
     let reason = recent_lines
         .iter()
         .rev()
@@ -2459,6 +2474,26 @@ fn build_download_error_message(exit_code: Option<i32>, recent_lines: &[String])
         }
         None => BackendError::from_message(format!("Download failed: {}", reason)),
     }
+}
+
+/// yt-dlp prints this when a logged-in account is not age-verified for an
+/// age-restricted YouTube video. It then falls back to clients that need a
+/// GVS PO Token, so without one only format 18 (360p) remains.
+fn is_youtube_age_verification_notice(line: &str) -> bool {
+    line.contains("age-restricted") && line.contains("requiring account age-verification")
+}
+
+fn log_youtube_age_verification_notice(line: &str, logged: &AtomicBool, url: &str) {
+    if !is_youtube_age_verification_notice(line) || logged.swap(true, Ordering::SeqCst) {
+        return;
+    }
+    add_log_internal(
+        "info",
+        "YouTube requires account age-verification for this age-restricted video; only low-quality formats (usually 360p) may be available. Verify your age on YouTube with the account used for cookies, then refresh cookies.",
+        None,
+        Some(url),
+    )
+    .ok();
 }
 
 fn download_cancelled_error() -> BackendError {
@@ -3526,6 +3561,7 @@ pub async fn download_video(
             let mut printed_filepaths: Vec<String> = Vec::new();
             let mut recovered_filepaths: Vec<String> = Vec::new();
             let mut recent_output: VecDeque<String> = VecDeque::new();
+            let age_verification_logged = AtomicBool::new(false);
 
             let quality_display = match quality.as_str() {
                 "8k" => Some("8K".to_string()),
@@ -3551,6 +3587,7 @@ pub async fn download_video(
                     CommandEvent::Stdout(line_bytes) => {
                         let line = decode_process_output(&line_bytes);
                         push_recent_output(&mut recent_output, &line);
+                        log_youtube_age_verification_notice(&line, &age_verification_logged, &url);
 
                         // Parse playlist item info
                         if line.contains("Downloading item") {
@@ -3664,6 +3701,11 @@ pub async fn download_video(
                         let stderr_line = decode_process_output(&bytes);
                         let stderr_line = stderr_line.trim().to_string();
                         push_recent_output(&mut recent_output, &stderr_line);
+                        log_youtube_age_verification_notice(
+                            &stderr_line,
+                            &age_verification_logged,
+                            &url,
+                        );
 
                         if let Some((percent, speed, eta, pi, pc, downloaded_size, elapsed_time)) =
                             parse_progress(&stderr_line)
@@ -4180,6 +4222,10 @@ async fn handle_tokio_download(
     let stderr_source = effective_source(&source, &url);
     let stderr_recent_output = recent_output.clone();
     let stderr_fp_clone = stderr_filepath.clone();
+    // yt-dlp prints the age-verification notice to stdout, but check stderr too
+    // in case output is redirected (e.g. quiet/logtostderr); log it only once.
+    let age_verification_logged = Arc::new(AtomicBool::new(false));
+    let stderr_age_verification_logged = age_verification_logged.clone();
     let stderr_task = stderr.map(|stderr_handle| {
         tokio::spawn(async move {
             let mut stderr_reader = BufReader::new(stderr_handle);
@@ -4200,6 +4246,11 @@ async fn handle_tokio_download(
                     break;
                 }
                 push_recent_output_shared(&stderr_recent_output, &line);
+                log_youtube_age_verification_notice(
+                    &line,
+                    &stderr_age_verification_logged,
+                    &stderr_url,
+                );
 
                 // On Windows, yt-dlp may print --print after_move:filepath to stderr.
                 // Capture it here as a fallback in case stdout doesn't contain the path.
@@ -4290,6 +4341,7 @@ async fn handle_tokio_download(
             return Err(BackendError::from_message("Download cancelled").to_wire_string());
         }
         push_recent_output_shared(&recent_output, &line);
+        log_youtube_age_verification_notice(&line, &age_verification_logged, &url);
 
         // Parse progress and emit events
         if let Some((percent, speed, eta, pi, pc, downloaded_size, elapsed_time)) =
@@ -5694,6 +5746,43 @@ mod tests {
         let mut skip_args = Vec::new();
         push_overwrite_args(&mut skip_args, Some(true));
         assert_eq!(skip_args, vec!["--no-overwrites"]);
+    }
+
+    #[test]
+    fn bot_check_errors_are_not_reported_as_sign_in_required() {
+        let error = build_download_error_message(
+            Some(1),
+            &[
+                "ERROR: [youtube] mlvbJxzN958: Sign in to confirm you\u{2019}re not a bot. Use --cookies-from-browser or --cookies for the authentication.".to_string(),
+                "[download] Finished".to_string(),
+            ],
+        );
+        let wire = error.to_wire();
+
+        assert_eq!(wire.code, crate::types::code::YT_BOT_CHECK);
+        assert_eq!(wire.retryable, Some(false));
+    }
+
+    #[test]
+    fn missing_browser_cookie_db_is_not_reported_as_locked() {
+        let error = build_download_error_message(
+            Some(1),
+            &[r#"ERROR: could not find chrome cookies database in "/nonexistent-youwee-test/Chrome/Profile 3""#.to_string()],
+        );
+        let wire = error.to_wire();
+
+        assert_eq!(wire.code, crate::types::code::YT_COOKIE_PROFILE_NOT_FOUND);
+        assert_eq!(wire.retryable, Some(false));
+    }
+
+    #[test]
+    fn detects_youtube_age_verification_notice() {
+        assert!(is_youtube_age_verification_notice(
+            "[youtube] YCuT6oXJX7A: This video is age-restricted and YouTube is requiring account age-verification; some formats may be missing"
+        ));
+        assert!(!is_youtube_age_verification_notice(
+            "[youtube] YCuT6oXJX7A: This video is age-restricted; some formats may be missing without authentication."
+        ));
     }
 
     #[test]

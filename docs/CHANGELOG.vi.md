@@ -7,6 +7,13 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.20.1-custom.15] - 2026-11-17
+
+### Sửa lỗi
+- **Kiểm tra bot của YouTube bị báo như lỗi đăng nhập** - Lỗi "Sign in to confirm you're not a bot" giờ có thông báo riêng, hướng dẫn dùng cookie từ trình duyệt đã đăng nhập hoặc đổi mạng/proxy, thay cho lỗi chung "yêu cầu đăng nhập". Port từ upstream v0.21.0.
+- **Video YouTube giới hạn độ tuổi chỉ tải được 360p mà không rõ lý do** - Log giờ giải thích khi YouTube yêu cầu xác minh tuổi tài khoản cho video giới hạn độ tuổi, khiến yt-dlp chỉ lấy được định dạng chất lượng thấp (thường là 360p). Port từ upstream v0.21.0.
+- **Hộp thoại cookie luôn đổ lỗi cho trình duyệt đang mở** - Khi profile trình duyệt đã chọn không có cơ sở dữ liệu cookie, hoặc hệ thống chặn đọc thư mục đó (quyền riêng tư macOS, Truy cập toàn bộ ổ đĩa), hộp thoại giờ nói đúng nguyên nhân và đưa ra thao tác phù hợp: chọn profile khác, hoặc mở Cài đặt quyền riêng tư trên macOS. Hộp thoại "trình duyệt đang mở" vẫn dùng cho lỗi khoá cơ sở dữ liệu trên Windows và lỗi giải mã App-Bound/DPAPI. Hộp thoại đã được dịch đủ 13 ngôn ngữ. Port từ upstream v0.21.0.
+
 ## [0.20.1-custom.14] - 2026-10-27
 
 ### Sửa lỗi
