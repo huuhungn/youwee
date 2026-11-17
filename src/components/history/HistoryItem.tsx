@@ -1,4 +1,5 @@
 import { open } from '@tauri-apps/plugin-dialog';
+import type { TFunction } from 'i18next';
 import {
   AlertCircle,
   Check,
@@ -71,10 +72,7 @@ function formatSize(bytes: number | undefined, unknownLabel: string): string {
 }
 
 // Format relative time with translations
-function formatRelativeTime(
-  dateStr: string,
-  t: (key: string, options?: Record<string, unknown>) => string,
-): string {
+function formatRelativeTime(dateStr: string, t: TFunction): string {
   const date = new Date(dateStr);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();

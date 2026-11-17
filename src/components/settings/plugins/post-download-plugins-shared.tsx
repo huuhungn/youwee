@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next';
 import * as LucideIcons from 'lucide-react';
 import { Check, type LucideIcon, Puzzle } from 'lucide-react';
 import type {
@@ -214,7 +215,7 @@ const LUCIDE_ICONS = new Set<unknown>(Object.values(LucideIcons.icons));
 
 export function summarizeRequestedPermissions(
   plugin: PluginSummary | PluginPackageInspection,
-  t: (key: string, opts?: Record<string, unknown>) => string,
+  t: TFunction,
 ) {
   const permissions = plugin.manifest.permissions;
   const entries: string[] = [];
@@ -265,7 +266,7 @@ export function currentTimeoutSec(plugin: PluginSummary) {
 
 export function summarizeCompatibility(
   compatibility: PluginCompatibilitySpec | null | undefined,
-  t: (key: string, opts?: Record<string, unknown>) => string,
+  t: TFunction,
 ) {
   const entries: string[] = [];
   if (compatibility?.appVersion) {
@@ -296,7 +297,7 @@ export function formatSignerFingerprint(fingerprint: string) {
 
 export function formatSourceKind(
   kind: PluginSummary['installation']['source']['kind'] | PluginPackageInspection['source']['kind'],
-  t: (key: string, opts?: Record<string, unknown>) => string,
+  t: TFunction,
 ) {
   switch (kind) {
     case 'workspace':
@@ -316,10 +317,7 @@ export function formatPackageFormat(
   return version ? `${format.toUpperCase()} v${version}` : format.toUpperCase();
 }
 
-export function formatSignatureStatus(
-  status: string | null | undefined,
-  t: (key: string, opts?: Record<string, unknown>) => string,
-) {
+export function formatSignatureStatus(status: string | null | undefined, t: TFunction) {
   switch (status) {
     case 'signed':
       return t('download.pluginSignatureSigned');
@@ -334,10 +332,7 @@ export function formatSignatureStatus(
   }
 }
 
-export function formatRuntimeStatusBadge(
-  status: string | undefined,
-  t: (key: string, opts?: Record<string, unknown>) => string,
-) {
+export function formatRuntimeStatusBadge(status: string | undefined, t: TFunction) {
   if (status === 'running') return t('download.pluginStatusRunning');
   if (status === 'success') return t('download.pluginStatusSuccess');
   if (status === 'error') return t('download.pluginStatusError');
@@ -424,10 +419,7 @@ export function ToggleChoiceCard({
   );
 }
 
-export function getFilesystemPermissionLabel(
-  permission: PluginFilesystemPermission,
-  t: (key: string, opts?: Record<string, unknown>) => string,
-) {
+export function getFilesystemPermissionLabel(permission: PluginFilesystemPermission, t: TFunction) {
   switch (permission) {
     case 'fs.plugin.read':
       return t('download.pluginPermissionFsPluginRead');
@@ -450,10 +442,7 @@ export function getFilesystemPermissionLabel(
   }
 }
 
-export function getToolPermissionLabel(
-  permission: PluginToolPermission,
-  t: (key: string, opts?: Record<string, unknown>) => string,
-) {
+export function getToolPermissionLabel(permission: PluginToolPermission, t: TFunction) {
   switch (permission) {
     case 'tool.ffmpeg.run':
       return t('download.pluginPermissionToolFfmpeg');
@@ -464,7 +453,7 @@ export function getToolPermissionLabel(
 
 export function validateCreatePluginConfigFields(
   fields: CreatePluginConfigFieldDraft[],
-  t: (key: string, opts?: Record<string, unknown>) => string,
+  t: TFunction,
   options?: {
     activeFieldIds?: Set<string>;
     showAll?: boolean;

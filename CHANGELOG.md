@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Video titles could trigger the wrong cookie or bot-check error** - A download that failed for another reason (network, FFmpeg) was reported as YouTube's bot check, which skips auto-retry, when its title or filename contained "not a bot". The bot-check and missing cookie database errors now come only from yt-dlp's own `ERROR:` lines.
 - **Blocked cookie folder error mentioned macOS on every system** - The error message now says the system blocked reading the browser profile folder. The Full Disk Access steps stay in the macOS dialog.
 
+### Changed
+- **Dependency update** - Updated Tauri to 2.12 (Rust crates and JS packages together), React 19.3, Vite 8.3, i18next 27, Biome 2.6, rusqlite 0.42 and zip 9.5, plus other frontend and Rust dependencies. The minimum Rust version is now 1.90. Biome now always uses LF line endings, so lint no longer fails on Windows checkouts that convert files to CRLF.
+
 ## [0.20.1-custom.15] - 2026-11-17
 
 ### Fixed
