@@ -132,6 +132,7 @@ pub async fn check_gallerydl_internal(app: &AppHandle) -> Result<GalleryDlStatus
             is_system: false,
             is_bundled: false,
             install_hint: Some(gallerydl_install_hint()),
+            can_install: gallerydl_asset_name().is_some(),
         });
     };
 
@@ -161,6 +162,7 @@ pub async fn check_gallerydl_internal(app: &AppHandle) -> Result<GalleryDlStatus
         is_system: get_system_gallerydl_path().as_ref() == Some(&binary_path),
         is_bundled: get_packaged_gallerydl_path(app).as_ref() == Some(&binary_path),
         install_hint: None,
+        can_install: gallerydl_asset_name().is_some(),
     })
 }
 
@@ -565,7 +567,10 @@ pub async fn install_gallerydl_internal(
 
 #[cfg(test)]
 mod tests {
-    use super::{find_asset_checksum, gallerydl_install_hint, parse_gallerydl_update_check};
+    use super::{
+        find_asset_checksum, gallerydl_asset_name, gallerydl_install_hint,
+        parse_gallerydl_update_check,
+    };
 
     #[test]
     fn parses_available_nightly_update() {
@@ -631,6 +636,19 @@ mod tests {
             Some("6d126c4aecc27104b0cb86b029227a18e507357fc4ac4acf80737dc0e1152993")
         );
         assert!(find_asset_checksum(sums, "gallery-dl.dmg").is_none());
+    }
+
+    #[test]
+    fn install_is_offered_only_where_an_official_build_exists() {
+        // Codeberg publishes gallery-dl.exe, gallery-dl_x86.exe and gallery-dl.bin only.
+        let supported = cfg!(any(
+            all(
+                target_os = "windows",
+                any(target_arch = "x86_64", target_arch = "x86")
+            ),
+            all(target_os = "linux", target_arch = "x86_64")
+        ));
+        assert_eq!(gallerydl_asset_name().is_some(), supported);
     }
 
     #[test]

@@ -212,7 +212,9 @@
       "current": "الحالي: المرفق {{version}}",
       "downloaded": "تم تنزيل {{channel}} {{version}} · لا يزال المرفق {{bundled}} قيد الاستخدام",
       "missingFile": "تم اختيار {{channel}} لكن ملفه مفقود · يُستخدم المرفق {{bundled}} مؤقتًا",
-      "inUse": "يُستخدم {{channel}} {{version}}"
+      "inUse": "يُستخدم {{channel}} {{version}}",
+      "redownloadTitle": "إعادة تنزيل yt-dlp {{channel}}",
+      "redownloadText": "إصدار yt-dlp الذي اخترته مفقود، لذلك يستخدم Youwee الإصدار المرفق مؤقتًا. نزّله مرة أخرى للعودة إلى اختيارك."
     },
     "ffmpeg": {
       "title": "تثبيت FFmpeg",

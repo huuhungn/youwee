@@ -132,4 +132,6 @@ pub struct GalleryDlStatus {
     /// How to install gallery-dl on this platform. Only populated when it is
     /// missing, so the UI can say what to do instead of only that it is absent.
     pub install_hint: Option<String>,
+    /// Whether Youwee can download its own copy here (an official standalone build exists).
+    pub can_install: bool,
 }

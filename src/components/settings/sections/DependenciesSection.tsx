@@ -967,7 +967,7 @@ export function DependenciesSection({ highlightId }: DependenciesSectionProps) {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {galleryDlStatus && !galleryDlStatus.installed && (
+                {galleryDlStatus && !galleryDlStatus.installed && galleryDlStatus.can_install && (
                   <Button size="sm" onClick={installGalleryDl} disabled={galleryDlUpdating}>
                     {galleryDlUpdating ? (
                       <Loader2 className="w-4 h-4 animate-spin" />

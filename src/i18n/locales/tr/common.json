@@ -212,7 +212,9 @@
       "current": "Mevcut: dahili {{version}}",
       "downloaded": "{{channel}} {{version}} indirildi · hâlâ dahili {{bundled}} kullanılıyor",
       "missingFile": "{{channel}} seçili ancak dosyası eksik · şimdilik dahili {{bundled}} kullanılıyor",
-      "inUse": "{{channel}} {{version}} kullanılıyor"
+      "inUse": "{{channel}} {{version}} kullanılıyor",
+      "redownloadTitle": "yt-dlp {{channel}} sürümünü yeniden indir",
+      "redownloadText": "Seçtiğiniz yt-dlp sürümü bulunamadı, bu yüzden Youwee şimdilik dahili sürümü kullanıyor. Seçiminize dönmek için yeniden indirin."
     },
     "ffmpeg": {
       "title": "FFmpeg'i yükleyin",

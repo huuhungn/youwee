@@ -43,6 +43,8 @@ export interface GalleryDlStatus {
   is_bundled: boolean;
   /** Platform-specific install instructions, present only when gallery-dl is missing. */
   install_hint?: string | null;
+  /** Whether Youwee can download gallery-dl here (an official standalone build exists). */
+  can_install: boolean;
 }
 
 export interface FfmpegUpdateInfo {
@@ -74,7 +76,7 @@ export interface DownloadProgress {
   total: number;
 }
 
-interface DependenciesContextType {
+export interface DependenciesContextType {
   // yt-dlp state
   ytdlpSource: DependencySource;
   ytdlpInfo: YtdlpVersionInfo | null;
@@ -138,13 +140,14 @@ interface DependenciesContextType {
   denoSuccess: boolean;
   denoUpdateInfo: DenoUpdateInfo | null;
   denoCheckingUpdate: boolean;
-  isAutoDownloadingDeno: boolean; // True when auto-downloading on first launch
+  isAutoDownloadingDeno: boolean; // First-launch install running or failed, until dismissed
   denoDownloadProgress: DownloadProgress | null;
 
   // Deno actions
   checkDeno: () => Promise<DenoStatus | null>;
   checkDenoUpdate: () => Promise<void>;
   downloadDeno: () => Promise<void>;
+  dismissDenoAutoDownload: () => void;
 
   // gallery-dl state/actions
   galleryDlStatus: GalleryDlStatus | null;
@@ -161,7 +164,7 @@ interface DependenciesContextType {
   installGalleryDl: () => Promise<void>;
 }
 
-const DependenciesContext = createContext<DependenciesContextType | null>(null);
+export const DependenciesContext = createContext<DependenciesContextType | null>(null);
 
 export function DependenciesProvider({ children }: { children: ReactNode }) {
   const [ytdlpSource, setYtdlpSourceState] = useState<DependencySource>('auto');
@@ -498,6 +501,9 @@ export function DependenciesProvider({ children }: { children: ReactNode }) {
     }
   }, [checkDeno]);
 
+  // Closing the first-launch Deno dialog must stick, or it would open again straight away.
+  const dismissDenoAutoDownload = useCallback(() => setIsAutoDownloadingDeno(false), []);
+
   const checkGalleryDl = useCallback(async () => {
     setGalleryDlLoading(true);
     setGalleryDlError(null);
@@ -639,14 +645,15 @@ export function DependenciesProvider({ children }: { children: ReactNode }) {
               is_bundled: false,
             });
             setDenoSuccess(true);
+            setIsAutoDownloadingDeno(false);
             await checkDeno();
             // Hide success message after 3 seconds
             setTimeout(() => setDenoSuccess(false), 3000);
           } catch (err) {
+            // Keep isAutoDownloadingDeno so the error stays on screen until the user closes it.
             setDenoError(localizeUnknownError(err));
           } finally {
             setDenoDownloading(false);
-            // Keep isAutoDownloadingDeno true until user dismisses or success auto-closes
           }
         } else if (!status.is_system) {
           checkDenoUpdate().catch(() => {
@@ -844,6 +851,7 @@ export function DependenciesProvider({ children }: { children: ReactNode }) {
         checkDeno,
         checkDenoUpdate,
         downloadDeno,
+        dismissDenoAutoDownload,
         galleryDlStatus,
         galleryDlLoading,
         galleryDlUpdating,

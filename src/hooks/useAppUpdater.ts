@@ -233,6 +233,17 @@ export function updateBadgeKey(status: UpdateStatus, failedStep: UpdateStep) {
   return null;
 }
 
+/** Whether the update dialog has anything to show; the other statuses render no dialog at all. */
+export function updateDialogHasContent(status: UpdateStatus) {
+  return !(
+    status === 'initializing' ||
+    status === 'idle' ||
+    status === 'checking' ||
+    status === 'up-to-date' ||
+    status === 'external'
+  );
+}
+
 /** Downloads or processing jobs still running; restarting to install would stop them. */
 export function useAppUpdater(runningJobs = 0) {
   const [status, setStatusState] = useState<UpdateStatus>('initializing');

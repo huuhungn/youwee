@@ -212,7 +212,9 @@
       "current": "Current: bundled {{version}}",
       "downloaded": "{{channel}} {{version}} is downloaded · still using bundled {{bundled}}",
       "missingFile": "{{channel}} is selected but its file is missing · using bundled {{bundled}} for now",
-      "inUse": "Using {{channel}} {{version}}"
+      "inUse": "Using {{channel}} {{version}}",
+      "redownloadTitle": "Re-download yt-dlp {{channel}}",
+      "redownloadText": "The yt-dlp build you selected is missing, so Youwee is using the bundled one for now. Download it again to go back to your choice."
     },
     "ffmpeg": {
       "title": "Install FFmpeg",

@@ -212,7 +212,9 @@
       "current": "現在: 同梱版 {{version}}",
       "downloaded": "{{channel}} {{version}} はダウンロード済み · 同梱版 {{bundled}} を使用中",
       "missingFile": "{{channel}} が選択されていますがファイルがありません · 一時的に同梱版 {{bundled}} を使用中",
-      "inUse": "{{channel}} {{version}} を使用中"
+      "inUse": "{{channel}} {{version}} を使用中",
+      "redownloadTitle": "yt-dlp {{channel}} を再ダウンロード",
+      "redownloadText": "選択した yt-dlp が見つからないため、いまは同梱版を使っています。もう一度ダウンロードすると選択した版に戻ります。"
     },
     "ffmpeg": {
       "title": "FFmpeg をインストール",

@@ -15,7 +15,10 @@ export function formatDependencyProgressLabel(
     case 'checksum':
       return t('dependencies.checkingChecksum');
     case 'downloading':
-      return `${t('dependencies.downloading')} ${progress.percent}%`;
+      // Without a Content-Length the percent never moves off 0, so leave it out.
+      return progress.total > 0
+        ? `${t('dependencies.downloading')} ${progress.percent}%`
+        : t('dependencies.downloading');
     case 'verifying':
       return t('dependencies.verifying');
     case 'extracting':

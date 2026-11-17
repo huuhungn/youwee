@@ -21,6 +21,7 @@ import {
   type UpdateProgress,
   type UpdateStatus,
   type UpdateStep,
+  updateDialogHasContent,
   updaterRestartsAutomatically,
   useUpdateStall,
 } from '@/hooks/useAppUpdater';
@@ -136,13 +137,7 @@ export function UpdateDialog({
   const hideDownload = settled(onDismiss);
 
   // Only show dialog for specific states
-  if (
-    status === 'initializing' ||
-    status === 'idle' ||
-    status === 'checking' ||
-    status === 'up-to-date' ||
-    status === 'external'
-  ) {
+  if (!updateDialogHasContent(status)) {
     return null;
   }
 

@@ -212,7 +212,9 @@
       "current": "Joriy: ichki {{version}}",
       "downloaded": "{{channel}} {{version}} yuklab olingan · hali ichki {{bundled}} ishlatilmoqda",
       "missingFile": "{{channel}} tanlangan, lekin fayli yoʻq · hozircha ichki {{bundled}} ishlatilmoqda",
-      "inUse": "{{channel}} {{version}} ishlatilmoqda"
+      "inUse": "{{channel}} {{version}} ishlatilmoqda",
+      "redownloadTitle": "yt-dlp {{channel}} versiyasini qayta yuklab olish",
+      "redownloadText": "Siz tanlagan yt-dlp versiyasi topilmadi, shuning uchun Youwee hozircha ichki versiyadan foydalanmoqda. Tanlovingizga qaytish uchun uni qayta yuklab oling."
     },
     "ffmpeg": {
       "title": "FFmpeg ni oʻrnating",

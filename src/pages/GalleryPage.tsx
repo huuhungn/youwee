@@ -111,7 +111,7 @@ export function GalleryPage({ onNavigateToSettings, onNavigateToLogs }: GalleryP
                     </div>
                   )}
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {galleryDlStatus && !galleryDlUpdating && (
+                    {galleryDlStatus?.can_install && !galleryDlUpdating && (
                       <Button
                         size="sm"
                         className="h-8"

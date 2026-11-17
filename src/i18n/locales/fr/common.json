@@ -212,7 +212,9 @@
       "current": "Actuel : intégré {{version}}",
       "downloaded": "{{channel}} {{version}} est téléchargé · la version intégrée {{bundled}} reste utilisée",
       "missingFile": "{{channel}} est sélectionné mais son fichier est manquant · version intégrée {{bundled}} utilisée pour l'instant",
-      "inUse": "{{channel}} {{version}} utilisé"
+      "inUse": "{{channel}} {{version}} utilisé",
+      "redownloadTitle": "Retélécharger yt-dlp {{channel}}",
+      "redownloadText": "La version de yt-dlp que vous avez choisie est introuvable, Youwee utilise donc la version intégrée pour le moment. Téléchargez-la à nouveau pour revenir à votre choix."
     },
     "ffmpeg": {
       "title": "Installer FFmpeg",

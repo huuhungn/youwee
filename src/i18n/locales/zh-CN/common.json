@@ -212,7 +212,9 @@
       "current": "当前：自带版本 {{version}}",
       "downloaded": "已下载 {{channel}} {{version}} · 仍在使用自带版本 {{bundled}}",
       "missingFile": "已选择 {{channel}}，但文件缺失 · 暂时使用自带版本 {{bundled}}",
-      "inUse": "正在使用 {{channel}} {{version}}"
+      "inUse": "正在使用 {{channel}} {{version}}",
+      "redownloadTitle": "重新下载 yt-dlp {{channel}}",
+      "redownloadText": "找不到你选择的 yt-dlp 版本，Youwee 暂时使用自带版本。重新下载即可恢复你的选择。"
     },
     "ffmpeg": {
       "title": "安装 FFmpeg",

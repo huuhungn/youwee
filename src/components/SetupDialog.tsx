@@ -66,6 +66,8 @@ export function SetupDialog({ items, onClose, onOpenDependencies }: SetupDialogP
   });
   const [isSwitchingYtdlp, setIsSwitchingYtdlp] = useState(false);
   const [isInstallingAll, setIsInstallingAll] = useState(false);
+  // The step this dialog started; a download the app runs on its own must not lock the dialog.
+  const [runningItem, setRunningItem] = useState<SetupItem | null>(null);
 
   const state: SetupDependencyState = {
     ytdlpSource: deps.ytdlpSource,
@@ -86,21 +88,26 @@ export function SetupDialog({ items, onClose, onOpenDependencies }: SetupDialogP
 
   const runYtdlp = async (): Promise<boolean> => {
     setAttempted((prev) => ({ ...prev, ytdlp: true }));
-    const target = getYtdlpTargetChannel(state);
-    if (ytdlpSetupNeedsDownload(getYtdlpSetupState(state))) {
-      // Download first and only then switch, so a failed download keeps the working bundled binary.
-      const downloaded = await deps.downloadChannelBinary(target);
-      if (!downloaded) return false;
-    }
-    if (deps.ytdlpChannel !== target) {
-      setIsSwitchingYtdlp(true);
-      try {
-        await deps.setYtdlpChannel(target);
-      } finally {
-        setIsSwitchingYtdlp(false);
+    setRunningItem('ytdlp');
+    try {
+      const target = getYtdlpTargetChannel(state);
+      if (ytdlpSetupNeedsDownload(getYtdlpSetupState(state))) {
+        // Download first and only then switch, so a failed download keeps the working bundled binary.
+        const downloaded = await deps.downloadChannelBinary(target);
+        if (!downloaded) return false;
       }
+      if (deps.ytdlpChannel !== target) {
+        setIsSwitchingYtdlp(true);
+        try {
+          await deps.setYtdlpChannel(target);
+        } finally {
+          setIsSwitchingYtdlp(false);
+        }
+      }
+      return true;
+    } finally {
+      setRunningItem(null);
     }
-    return true;
   };
 
   const ytdlpView = (): ItemView => {
@@ -113,11 +120,19 @@ export function SetupDialog({ items, onClose, onOpenDependencies }: SetupDialogP
     const otherDownload = deps.isChannelDownloading && !downloadingTarget;
     const error = attempted.ytdlp && !downloadingTarget ? deps.channelError : null;
 
-    const base: Pick<ItemView, 'icon' | 'title' | 'text'> = {
-      icon: Download,
-      title: t('setupDialog.ytdlp.title', { channel: ytdlpTargetName }),
-      text: t('setupDialog.ytdlp.text'),
-    };
+    const missingFile = setupState === 'missingFile';
+    // A selected channel whose file is gone is re-downloaded, not "switched to" (Nightly, Master).
+    const base: Pick<ItemView, 'icon' | 'title' | 'text'> = missingFile
+      ? {
+          icon: Download,
+          title: t('setupDialog.ytdlp.redownloadTitle', { channel: ytdlpTargetName }),
+          text: t('setupDialog.ytdlp.redownloadText'),
+        }
+      : {
+          icon: Download,
+          title: t('setupDialog.ytdlp.title', { channel: ytdlpTargetName }),
+          text: t('setupDialog.ytdlp.text'),
+        };
 
     if (downloadingTarget) {
       return {
@@ -174,7 +189,6 @@ export function SetupDialog({ items, onClose, onOpenDependencies }: SetupDialogP
       };
     }
 
-    const missingFile = setupState === 'missingFile';
     return {
       ...base,
       badge: error
@@ -209,7 +223,12 @@ export function SetupDialog({ items, onClose, onOpenDependencies }: SetupDialogP
   // --- FFmpeg ---------------------------------------------------------------
   const runFfmpeg = async (): Promise<boolean> => {
     setAttempted((prev) => ({ ...prev, ffmpeg: true }));
-    return deps.downloadFfmpeg();
+    setRunningItem('ffmpeg');
+    try {
+      return await deps.downloadFfmpeg();
+    } finally {
+      setRunningItem(null);
+    }
   };
 
   const ffmpegView = (): ItemView => {
@@ -256,16 +275,16 @@ export function SetupDialog({ items, onClose, onOpenDependencies }: SetupDialogP
   };
 
   const views = items.map((item) => (item === 'ytdlp' ? ytdlpView() : ffmpegView()));
-  const isBusy = isInstallingAll || views.some((view) => view.busy !== null);
+  const isBusy = isInstallingAll || runningItem !== null;
   const allDone = items.length > 0 && items.every((item) => isSetupItemDone(item, state));
   const hasPendingAction = views.some((view) => view.action !== null);
 
+  // Runs the same steps as the item buttons; an item without an action is done or already running.
   const installAll = async () => {
     setIsInstallingAll(true);
     try {
-      for (const item of items) {
-        if (isSetupItemDone(item, state)) continue;
-        await (item === 'ytdlp' ? runYtdlp() : runFfmpeg());
+      for (const view of views) {
+        if (view.action) await view.action.run();
       }
     } finally {
       setIsInstallingAll(false);

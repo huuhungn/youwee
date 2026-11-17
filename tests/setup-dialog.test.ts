@@ -1,9 +1,12 @@
 import { describe, expect, test } from 'bun:test';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import type { TFunction } from 'i18next';
 import type { FfmpegStatus } from '../src/contexts/DependenciesContext';
+import { updateDialogHasContent } from '../src/hooks/useAppUpdater';
 import {
   dependencyProgressPercent,
+  formatDependencyProgressLabel,
   formatDependencyProgressSize,
 } from '../src/lib/dependency-progress';
 import {
@@ -14,9 +17,12 @@ import {
   getYtdlpTargetChannel,
   hasSeenSetupDialog,
   isSetupItemDone,
+  isStartupDependencyStateReady,
+  isStartupDialogBlocked,
   markSetupDialogSeen,
   SETUP_DIALOG_SEEN_KEY,
   type SetupDependencyState,
+  shouldMarkSetupDialogSeen,
   ytdlpSetupNeedsDownload,
 } from '../src/lib/setup-dialog';
 import type { YtdlpAllVersions } from '../src/lib/types';
@@ -69,8 +75,21 @@ function state(overrides: Partial<SetupDependencyState> = {}): SetupDependencySt
 }
 
 describe('setup dialog items', () => {
-  test('a fresh install is missing both yt-dlp Stable and FFmpeg', () => {
-    expect(getMissingSetupItems(state())).toEqual(['ytdlp', 'ffmpeg']);
+  test('only a missing FFmpeg counts as missing on a fresh install', () => {
+    // The bundled yt-dlp works; moving to Stable is offered only from "Set up high quality".
+    expect(getMissingSetupItems(state())).toEqual(['ffmpeg']);
+    expect(getApplicableSetupItems(state())).toEqual(['ytdlp', 'ffmpeg']);
+  });
+
+  test('a selected channel whose file is gone is missing', () => {
+    expect(
+      getMissingSetupItems(state({ ytdlpChannel: 'nightly', ffmpegStatus: packagedFfmpeg })),
+    ).toEqual(['ytdlp']);
+    expect(
+      getMissingSetupItems(
+        state({ ffmpegStatus: packagedFfmpeg, ytdlpAllVersions: versions({ stable: true }) }),
+      ),
+    ).toEqual([]);
   });
 
   test('a downloaded channel with an installed binary counts as done', () => {
@@ -90,7 +109,7 @@ describe('setup dialog items', () => {
 
   test('FFmpeg packaged with Youwee is not offered for install', () => {
     expect(isSetupItemDone('ffmpeg', state({ ffmpegStatus: packagedFfmpeg }))).toBe(true);
-    expect(getMissingSetupItems(state({ ffmpegStatus: packagedFfmpeg }))).toEqual(['ytdlp']);
+    expect(getMissingSetupItems(state({ ffmpegStatus: packagedFfmpeg }))).toEqual([]);
   });
 
   test('system-managed dependencies are left alone', () => {
@@ -132,28 +151,27 @@ describe('yt-dlp setup state', () => {
 });
 
 describe('startup dependency dialog', () => {
-  test('first run shows the setup dialog with every missing item', () => {
+  test('first run without FFmpeg opens the setup dialog for FFmpeg only', () => {
     expect(getStartupDependencyDialog(state(), false)).toEqual({
       kind: 'setup',
-      items: ['ytdlp', 'ffmpeg'],
+      items: ['ffmpeg'],
     });
   });
 
-  test('first run with the dependency pack only offers what the pack does not provide', () => {
-    expect(getStartupDependencyDialog(state({ ffmpegStatus: packagedFfmpeg }), false)).toEqual({
-      kind: 'setup',
-      items: ['ytdlp'],
-    });
+  test('first run with the Windows Full pack opens nothing and is remembered', () => {
+    const fullPack = state({ ffmpegStatus: packagedFfmpeg });
+    const dialog = getStartupDependencyDialog(fullPack, false);
+    expect(dialog).toBeNull();
+    expect(shouldMarkSetupDialogSeen(fullPack, false, dialog)).toBe(true);
+  });
+
+  test('a missing channel file opens the setup dialog even with the pack', () => {
     expect(
       getStartupDependencyDialog(
-        state({
-          ffmpegStatus: packagedFfmpeg,
-          ytdlpChannel: 'stable',
-          ytdlpAllVersions: versions({ stable: true }),
-        }),
+        state({ ffmpegStatus: packagedFfmpeg, ytdlpChannel: 'master' }),
         false,
       ),
-    ).toBeNull();
+    ).toEqual({ kind: 'setup', items: ['ytdlp'] });
   });
 
   test('a dismissed or completed setup dialog never opens again', () => {
@@ -190,6 +208,84 @@ describe('startup dependency dialog', () => {
   });
 });
 
+describe('startup gate', () => {
+  const checks = { ffmpegLoading: false, channelError: null, denoChecked: true };
+
+  test('waits for FFmpeg, the yt-dlp channels and Deno to be checked', () => {
+    expect(isStartupDependencyStateReady(state(), checks)).toBe(true);
+    expect(isStartupDependencyStateReady(state(), { ...checks, ffmpegLoading: true })).toBe(false);
+    expect(isStartupDependencyStateReady(state({ ffmpegStatus: null }), checks)).toBe(false);
+    expect(isStartupDependencyStateReady(state(), { ...checks, denoChecked: false })).toBe(false);
+    expect(isStartupDependencyStateReady(state({ ytdlpAllVersions: null }), checks)).toBe(false);
+  });
+
+  test('a failed yt-dlp version check or a system yt-dlp still counts as checked', () => {
+    const unknown = state({ ytdlpAllVersions: null });
+    expect(isStartupDependencyStateReady(unknown, { ...checks, channelError: 'offline' })).toBe(
+      true,
+    );
+    expect(isStartupDependencyStateReady({ ...unknown, ytdlpSource: 'system' }, checks)).toBe(true);
+  });
+
+  test('waits for the Deno first-run dialog until the user closes it', () => {
+    const idle = { denoFirstRunOpen: false, denoDownloading: false, updateDialogVisible: false };
+    expect(isStartupDialogBlocked(idle)).toBe(false);
+    // A failed first install keeps its dialog open, and blocking, until the user closes it.
+    expect(isStartupDialogBlocked({ ...idle, denoFirstRunOpen: true })).toBe(true);
+    // Closing clears the first-run flag, which lets the setup or FFmpeg prompt through.
+    expect(isStartupDialogBlocked({ ...idle, denoFirstRunOpen: false })).toBe(false);
+    expect(isStartupDialogBlocked({ ...idle, denoDownloading: true })).toBe(true);
+  });
+
+  test('an updater with nothing to show does not hold the dialog back', () => {
+    // dialogVisible starts true; the update dialog renders nothing until there is an update.
+    for (const status of ['initializing', 'idle', 'checking', 'up-to-date', 'external'] as const) {
+      expect(updateDialogHasContent(status)).toBe(false);
+    }
+    for (const status of ['available', 'downloading', 'ready', 'error', 'installed'] as const) {
+      expect(updateDialogHasContent(status)).toBe(true);
+    }
+  });
+
+  test('waits while the update dialog is on screen', () => {
+    expect(
+      isStartupDialogBlocked({
+        denoFirstRunOpen: false,
+        denoDownloading: false,
+        updateDialogVisible: true,
+      }),
+    ).toBe(true);
+  });
+
+  test('marks the dialog seen only when nothing is missing and yt-dlp is known', () => {
+    const complete = state({
+      ffmpegStatus: packagedFfmpeg,
+      ytdlpChannel: 'stable',
+      ytdlpAllVersions: versions({ stable: true }),
+    });
+    expect(shouldMarkSetupDialogSeen(complete, false, null)).toBe(true);
+    expect(shouldMarkSetupDialogSeen(complete, true, null)).toBe(false);
+    expect(shouldMarkSetupDialogSeen(state(), false, { kind: 'setup', items: ['ffmpeg'] })).toBe(
+      false,
+    );
+    // The yt-dlp check failed: try again next launch instead of skipping the dialog for good.
+    expect(
+      shouldMarkSetupDialogSeen(
+        state({ ffmpegStatus: packagedFfmpeg, ytdlpAllVersions: null }),
+        false,
+        null,
+      ),
+    ).toBe(false);
+    expect(
+      shouldMarkSetupDialogSeen(
+        state({ ffmpegStatus: packagedFfmpeg, ytdlpAllVersions: null, ytdlpSource: 'system' }),
+        false,
+        null,
+      ),
+    ).toBe(true);
+  });
+});
+
 describe('dependency download progress', () => {
   const progress = (stage: 'checksum' | 'downloading' | 'verifying', percent = 0, total = 0) => ({
     stage,
@@ -204,6 +300,16 @@ describe('dependency download progress', () => {
     );
     expect(formatDependencyProgressSize(progress('downloading', 0, 0))).toBeNull();
     expect(dependencyProgressPercent(progress('downloading', 40, 1000))).toBe(40);
+  });
+
+  test('labels a download without a known size without a percentage', () => {
+    const t = ((key: string) => key) as unknown as TFunction;
+    expect(formatDependencyProgressLabel(t, progress('downloading', 0, 0), 'fallback')).toBe(
+      'dependencies.downloading',
+    );
+    expect(formatDependencyProgressLabel(t, progress('downloading', 40, 1000), 'fallback')).toBe(
+      'dependencies.downloading 40%',
+    );
   });
 
   test('checksum is indeterminate and verifying is full', () => {

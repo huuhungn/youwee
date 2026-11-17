@@ -29,7 +29,7 @@ import { SummarySessionProvider } from '@/contexts/SummarySessionProvider';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
 import { UniversalProvider } from '@/contexts/UniversalContext';
 import { UpdaterProvider, useUpdater } from '@/contexts/UpdaterContext';
-import { updateBadgeKey } from '@/hooks/useAppUpdater';
+import { updateBadgeKey, updateDialogHasContent } from '@/hooks/useAppUpdater';
 import { useExternalDownloadLinks } from '@/hooks/useExternalDownloadLinks';
 import { usePluginExecutionToasts } from '@/hooks/usePluginExecutionToasts';
 import { useTelegramRemoteCommands } from '@/hooks/useTelegramRemoteCommands';
@@ -40,10 +40,13 @@ import {
   getApplicableSetupItems,
   getStartupDependencyDialog,
   hasSeenSetupDialog,
+  isStartupDependencyStateReady,
+  isStartupDialogBlocked,
   markSetupDialogSeen,
   onOpenSetupDialogRequest,
   type SetupDependencyState,
   type SetupItem,
+  shouldMarkSetupDialogSeen,
 } from '@/lib/setup-dialog';
 import {
   ChannelsPage,
@@ -71,7 +74,6 @@ function AppContent() {
   } | null>(null);
   const [showFfmpegDialog, setShowFfmpegDialog] = useState(false);
   const [setupDialogItems, setSetupDialogItems] = useState<SetupItem[] | null>(null);
-  const [showDenoDialog, setShowDenoDialog] = useState(false);
   const [startupDialogChecked, setStartupDialogChecked] = useState(false);
   const updater = useUpdater();
   const {
@@ -86,7 +88,7 @@ function AppContent() {
     denoStatus,
     denoError,
     denoDownloading,
-    denoSuccess,
+    dismissDenoAutoDownload,
   } = useDependencies();
   const { isTransitioning, oldMode, applyPendingTheme, onTransitionComplete } = useTheme();
   const externalStartLockRef = useRef({ youtube: false, universal: false });
@@ -159,42 +161,43 @@ function AppContent() {
   const setupStateRef = useRef(setupState);
   setupStateRef.current = setupState;
 
-  // Startup checks are done once FFmpeg, the yt-dlp channel info and Deno have all been looked at.
-  const setupStateReady =
-    !ffmpegLoading &&
-    ffmpegStatus !== null &&
-    (ytdlpSource === 'system' || ytdlpAllVersions !== null || channelError !== null) &&
-    (denoStatus !== null || denoError !== null);
+  const setupStateReady = isStartupDependencyStateReady(setupState, {
+    ffmpegLoading,
+    channelError,
+    denoChecked: denoStatus !== null || denoError !== null,
+  });
+  const startupDialogBlocked = isStartupDialogBlocked({
+    denoFirstRunOpen: isAutoDownloadingDeno,
+    denoDownloading,
+    updateDialogVisible: updater.dialogVisible && updateDialogHasContent(updater.status),
+  });
 
-  // Mirrors DenoDialog's own render check: showDenoDialog keeps toggling after Deno is installed.
-  const denoDialogOpen = showDenoDialog && !denoStatus?.installed && !denoSuccess;
-
-  // One dependency dialog per launch, after the Deno first-run install so dialogs never stack:
+  // One dependency dialog per launch, after the Deno first-run dialog and any update dialog:
   // the setup dialog until it has been seen once, then the FFmpeg reminder while FFmpeg is missing.
   useEffect(() => {
-    if (startupDialogChecked || !setupStateReady) return;
-    if (denoDialogOpen || denoDownloading) return;
+    if (startupDialogChecked || !setupStateReady || startupDialogBlocked) return;
 
     // Small delay to let the app render and late startup state settle.
     const timer = setTimeout(() => {
       setStartupDialogChecked(true);
       const setupSeen = hasSeenSetupDialog();
       const dialog = getStartupDependencyDialog(setupStateRef.current, setupSeen);
-      if (dialog?.kind === 'setup') {
-        setSetupDialogItems(dialog.items);
-        return;
+      // Nothing missing (e.g. the Windows Full pack): skip the dialog for good.
+      if (shouldMarkSetupDialogSeen(setupStateRef.current, setupSeen, dialog)) {
+        markSetupDialogSeen();
       }
-      // Nothing to set up (e.g. the dependency pack already ships FFmpeg): never ask again.
-      if (!setupSeen) markSetupDialogSeen();
-      if (dialog?.kind === 'ffmpeg') setShowFfmpegDialog(true);
+      if (dialog?.kind === 'setup') setSetupDialogItems(dialog.items);
+      else if (dialog?.kind === 'ffmpeg') setShowFfmpegDialog(true);
     }, 800);
     return () => clearTimeout(timer);
-  }, [startupDialogChecked, setupStateReady, denoDialogOpen, denoDownloading]);
+  }, [startupDialogChecked, setupStateReady, startupDialogBlocked]);
 
   // Manual open (from the download guide) lists every item that applies.
   useEffect(
     () =>
       onOpenSetupDialogRequest(() => {
+        // The user chose this dialog, so the startup check must not open another one later.
+        setStartupDialogChecked(true);
         const items = getApplicableSetupItems(setupStateRef.current);
         if (items.length === 0) {
           openSettingsPage('dependencies');
@@ -216,24 +219,6 @@ function AppContent() {
       setShowFfmpegDialog(false);
     }
   }, [ffmpegStatus, showFfmpegDialog]);
-
-  // Show Deno dialog when auto-downloading on first launch
-  useEffect(() => {
-    if (isAutoDownloadingDeno && !showDenoDialog) {
-      setShowDenoDialog(true);
-    }
-  }, [isAutoDownloadingDeno, showDenoDialog]);
-
-  // Close Deno dialog when Deno gets installed successfully
-  useEffect(() => {
-    if ((denoStatus?.installed || denoSuccess) && showDenoDialog) {
-      // Small delay to show success state
-      const timer = setTimeout(() => {
-        setShowDenoDialog(false);
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [denoStatus, denoSuccess, showDenoDialog]);
 
   // Sync UI language to system tray on mount
   useEffect(() => {
@@ -296,26 +281,30 @@ function AppContent() {
         <MusicPlayer />
       </MainLayout>
 
-      {updater.dialogVisible && (
-        <UpdateDialog
-          status={updater.status}
-          updateInfo={updater.updateInfo}
-          progress={updater.progress}
-          error={updater.error}
-          errorKind={updater.errorKind}
-          failedStep={updater.failedStep}
-          installAfterRestart={updater.installAfterRestart}
-          runningJobs={updater.runningJobs}
-          restartQueued={updater.restartQueued}
-          onRestartWhenDone={updater.queueRestart}
-          onDownload={updater.downloadAndInstall}
-          onRestart={updater.restartApp}
-          onDismiss={updater.dismissUpdate}
-          onRetry={updater.retryUpdate}
-          onCancelDownload={updater.cancelDownload}
-          onRetryNow={updater.restartDownload}
-        />
-      )}
+      {/* A dependency dialog on screen holds the update dialog back, so the two never stack. */}
+      {updater.dialogVisible &&
+        !isAutoDownloadingDeno &&
+        !setupDialogItems &&
+        !showFfmpegDialog && (
+          <UpdateDialog
+            status={updater.status}
+            updateInfo={updater.updateInfo}
+            progress={updater.progress}
+            error={updater.error}
+            errorKind={updater.errorKind}
+            failedStep={updater.failedStep}
+            installAfterRestart={updater.installAfterRestart}
+            runningJobs={updater.runningJobs}
+            restartQueued={updater.restartQueued}
+            onRestartWhenDone={updater.queueRestart}
+            onDownload={updater.downloadAndInstall}
+            onRestart={updater.restartApp}
+            onDismiss={updater.dismissUpdate}
+            onRetry={updater.retryUpdate}
+            onCancelDownload={updater.cancelDownload}
+            onRetryNow={updater.restartDownload}
+          />
+        )}
 
       {setupDialogItems && (
         <SetupDialog
@@ -327,7 +316,7 @@ function AppContent() {
 
       {showFfmpegDialog && <FFmpegDialog onDismiss={() => setShowFfmpegDialog(false)} />}
 
-      {showDenoDialog && <DenoDialog onDismiss={() => setShowDenoDialog(false)} />}
+      {isAutoDownloadingDeno && <DenoDialog onDismiss={dismissDenoAutoDownload} />}
       <DuplicateDownloadReviewHost />
       <MeteorTransition
         isActive={isTransitioning}

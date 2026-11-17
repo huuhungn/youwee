@@ -91,9 +91,18 @@ export function isSetupItemDone(item: SetupItem, state: SetupDependencyState): b
   return state.ffmpegStatus?.installed === true;
 }
 
-/** Items still missing, i.e. the ones worth showing on first launch. */
+/**
+ * Items that are really missing, the only reason to open the dialog on its own: no FFmpeg, or a
+ * selected yt-dlp channel whose file is gone. Moving from the bundled yt-dlp to Stable is only
+ * offered when the user opens the dialog, so a complete install (e.g. the Windows Full pack)
+ * starts without any prompt.
+ */
 export function getMissingSetupItems(state: SetupDependencyState): SetupItem[] {
-  return getApplicableSetupItems(state).filter((item) => !isSetupItemDone(item, state));
+  return getApplicableSetupItems(state).filter((item) =>
+    item === 'ytdlp'
+      ? getYtdlpSetupState(state) === 'missingFile'
+      : state.ffmpegStatus?.installed !== true,
+  );
 }
 
 export type StartupDependencyDialog = { kind: 'setup'; items: SetupItem[] } | { kind: 'ffmpeg' };
@@ -112,4 +121,44 @@ export function getStartupDependencyDialog(
     if (items.length > 0) return { kind: 'setup', items };
   }
   return state.ffmpegStatus?.installed === false ? { kind: 'ffmpeg' } : null;
+}
+
+/** Startup checks are done once FFmpeg, the yt-dlp channel info and Deno have all been looked at. */
+export function isStartupDependencyStateReady(
+  state: SetupDependencyState,
+  checks: { ffmpegLoading: boolean; channelError: string | null; denoChecked: boolean },
+): boolean {
+  return (
+    !checks.ffmpegLoading &&
+    state.ffmpegStatus !== null &&
+    (state.ytdlpSource === 'system' ||
+      state.ytdlpAllVersions !== null ||
+      checks.channelError !== null) &&
+    checks.denoChecked
+  );
+}
+
+/**
+ * Another startup dialog owns the screen, so the dependency dialog waits: the Deno first-run
+ * install (while it runs or shows its error, until the user closes it) or the app update dialog.
+ */
+export function isStartupDialogBlocked(blockers: {
+  denoFirstRunOpen: boolean;
+  denoDownloading: boolean;
+  updateDialogVisible: boolean;
+}): boolean {
+  return blockers.denoFirstRunOpen || blockers.denoDownloading || blockers.updateDialogVisible;
+}
+
+/**
+ * Record the setup dialog as seen without showing it when nothing is missing. Not while the
+ * yt-dlp channel state is still unknown, so a failed version check cannot skip it for good.
+ */
+export function shouldMarkSetupDialogSeen(
+  state: SetupDependencyState,
+  setupSeen: boolean,
+  dialog: StartupDependencyDialog | null,
+): boolean {
+  if (setupSeen || dialog?.kind === 'setup') return false;
+  return state.ytdlpSource === 'system' || state.ytdlpAllVersions !== null;
 }

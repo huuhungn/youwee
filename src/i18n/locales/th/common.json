@@ -212,7 +212,9 @@
       "current": "ปัจจุบัน: รุ่นที่มาพร้อมแอป {{version}}",
       "downloaded": "ดาวน์โหลด {{channel}} {{version}} แล้ว · ยังใช้รุ่นที่มาพร้อมแอป {{bundled}}",
       "missingFile": "เลือก {{channel}} แล้วแต่ไม่พบไฟล์ · ใช้รุ่นที่มาพร้อมแอป {{bundled}} ชั่วคราว",
-      "inUse": "กำลังใช้ {{channel}} {{version}}"
+      "inUse": "กำลังใช้ {{channel}} {{version}}",
+      "redownloadTitle": "ดาวน์โหลด yt-dlp {{channel}} ใหม่",
+      "redownloadText": "ไม่พบ yt-dlp รุ่นที่คุณเลือก Youwee จึงใช้รุ่นที่มาพร้อมแอปไปก่อน ดาวน์โหลดอีกครั้งเพื่อกลับไปใช้รุ่นที่คุณเลือก"
     },
     "ffmpeg": {
       "title": "ติดตั้ง FFmpeg",

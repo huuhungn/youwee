@@ -212,7 +212,9 @@
       "current": "Hiện tại: bản đi kèm {{version}}",
       "downloaded": "Đã tải bản {{channel}} {{version}} · vẫn đang dùng bản đi kèm {{bundled}}",
       "missingFile": "Đã chọn kênh {{channel}} nhưng thiếu file · tạm dùng bản đi kèm {{bundled}}",
-      "inUse": "Đang dùng bản {{channel}} {{version}}"
+      "inUse": "Đang dùng bản {{channel}} {{version}}",
+      "redownloadTitle": "Tải lại yt-dlp kênh {{channel}}",
+      "redownloadText": "Không tìm thấy bản yt-dlp bạn đã chọn nên Youwee đang tạm dùng bản đi kèm. Hãy tải lại để quay về lựa chọn của bạn."
     },
     "ffmpeg": {
       "title": "Cài FFmpeg",

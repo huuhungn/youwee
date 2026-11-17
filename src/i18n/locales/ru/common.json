@@ -212,7 +212,9 @@
       "current": "Сейчас: встроенный {{version}}",
       "downloaded": "{{channel}} {{version}} загружен · пока используется встроенный {{bundled}}",
       "missingFile": "Выбран {{channel}}, но файл отсутствует · временно используется встроенный {{bundled}}",
-      "inUse": "Используется {{channel}} {{version}}"
+      "inUse": "Используется {{channel}} {{version}}",
+      "redownloadTitle": "Скачать yt-dlp {{channel}} заново",
+      "redownloadText": "Выбранная сборка yt-dlp не найдена, поэтому Youwee пока использует встроенную. Скачайте её снова, чтобы вернуться к своему выбору."
     },
     "ffmpeg": {
       "title": "Установить FFmpeg",
