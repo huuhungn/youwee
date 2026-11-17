@@ -13,6 +13,7 @@ export type FilenameMetadataField =
   | 'duration'
   | 'resolution'
   | 'videoId';
+export type FilenameMetadataPosition = 'prefix' | 'suffix';
 export type YouTubePlayerClient = 'auto' | 'web' | 'mweb' | 'tv' | 'ios' | 'android' | 'web_safari';
 export type YtdlpAdvancedOptionId =
   | 'impersonate'
@@ -118,6 +119,7 @@ export interface ItemDownloadSettings {
   numberQueueItems?: boolean;
   filenameMetadataEnabled?: boolean;
   filenameMetadataFields?: FilenameMetadataField[];
+  filenameMetadataPosition?: FilenameMetadataPosition;
   splitEmbeddedChapters?: boolean;
   numberChapterFiles?: boolean;
   autoOrganizeCollections?: boolean;
@@ -153,6 +155,7 @@ export interface ItemUniversalSettings {
   numberQueueItems?: boolean;
   filenameMetadataEnabled?: boolean;
   filenameMetadataFields?: FilenameMetadataField[];
+  filenameMetadataPosition?: FilenameMetadataPosition;
   splitEmbeddedChapters?: boolean;
   numberChapterFiles?: boolean;
   autoOrganizeCollections?: boolean;
@@ -374,6 +377,7 @@ export interface DownloadSettings {
   numberQueueItems: boolean; // Prefix regular queued items with their queue order
   filenameMetadataEnabled: boolean; // Prefix downloaded files with selected yt-dlp metadata fields
   filenameMetadataFields: FilenameMetadataField[]; // Ordered, allowlisted metadata fields
+  filenameMetadataPosition: FilenameMetadataPosition; // Place filename metadata before or after the title
   splitEmbeddedChapters: boolean; // Split downloaded media into embedded chapter files
   numberChapterFiles: boolean; // Prefix chapter files with chapter numbers when splitting
   autoOrganizeCollections: boolean; // Create Library collections for grouped playlist/channel outputs

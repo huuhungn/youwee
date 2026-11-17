@@ -49,7 +49,10 @@ import {
   waitWithCancellation,
 } from '@/lib/download-retry';
 import { externalDownloadFormat } from '@/lib/external-link';
-import { resolveFilenameMetadataSettings } from '@/lib/filename-metadata';
+import {
+  resolveFilenameMetadataSettings,
+  sanitizeFilenameMetadataPosition,
+} from '@/lib/filename-metadata';
 import {
   buildCookieProxyInvokeOptions,
   buildProxyUrl,
@@ -229,6 +232,7 @@ function saveSettings(settings: DownloadSettings) {
         numberQueueItems: settings.numberQueueItems,
         filenameMetadataEnabled: settings.filenameMetadataEnabled,
         filenameMetadataFields: settings.filenameMetadataFields,
+        filenameMetadataPosition: settings.filenameMetadataPosition,
         splitEmbeddedChapters: settings.splitEmbeddedChapters,
         numberChapterFiles: settings.numberChapterFiles,
         autoOrganizeCollections: settings.autoOrganizeCollections,
@@ -439,6 +443,7 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
       numberQueueItems: saved.numberQueueItems === true,
       filenameMetadataEnabled: filenameMetadata.enabled,
       filenameMetadataFields: filenameMetadata.fields,
+      filenameMetadataPosition: sanitizeFilenameMetadataPosition(saved.filenameMetadataPosition),
       splitEmbeddedChapters: saved.splitEmbeddedChapters === true,
       numberChapterFiles: saved.numberChapterFiles !== false,
       autoOrganizeCollections: saved.autoOrganizeCollections === true,
@@ -986,6 +991,7 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
         numberQueueItems: currentSettings.numberQueueItems,
         filenameMetadataEnabled: currentSettings.filenameMetadataEnabled,
         filenameMetadataFields: [...currentSettings.filenameMetadataFields],
+        filenameMetadataPosition: currentSettings.filenameMetadataPosition,
         splitEmbeddedChapters: currentSettings.splitEmbeddedChapters,
         numberChapterFiles: currentSettings.numberChapterFiles,
         autoOrganizeCollections: currentSettings.autoOrganizeCollections,
@@ -1121,6 +1127,7 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
         numberQueueItems: currentSettings.numberQueueItems,
         filenameMetadataEnabled: currentSettings.filenameMetadataEnabled,
         filenameMetadataFields: [...currentSettings.filenameMetadataFields],
+        filenameMetadataPosition: currentSettings.filenameMetadataPosition,
         splitEmbeddedChapters: currentSettings.splitEmbeddedChapters,
         numberChapterFiles: currentSettings.numberChapterFiles,
         autoOrganizeCollections: currentSettings.autoOrganizeCollections,
@@ -1199,6 +1206,7 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
         numberQueueItems: currentSettings.numberQueueItems,
         filenameMetadataEnabled: currentSettings.filenameMetadataEnabled,
         filenameMetadataFields: [...currentSettings.filenameMetadataFields],
+        filenameMetadataPosition: currentSettings.filenameMetadataPosition,
         splitEmbeddedChapters: currentSettings.splitEmbeddedChapters,
         numberChapterFiles: currentSettings.numberChapterFiles,
         autoOrganizeCollections: currentSettings.autoOrganizeCollections,
@@ -1343,6 +1351,7 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
           numberQueueItems: settingsRef.current.numberQueueItems,
           filenameMetadataEnabled: settingsRef.current.filenameMetadataEnabled,
           filenameMetadataFields: [...settingsRef.current.filenameMetadataFields],
+          filenameMetadataPosition: settingsRef.current.filenameMetadataPosition,
           splitEmbeddedChapters: settingsRef.current.splitEmbeddedChapters,
           numberChapterFiles: settingsRef.current.numberChapterFiles,
           autoOrganizeCollections: settingsRef.current.autoOrganizeCollections,
@@ -1791,6 +1800,7 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
             numberQueueItems: itemSettings?.numberQueueItems ?? false,
             filenameMetadataEnabled: itemSettings?.filenameMetadataEnabled ?? false,
             filenameMetadataFields: itemSettings?.filenameMetadataFields ?? [],
+            filenameMetadataPosition: itemSettings?.filenameMetadataPosition ?? 'prefix',
             splitEmbeddedChapters: itemSettings?.splitEmbeddedChapters ?? false,
             numberChapterFiles: itemSettings?.numberChapterFiles ?? true,
             autoOrganizeCollections: itemSettings?.autoOrganizeCollections ?? false,

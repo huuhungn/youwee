@@ -12,7 +12,10 @@ import {
 import { syncAssetScopePaths } from '@/lib/asset-access';
 import { collectAssetScopeCandidates } from '@/lib/asset-paths';
 import { localizeUnknownError } from '@/lib/backend-error';
-import { resolveFilenameMetadataSettings } from '@/lib/filename-metadata';
+import {
+  resolveFilenameMetadataSettings,
+  sanitizeFilenameMetadataPosition,
+} from '@/lib/filename-metadata';
 import { buildCookieProxyInvokeOptions, loadNetworkSettings } from '@/lib/network-config';
 import {
   loadPluginWorkflowSnapshots,
@@ -20,6 +23,7 @@ import {
 } from '@/lib/post-download-plugins';
 import type {
   DownloadProgress,
+  FilenameMetadataPosition,
   HistoryAdvancedFilters,
   HistoryCollection,
   HistoryEntry,
@@ -606,6 +610,7 @@ export function HistoryProvider({ children }: { children: ReactNode }) {
       let filenameTemplate = '%(title)s.%(ext)s';
       let filenameMetadataEnabled = false;
       let filenameMetadataFields: string[] = [];
+      let filenameMetadataPosition: FilenameMetadataPosition = 'prefix';
       let organizeBySource = false;
       let savedOutputPath = '';
       try {
@@ -626,6 +631,9 @@ export function HistoryProvider({ children }: { children: ReactNode }) {
           );
           filenameMetadataEnabled = filenameMetadata.enabled;
           filenameMetadataFields = filenameMetadata.fields;
+          filenameMetadataPosition = sanitizeFilenameMetadataPosition(
+            parsed.filenameMetadataPosition,
+          );
           organizeBySource = parsed.organizeBySource === true;
           savedOutputPath = parsed.outputPath || '';
         }
@@ -698,6 +706,7 @@ export function HistoryProvider({ children }: { children: ReactNode }) {
           numberQueueItems: false,
           filenameMetadataEnabled,
           filenameMetadataFields,
+          filenameMetadataPosition,
           splitEmbeddedChapters: false,
           numberChapterFiles: true,
           autoOrganizeCollections: false,

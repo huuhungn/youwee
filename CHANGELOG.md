@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Filename metadata position** - Settings → Download can now place the selected filename metadata before (default) or after the title. Playlist and queue numbering still comes first, so files keep sorting in order.
+
 ## [0.20.1-custom.15] - 2026-11-17
 
 ### Fixed

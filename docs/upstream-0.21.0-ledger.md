@@ -1,6 +1,6 @@
 # Upstream 0.21.0 disposition ledger
 
-Status: the three error-message `port` rows (`9b63b1a`, `df8ac79`, `610d73c`) were adapted on branch `chore/upstream-0.21.0-port` and ship in `0.20.1-custom.15`. Every other row is ledger only: 4 `port` rows and 5 `adapt` rows stay open for a later wave, and 17 `record` rows are closed.
+Status: the three error-message `port` rows (`9b63b1a`, `df8ac79`, `610d73c`) were adapted on branch `chore/upstream-0.21.0-port` and ship in `0.20.1-custom.15`. `7d815e1` was ported afterwards on `port/upstream-0.21.0-filename-position`. Every other row is ledger only: 3 `port` rows and 5 `adapt` rows stay open for a later wave, and 17 `record` rows are closed.
 
 - Fork base: `a4c24f8` (`0.20.1-custom.14`, `origin/main`)
 - Upstream tip: `5fed7ac` (`v0.21.0`, 2026-11-13)
@@ -16,7 +16,7 @@ The fork diverges on purpose, so nothing here is merged or cherry-picked as is. 
 
 | Disposition | Count | Meaning |
 | --- | ---: | --- |
-| port | 7 | Missing behavior or missing file. 3 ported here, 4 open or not replayed. |
+| port | 7 | Missing behavior or missing file. 4 ported (3 in `0.20.1-custom.15`, `7d815e1` afterwards), 3 open or not replayed. |
 | adapt | 5 | Fork has the area. Diff upstream against the fork and take only the missing delta. |
 | record | 17 | Changelog, upstream version identity, or merge commits with no own content. |
 | Total | 29 | |
@@ -43,7 +43,7 @@ Diff these against the fork before editing. Do not replace the fork copy wholesa
 
 | SHA | Date | Subject | Fork evidence |
 | --- | --- | --- | --- |
-| `7d815e1` | 2026-11-12 | feat: let filename metadata go after the title | The fork has `filenameMetadataEnabled` and `filenameMetadataFields` in `src/lib/types.ts` but no `filenameMetadataPosition`. **Open, ledger only.** Upstream reshapes the template in `download.rs` (189 lines) and keeps the settings in `download-settings.ts`, which the fork inlines; adapt into the fork's template helpers and the queue-filename tests. |
+| `7d815e1` | 2026-11-12 | feat: let filename metadata go after the title | The fork has `filenameMetadataEnabled` and `filenameMetadataFields` in `src/lib/types.ts` but no `filenameMetadataPosition`. **Ported** on branch `port/upstream-0.21.0-filename-position`. The position (`prefix` default, `suffix`) is threaded through the fork's settings, item snapshots, history re-download and Channels flows; `build_output_template` inserts the metadata before the extension, so custom filename templates work and numbering stays first. |
 | `bb2ab09` | 2026-11-12 | feat: add first-run setup dialog for yt-dlp Stable and FFmpeg | The fork has `FFmpegDialog.tsx`, `DenoDialog.tsx` and `DependenciesContext`. **Open, ledger only.** Upstream replaces `FFmpegDialog` with a combined `SetupDialog` and changes `dependencies.rs`; the fork's bundled-dependency pack and Deno setup flow must stay, so this needs its own design pass. |
 | `581dba3` | 2026-11-12 | feat: install gallery-dl from the app | The fork already installs gallery-dl in the app from Codeberg, verified against `SHA256SUMS`, with a Homebrew hint on macOS (`services/gallerydl.rs`; keep list). **Open, ledger only.** Remaining delta: `gallerydl-download-progress` events, the install entry on the Gallery page, and the Gallery "Open Dependencies" button, which still opens `openSettingsPage('general')` in `src/App.tsx` (upstream changelog `682b7ab`). |
 | `fd8dd62` | 2026-11-13 | feat: add inline download buttons to X video posts in browser extension | The fork extension already lists `x.com` and `twitter.com` hosts and video selectors in `extensions/youwee-webext/src/shared.js`. **Open, ledger only.** Upstream adds inline buttons on X posts (`content.js`, `content.css`); adapt against the fork's extension and recheck Chromium and Firefox builds. |
@@ -92,4 +92,4 @@ These fork-only surfaces must still exist after every later port wave:
 
 Port wave 1 (2026-11-17, branch `chore/upstream-0.21.0-port`, release `0.20.1-custom.15`): `9b63b1a` and `df8ac79` ported, `610d73c` adapted. To check fit, each upstream hunk was compared with the fork's copy of `download.rs`, `ytdlp.rs`, `error.rs`, `backend-error.ts`, the two download contexts and `BrowserCookieErrorDialog.tsx`; the Rust hunks applied to code of the same shape, while the dialog and the cookie message pattern were adapted as noted in the Port table. Locale strings were copied from upstream for all 13 locales, and `tests/cookie-errors.test.ts` checks that every locale has every new key. Tested: `bun test`, `bun x tsc -b`, Biome with LF line endings, `cargo check --tests`, `cargo fmt --check`, and CI on the PR head. Not tested: a live bot check, an age-restricted download, or the macOS Full Disk Access path in the packaged app.
 
-Open rows, in suggested order: the one-line Gallery "Open Dependencies" fix from `581dba3`, then `7d815e1`, then the Linux packaging rows `02821b8`, `9e68aea` and `c121ae1` together (Ubuntu runner), then `fd8dd62`, `bb2ab09`, and `05cb871` as its own upgrade wave. `0d2f77b` waits for an owner decision.
+Open rows, in suggested order: the one-line Gallery "Open Dependencies" fix from `581dba3`, then the Linux packaging rows `02821b8`, `9e68aea` and `c121ae1` together (Ubuntu runner), then `fd8dd62`, `bb2ab09`, and `05cb871` as its own upgrade wave. `0d2f77b` waits for an owner decision.

@@ -1574,7 +1574,22 @@ fn filename_metadata_template(field: &str) -> Option<&'static str> {
     }
 }
 
-fn build_filename_metadata_prefix(enabled: bool, fields: &[String]) -> Option<String> {
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum FilenameMetadataPosition {
+    Prefix,
+    Suffix,
+}
+
+impl FilenameMetadataPosition {
+    fn from_setting(value: Option<&str>) -> Self {
+        match value {
+            Some("suffix") => Self::Suffix,
+            _ => Self::Prefix,
+        }
+    }
+}
+
+fn build_filename_metadata(enabled: bool, fields: &[String]) -> Option<String> {
     if !enabled {
         return None;
     }
@@ -1589,7 +1604,7 @@ fn build_filename_metadata_prefix(enabled: bool, fields: &[String]) -> Option<St
         }
     }
 
-    (!templates.is_empty()).then(|| format!("{}_", templates.join("_")))
+    (!templates.is_empty()).then(|| templates.join("_"))
 }
 
 fn build_output_template(
@@ -1597,16 +1612,27 @@ fn build_output_template(
     item_prefix: &str,
     filename_metadata_enabled: bool,
     filename_metadata_fields: &[String],
+    filename_metadata_position: FilenameMetadataPosition,
 ) -> String {
-    let metadata_prefix =
-        build_filename_metadata_prefix(filename_metadata_enabled, filename_metadata_fields)
-            .unwrap_or_default();
-    format!(
-        "{}{}{}",
-        item_prefix,
-        metadata_prefix,
-        normalize_filename_template(filename_template)
-    )
+    let mut template = normalize_filename_template(filename_template);
+    // Item numbering always stays first so files keep sorting in order.
+    let Some(metadata) =
+        build_filename_metadata(filename_metadata_enabled, filename_metadata_fields)
+    else {
+        return format!("{item_prefix}{template}");
+    };
+    match filename_metadata_position {
+        FilenameMetadataPosition::Prefix => format!("{item_prefix}{metadata}_{template}"),
+        FilenameMetadataPosition::Suffix => {
+            // Insert before the extension, like the collision suffix does.
+            let label = format!("_{metadata}");
+            match template.rfind(".%(ext") {
+                Some(extension_index) => template.insert_str(extension_index, &label),
+                None => template.push_str(&label),
+            }
+            format!("{item_prefix}{template}")
+        }
+    }
 }
 
 // A `yw-…` suffix only keeps a job's files apart while it runs; it is removed on completion.
@@ -2561,6 +2587,7 @@ pub async fn download_video(
     number_queue_items: Option<bool>,
     filename_metadata_enabled: Option<bool>,
     filename_metadata_fields: Option<Vec<String>>,
+    filename_metadata_position: Option<String>,
     split_embedded_chapters: Option<bool>,
     number_chapter_files: Option<bool>,
     auto_organize_collections: Option<bool>,
@@ -2741,9 +2768,10 @@ pub async fn download_video(
     );
     let filename_metadata_enabled = filename_metadata_enabled.unwrap_or(false);
     let filename_metadata_fields = filename_metadata_fields.unwrap_or_default();
+    let filename_metadata_position =
+        FilenameMetadataPosition::from_setting(filename_metadata_position.as_deref());
     let has_filename_metadata =
-        build_filename_metadata_prefix(filename_metadata_enabled, &filename_metadata_fields)
-            .is_some();
+        build_filename_metadata(filename_metadata_enabled, &filename_metadata_fields).is_some();
     let split_embedded_chapters = split_embedded_chapters.unwrap_or(false);
     let number_chapter_files = number_chapter_files.unwrap_or(true);
     let auto_organize_collections_enabled = auto_organize_collections.unwrap_or(false);
@@ -2760,6 +2788,7 @@ pub async fn download_video(
                 &item_prefix,
                 filename_metadata_enabled,
                 &filename_metadata_fields,
+                filename_metadata_position,
             ),
             collision_suffix.as_deref(),
         ),
@@ -5348,7 +5377,13 @@ mod tests {
     #[test]
     fn output_template_uses_safe_custom_filename_template() {
         assert_eq!(
-            build_output_template(Some("%(uploader)s - %(title)s".to_string()), "", false, &[]),
+            build_output_template(
+                Some("%(uploader)s - %(title)s".to_string()),
+                "",
+                false,
+                &[],
+                FilenameMetadataPosition::Prefix
+            ),
             "%(uploader)s - %(title)s.%(ext)s"
         );
         assert_eq!(
@@ -5357,11 +5392,18 @@ mod tests {
                 "",
                 false,
                 &[],
+                FilenameMetadataPosition::Prefix
             ),
             "%(title)s.%(ext)s"
         );
         assert_eq!(
-            build_output_template(Some("  ".to_string()), "", false, &[]),
+            build_output_template(
+                Some("  ".to_string()),
+                "",
+                false,
+                &[],
+                FilenameMetadataPosition::Prefix
+            ),
             "%(title)s.%(ext)s"
         );
         assert_eq!(output_path_arg("C:/Downloads/"), "home:C:/Downloads");
@@ -5402,6 +5444,7 @@ mod tests {
                 &regular_queue_prefix,
                 false,
                 &[],
+                FilenameMetadataPosition::Prefix
             ),
             "07 - %(title)s.%(ext)s"
         );
@@ -5422,8 +5465,69 @@ mod tests {
                 "07 - ",
                 true,
                 &fields,
+                FilenameMetadataPosition::Prefix
             ),
             "07 - %(upload_date>%Y-%m-%d)s_%(view_count)sviews_%(title)s.%(ext)s"
+        );
+    }
+
+    #[test]
+    fn output_template_places_filename_metadata_after_the_title_as_suffix() {
+        let fields = vec!["uploadDate".to_string(), "viewCount".to_string()];
+
+        assert_eq!(
+            build_output_template(
+                Some("%(title)s.%(ext)s".to_string()),
+                "07 - ",
+                true,
+                &fields,
+                FilenameMetadataPosition::Suffix
+            ),
+            "07 - %(title)s_%(upload_date>%Y-%m-%d)s_%(view_count)sviews.%(ext)s"
+        );
+        assert_eq!(
+            build_output_template(
+                Some("%(uploader)s - %(title)s".to_string()),
+                "",
+                true,
+                &["videoId".to_string()],
+                FilenameMetadataPosition::Suffix
+            ),
+            "%(uploader)s - %(title)s_%(id)s.%(ext)s"
+        );
+    }
+
+    #[test]
+    fn output_template_suffix_without_valid_fields_keeps_the_plain_title() {
+        assert_eq!(
+            build_output_template(
+                Some("%(title)s.%(ext)s".to_string()),
+                "",
+                true,
+                &["--cookies".to_string()],
+                FilenameMetadataPosition::Suffix
+            ),
+            "%(title)s.%(ext)s"
+        );
+    }
+
+    #[test]
+    fn filename_metadata_position_defaults_to_prefix() {
+        assert_eq!(
+            FilenameMetadataPosition::from_setting(Some("suffix")),
+            FilenameMetadataPosition::Suffix
+        );
+        assert_eq!(
+            FilenameMetadataPosition::from_setting(Some("prefix")),
+            FilenameMetadataPosition::Prefix
+        );
+        assert_eq!(
+            FilenameMetadataPosition::from_setting(Some("%(title)s")),
+            FilenameMetadataPosition::Prefix
+        );
+        assert_eq!(
+            FilenameMetadataPosition::from_setting(None),
+            FilenameMetadataPosition::Prefix
         );
     }
 
@@ -5431,17 +5535,29 @@ mod tests {
     fn output_template_ignores_filename_metadata_when_disabled_or_empty() {
         let fields = vec!["videoId".to_string()];
         assert_eq!(
-            build_output_template(Some("%(title)s.%(ext)s".to_string()), "", false, &fields,),
+            build_output_template(
+                Some("%(title)s.%(ext)s".to_string()),
+                "",
+                false,
+                &fields,
+                FilenameMetadataPosition::Prefix
+            ),
             "%(title)s.%(ext)s"
         );
-        assert!(build_filename_metadata_prefix(true, &["unknown".to_string()]).is_none());
+        assert!(build_filename_metadata(true, &["unknown".to_string()]).is_none());
     }
 
     #[test]
     fn windows_output_template_limits_plain_titles_for_intermediate_files() {
         let output_directory = r"\\?\C:\Users\Administrator\Downloads";
         let template = constrain_title_template_for_output(
-            build_output_template(Some(DEFAULT_FILENAME_TEMPLATE.to_string()), "", false, &[]),
+            build_output_template(
+                Some(DEFAULT_FILENAME_TEMPLATE.to_string()),
+                "",
+                false,
+                &[],
+                FilenameMetadataPosition::Prefix,
+            ),
             output_directory,
             None,
         );

@@ -2,7 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { localizeProgressError, localizeUnknownError } from '@/lib/backend-error';
 import { createClientId } from '@/lib/client-id';
 import { buildDownloadDuplicateIdentity } from '@/lib/download-duplicates';
-import { resolveFilenameMetadataSettings } from '@/lib/filename-metadata';
+import {
+  resolveFilenameMetadataSettings,
+  sanitizeFilenameMetadataPosition,
+} from '@/lib/filename-metadata';
 import { buildCookieProxyInvokeOptions, loadNetworkSettings } from '@/lib/network-config';
 import {
   enqueuePluginWorkflowTrigger,
@@ -13,6 +16,7 @@ import {
 import type {
   ChannelVideo,
   DownloadSettings,
+  FilenameMetadataPosition,
   FollowedChannel,
   PlaylistVideoEntry,
   PostDownloadPluginPayload,
@@ -825,6 +829,7 @@ export function useChannelsController(): ChannelsContextType {
       let filenameTemplate = '%(title)s.%(ext)s';
       let filenameMetadataEnabled = false;
       let filenameMetadataFields: string[] = [];
+      let filenameMetadataPosition: FilenameMetadataPosition = 'prefix';
       let skipExisting = false;
       let organizeBySource = false;
       let embedMetadata = false;
@@ -864,6 +869,9 @@ export function useChannelsController(): ChannelsContextType {
           );
           filenameMetadataEnabled = filenameMetadata.enabled;
           filenameMetadataFields = filenameMetadata.fields;
+          filenameMetadataPosition = sanitizeFilenameMetadataPosition(
+            parsed.filenameMetadataPosition,
+          );
           skipExisting = parsed.skipExisting === true;
           organizeBySource = parsed.organizeBySource === true;
           embedMetadata = parsed.embedMetadata || false;
@@ -977,6 +985,7 @@ export function useChannelsController(): ChannelsContextType {
                 filenameTemplate,
                 filenameMetadataEnabled,
                 filenameMetadataFields,
+                filenameMetadataPosition,
                 skipExisting,
                 organizeBySource,
                 quality,
@@ -1312,6 +1321,7 @@ export function useChannelsController(): ChannelsContextType {
         let filenameTemplate = '%(title)s.%(ext)s';
         let filenameMetadataEnabled = false;
         let filenameMetadataFields: string[] = [];
+        let filenameMetadataPosition: FilenameMetadataPosition = 'prefix';
         let skipExisting = false;
         let organizeBySource = false;
         let autoOrganizeCollections = false;
@@ -1335,6 +1345,9 @@ export function useChannelsController(): ChannelsContextType {
             );
             filenameMetadataEnabled = filenameMetadata.enabled;
             filenameMetadataFields = filenameMetadata.fields;
+            filenameMetadataPosition = sanitizeFilenameMetadataPosition(
+              parsed.filenameMetadataPosition,
+            );
             skipExisting = parsed.skipExisting === true;
             organizeBySource = parsed.organizeBySource === true;
             autoOrganizeCollections = parsed.autoOrganizeCollections === true;
@@ -1445,6 +1458,7 @@ export function useChannelsController(): ChannelsContextType {
               filenameTemplate,
               filenameMetadataEnabled,
               filenameMetadataFields,
+              filenameMetadataPosition,
               skipExisting,
               organizeBySource,
               quality,
