@@ -7,6 +7,8 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.20.1-custom.17] - 2026-11-18
+
 ### Thêm mới
 - **Nhớ kích thước và vị trí cửa sổ** - Youwee mở lại với đúng kích thước, vị trí và trạng thái phóng to như lúc bạn thoát. Nếu màn hình chứa cửa sổ không còn được kết nối, cửa sổ sẽ mở trên màn hình chính thay vì nằm ngoài màn hình. Lần chạy đầu tiên giữ kích thước mặc định. Ý tưởng từ imsyy/yt-dlp-gui.
 
