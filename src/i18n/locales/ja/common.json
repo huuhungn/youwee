@@ -137,6 +137,7 @@
     "ARIA2_NOT_FOUND": "aria2c が見つかりません。aria2 をインストールし、PATH で aria2c が利用可能であることを確認してください。",
     "FFMPEG_NOT_FOUND": "FFmpeg が見つかりません。設定の依存関係を確認してください。",
     "FFMPEG_SYSTEM_MANAGED": "システムの FFmpeg は外部で管理されています。パッケージマネージャーで更新するか、アプリ管理に切り替えてください。",
+    "FFMPEG_CUSTOM_PATH_INVALID": "このパスに動作する FFmpeg がありません。ffmpeg 本体か、それを含むフォルダーを選んでください。",
     "AI_API_ERROR": "AI API エラー。",
     "AI_NO_API_KEY": "API キーが設定されていません。",
     "AI_NO_TRANSCRIPT": "利用可能な文字起こしがありません。",

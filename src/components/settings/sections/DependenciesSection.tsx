@@ -1,6 +1,7 @@
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faGlobe as faGlobeIcon } from '@fortawesome/free-solid-svg-icons';
 import { invoke } from '@tauri-apps/api/core';
+import { open } from '@tauri-apps/plugin-dialog';
 import {
   AlertCircle,
   Check,
@@ -57,6 +58,8 @@ export function DependenciesSection({ highlightId }: DependenciesSectionProps) {
     tool: 'ytdlp' | 'ffmpeg';
     source: Exclude<DependencySource, 'auto'>;
   } | null>(null);
+  // Typed custom FFmpeg path, saved on blur or Enter.
+  const [ffmpegPathDraft, setFfmpegPathDraft] = useState<string | null>(null);
   const { settings, updateSettings, updateUseActualPlayerJs } = useDownload();
   const {
     // yt-dlp
@@ -94,6 +97,8 @@ export function DependenciesSection({ highlightId }: DependenciesSectionProps) {
     downloadFfmpeg,
     ffmpegDownloadProgress,
     setFfmpegSource,
+    ffmpegCustomPath,
+    setFfmpegCustomPath,
     checkFfmpeg,
     // Deno
     denoStatus,
@@ -157,7 +162,8 @@ export function DependenciesSection({ highlightId }: DependenciesSectionProps) {
   const handleFfmpegSourceChange = async (nextSource: Exclude<DependencySource, 'auto'>) => {
     if (
       (nextSource === 'system' && ffmpegSource === 'system') ||
-      (nextSource === 'app' && ffmpegSource === 'app')
+      (nextSource === 'app' && ffmpegSource === 'app') ||
+      (nextSource === 'custom' && ffmpegSource === 'custom')
     ) {
       return;
     }
@@ -166,6 +172,30 @@ export function DependenciesSection({ highlightId }: DependenciesSectionProps) {
       return;
     }
     await setFfmpegSource(nextSource);
+  };
+
+  const pickFfmpegCustomPath = async (directory: boolean) => {
+    const selected = await open({
+      multiple: false,
+      directory,
+      title: t(
+        directory
+          ? 'dependencies.customPathFolderDialogTitle'
+          : 'dependencies.customPathDialogTitle',
+      ),
+    }).catch(() => null);
+    if (typeof selected === 'string' && selected.trim() !== '') {
+      if (await setFfmpegCustomPath(selected)) setFfmpegPathDraft(null);
+    }
+  };
+
+  const commitFfmpegPathDraft = async () => {
+    if (ffmpegPathDraft === null) return;
+    if (ffmpegPathDraft.trim() === (ffmpegCustomPath ?? '')) {
+      setFfmpegPathDraft(null);
+      return;
+    }
+    if (await setFfmpegCustomPath(ffmpegPathDraft)) setFfmpegPathDraft(null);
   };
 
   const handleConfirmSourceChange = async () => {
@@ -220,12 +250,20 @@ export function DependenciesSection({ highlightId }: DependenciesSectionProps) {
     ytdlpSource === 'system' ? 'system' : 'app';
   // Legacy FFmpeg `auto` can resolve to system FFmpeg, so display the resolved source.
   const ffmpegSourceUi: Exclude<DependencySource, 'auto'> =
-    ffmpegSource === 'system' || (ffmpegSource === 'auto' && ffmpegStatus?.is_system)
-      ? 'system'
-      : 'app';
+    ffmpegSource === 'custom'
+      ? 'custom'
+      : ffmpegSource === 'system' || (ffmpegSource === 'auto' && ffmpegStatus?.is_system)
+        ? 'system'
+        : 'app';
   const isFfmpegSystemSource = ffmpegSourceUi === 'system';
+  // A custom FFmpeg is replaced by the user, so Youwee neither checks nor offers updates for it.
+  const isFfmpegCustomSource = ffmpegSourceUi === 'custom';
+  const ffmpegSourceOptions: Array<{ value: Exclude<DependencySource, 'auto'>; label: string }> = [
+    ...sourceOptions,
+    { value: 'custom', label: t('dependencies.sourceCustomPath') },
+  ];
   const ffmpegUpdateState = resolveManagedDependencyUpdateState({
-    updateInfo: ffmpegUpdateInfo,
+    updateInfo: isFfmpegCustomSource ? null : ffmpegUpdateInfo,
     isSystem: isFfmpegSystemSource,
     isBundled: ffmpegStatus?.is_bundled === true,
   });
@@ -668,7 +706,8 @@ export function DependenciesSection({ highlightId }: DependenciesSectionProps) {
               <div className="flex items-center gap-2">
                 {ffmpegUpdateInfo?.has_update &&
                   !ffmpegStatus?.is_system &&
-                  !isFfmpegSystemSource && (
+                  !isFfmpegSystemSource &&
+                  !isFfmpegCustomSource && (
                     <Button size="sm" onClick={downloadFfmpeg} disabled={ffmpegDownloading}>
                       {ffmpegDownloading ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -689,7 +728,9 @@ export function DependenciesSection({ highlightId }: DependenciesSectionProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={isFfmpegSystemSource ? checkFfmpeg : checkFfmpegUpdate}
+                  onClick={
+                    isFfmpegSystemSource || isFfmpegCustomSource ? checkFfmpeg : checkFfmpegUpdate
+                  }
                   disabled={
                     ffmpegLoading ||
                     ffmpegDownloading ||
@@ -711,8 +752,8 @@ export function DependenciesSection({ highlightId }: DependenciesSectionProps) {
               <p className="text-[11px] font-medium text-muted-foreground">
                 {t('dependencies.source')}
               </p>
-              <div className="grid grid-cols-2 gap-1">
-                {sourceOptions.map((option) => {
+              <div className="grid grid-cols-3 gap-1">
+                {ffmpegSourceOptions.map((option) => {
                   const isActive = ffmpegSourceUi === option.value;
                   return (
                     <button
@@ -732,11 +773,72 @@ export function DependenciesSection({ highlightId }: DependenciesSectionProps) {
                   );
                 })}
               </div>
+              {isFfmpegCustomSource && (
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="text"
+                      aria-label={t('dependencies.sourceCustomPath')}
+                      value={ffmpegPathDraft ?? ffmpegCustomPath ?? ''}
+                      onChange={(event) => setFfmpegPathDraft(event.target.value)}
+                      onBlur={() => void commitFfmpegPathDraft()}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                          event.preventDefault();
+                          void commitFfmpegPathDraft();
+                        }
+                      }}
+                      placeholder={t('dependencies.customPathPlaceholder')}
+                      spellCheck={false}
+                      disabled={ffmpegDownloading}
+                      className="flex-1 min-w-0 h-7 rounded-md border border-border bg-background px-2 text-xs font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 px-2 text-xs"
+                      onClick={() => void pickFfmpegCustomPath(false)}
+                      disabled={ffmpegDownloading}
+                      title={t('dependencies.customPathDialogTitle')}
+                    >
+                      {t('dependencies.customPathBrowse')}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 px-2 text-xs"
+                      onClick={() => void pickFfmpegCustomPath(true)}
+                      disabled={ffmpegDownloading}
+                      title={t('dependencies.customPathFolderDialogTitle')}
+                    >
+                      {t('dependencies.customPathBrowseFolder')}
+                    </Button>
+                    {ffmpegCustomPath ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-xs text-muted-foreground"
+                        onClick={async () => {
+                          if (await setFfmpegCustomPath('')) setFfmpegPathDraft(null);
+                        }}
+                        disabled={ffmpegDownloading}
+                      >
+                        {t('dependencies.customPathClear')}
+                      </Button>
+                    ) : null}
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    {t('dependencies.customPathHint')}
+                  </p>
+                </div>
+              )}
             </div>
 
             <p className="mt-3 rounded-md bg-muted/40 px-2.5 py-2 text-[11px] text-muted-foreground">
               <span className="font-medium text-foreground">{t('dependencies.updatePolicy')}:</span>{' '}
-              {getUpdatePolicy(isFfmpegSystemSource)}
+              {isFfmpegCustomSource
+                ? t('dependencies.updatePolicyLocalStatusOnly')
+                : getUpdatePolicy(isFfmpegSystemSource)}
             </p>
 
             {/* The app-managed download button is hidden when the source is

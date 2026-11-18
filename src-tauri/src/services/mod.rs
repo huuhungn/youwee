@@ -55,7 +55,10 @@ pub(super) fn select_dependency_path_for_source(
     match source {
         DependencySource::System => system,
         DependencySource::App => app_managed.or(packaged),
-        DependencySource::Auto => select_preferred_dependency_path(app_managed, packaged, system),
+        // A custom path is resolved by its caller; when it is unusable, fall back to the automatic order.
+        DependencySource::Auto | DependencySource::Custom => {
+            select_preferred_dependency_path(app_managed, packaged, system)
+        }
     }
 }
 
@@ -140,6 +143,19 @@ mod tests {
                 None,
             ),
             None
+        );
+    }
+
+    #[test]
+    fn unusable_custom_path_falls_back_to_the_automatic_order() {
+        assert_eq!(
+            select_dependency_path_for_source(
+                &DependencySource::Custom,
+                None,
+                path("packaged"),
+                path("system"),
+            ),
+            path("packaged")
         );
     }
 

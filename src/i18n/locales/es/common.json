@@ -137,6 +137,7 @@
     "ARIA2_NOT_FOUND": "No se encontró aria2c. Instala aria2 y asegúrate de que aria2c esté disponible en el PATH.",
     "FFMPEG_NOT_FOUND": "No se encontró FFmpeg. Comprueba la configuración de Dependencias.",
     "FFMPEG_SYSTEM_MANAGED": "El FFmpeg del sistema se gestiona externamente. Actuálizalo con tu gestor de paquetes o cambia a 'Gestionado por la aplicación'.",
+    "FFMPEG_CUSTOM_PATH_INVALID": "No hay un FFmpeg que funcione en esta ruta. Elige el programa ffmpeg o la carpeta que lo contiene.",
     "AI_API_ERROR": "Error en la API de IA.",
     "AI_NO_API_KEY": "Clave API no configurada.",
     "AI_NO_TRANSCRIPT": "No hay transcripción disponible.",

@@ -137,6 +137,7 @@
     "ARIA2_NOT_FOUND": "لم يتم العثور على aria2c. ثبّت aria2 وتأكد من أن aria2c متاح في PATH.",
     "FFMPEG_NOT_FOUND": "لم يتم العثور على FFmpeg. تحقق من إعدادات Dependencies.",
     "FFMPEG_SYSTEM_MANAGED": "FFmpeg الخاص بالنظام مُدار خارجيًا. حدّثه عبر مدير الحزم أو بدّل إلى App managed.",
+    "FFMPEG_CUSTOM_PATH_INVALID": "لا يوجد FFmpeg صالح للتشغيل في هذا المسار. اختر برنامج ffmpeg أو المجلد الذي يحتويه.",
     "AI_API_ERROR": "خطأ في واجهة AI.",
     "AI_NO_API_KEY": "لم يتم إعداد مفتاح API.",
     "AI_NO_TRANSCRIPT": "لا يوجد نص تفريغ متاح.",

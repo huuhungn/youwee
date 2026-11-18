@@ -2,12 +2,13 @@ use crate::services::{
     check_deno_internal, check_deno_update_internal, check_ffmpeg_internal,
     check_ffmpeg_update_internal, check_gallerydl_internal, check_gallerydl_update_internal,
     dependency_download_percent, get_all_ytdlp_versions, get_channel_api_url,
-    get_deno_checksum_url, get_deno_download_url, get_ffmpeg_download_info, get_ffmpeg_path,
-    get_ffmpeg_source, get_latest_ffmpeg_release_info, get_ytdlp_channel,
-    get_ytdlp_channel_download_url, get_ytdlp_channel_version, get_ytdlp_download_info,
-    get_ytdlp_source, get_ytdlp_version_internal, install_gallerydl_internal,
-    parse_deno_checksum_response, parse_ffmpeg_version, set_ffmpeg_source, set_ytdlp_channel,
-    set_ytdlp_source, system_ffmpeg_upgrade_message, system_ytdlp_install_hint,
+    get_deno_checksum_url, get_deno_download_url, get_ffmpeg_custom_path_setting,
+    get_ffmpeg_download_info, get_ffmpeg_path, get_ffmpeg_source, get_latest_ffmpeg_release_info,
+    get_ytdlp_channel, get_ytdlp_channel_download_url, get_ytdlp_channel_version,
+    get_ytdlp_download_info, get_ytdlp_source, get_ytdlp_version_internal,
+    install_gallerydl_internal, is_working_ffmpeg, parse_deno_checksum_response,
+    parse_ffmpeg_version, resolve_custom_binary, set_ffmpeg_custom_path_setting, set_ffmpeg_source,
+    set_ytdlp_channel, set_ytdlp_source, system_ffmpeg_upgrade_message, system_ytdlp_install_hint,
     system_ytdlp_upgrade_message, update_gallerydl_internal, verify_sha256,
     write_app_ffmpeg_release_version, DenoUpdateInfo, FfmpegUpdateInfo, GalleryDlUpdateInfo,
 };
@@ -318,6 +319,9 @@ pub async fn get_ytdlp_source_cmd(app: AppHandle) -> Result<String, String> {
 #[tauri::command]
 pub async fn set_ytdlp_source_cmd(app: AppHandle, source: String) -> Result<(), String> {
     let source_enum = DependencySource::from_label(&source);
+    if source_enum == DependencySource::Custom {
+        return Err("A custom path is only supported for FFmpeg".to_string());
+    }
     set_ytdlp_source(&app, &source_enum).await
 }
 
@@ -585,6 +589,31 @@ pub async fn get_ffmpeg_source_cmd(app: AppHandle) -> Result<String, String> {
 pub async fn set_ffmpeg_source_cmd(app: AppHandle, source: String) -> Result<(), String> {
     let source_enum = DependencySource::from_label(&source);
     set_ffmpeg_source(&app, &source_enum).await
+}
+
+#[tauri::command]
+pub async fn get_ffmpeg_custom_path_cmd(app: AppHandle) -> Result<Option<String>, String> {
+    Ok(get_ffmpeg_custom_path_setting(&app).await)
+}
+
+/// Save the custom FFmpeg path after checking that it runs; an empty path clears it.
+#[tauri::command]
+pub async fn set_ffmpeg_custom_path_cmd(app: AppHandle, path: String) -> Result<(), String> {
+    if !path.trim().is_empty() {
+        let working = match resolve_custom_binary(Some(path.clone())) {
+            Some(binary) => is_working_ffmpeg(&binary).await,
+            None => false,
+        };
+        if !working {
+            return Err(BackendError::new(
+                crate::types::code::FFMPEG_CUSTOM_PATH_INVALID,
+                "No working FFmpeg at this path. Choose the ffmpeg program or the folder that contains it.",
+            )
+            .with_retryable(false)
+            .to_wire_string());
+        }
+    }
+    set_ffmpeg_custom_path_setting(&app, &path).await
 }
 
 #[tauri::command]

@@ -9,6 +9,7 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Thêm mới
 - **Nút tải trên bài đăng X** - Với tiện ích trình duyệt, mỗi bài đăng X (Twitter) có video giờ hiện nút tải Youwee cạnh nút đánh dấu. Nút này tải video của chính bài đăng đó ở chất lượng tốt nhất, kể cả khi đang ở dòng thời gian trang chủ. Trên X, widget nổi không còn hiện ra vì nó chỉ thấy được địa chỉ của dòng thời gian. Port từ upstream v0.21.0.
+- **Đường dẫn FFmpeg tùy chỉnh** - Cài đặt → Phụ thuộc → FFmpeg có thêm nguồn thứ ba, Đường dẫn tùy chỉnh, cho bản FFmpeg di động. Nhập đường dẫn, hoặc chọn chương trình ffmpeg hay thư mục chứa nó. Youwee chạy thử một lần trước khi lưu và từ chối đường dẫn không phải FFmpeg chạy được. Nếu sau này FFmpeg đã lưu không còn chạy, việc tải sẽ chuyển sang FFmpeg của Youwee hoặc của hệ thống thay vì báo lỗi. Youwee không đề xuất cập nhật cho FFmpeg tùy chỉnh. Theo yêu cầu ở issue #80 của upstream; dựa trên fork WasewaseX/youwee.
 
 ### Thay đổi
 - **Tôn trọng cài đặt "giảm chuyển động" của hệ thống** - Khi macOS, Windows hoặc Linux yêu cầu ứng dụng giảm chuyển động, việc chuyển giữa chế độ sáng và tối diễn ra ngay, không còn hiệu ứng thiên thạch và rung màn hình, các thao tác nhảy tới mục trong hàng đợi và cài đặt không còn cuộn trượt, và các hiệu ứng trượt, lấp lánh, phát sáng kết thúc ngay. Biểu tượng đang tải và các chấm tiến độ nhấp nháy vẫn chuyển động để bạn biết công việc đang chạy.
