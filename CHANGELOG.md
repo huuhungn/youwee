@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Window grew taller on every launch (Windows)** - Since 0.20.1-custom.17 the remembered window size was applied before Youwee replaced the Windows title bar with its own, so each restart made the window about one title bar taller. The size is now restored after that switch and stays the same across launches.
+
 ## [0.20.1-custom.17] - 2026-11-18
 
 ### Added
