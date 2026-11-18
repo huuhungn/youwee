@@ -9,6 +9,7 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Thay đổi
 - **yt-dlp đi kèm 2026.10.26** - Bộ cài Windows Full nay kèm yt-dlp 2026.10.26 thay cho 2026.07.04 (vẫn ghim checksum như trước). Với bản cũ, YouTube từ chối tải khi có khoảng thời gian (lỗi HTTP 403).
+- **Tiện ích Firefox 0.19.1.39 trên AMO** - Bộ cài Windows và tệp chuyển tiếp `firefox-updates.json` trong bản phát hành nay trỏ tới bản 0.19.1.39 công khai đã được AMO duyệt của Youwee Download Companion, thay cho 0.19.1.37.
 
 ## [0.20.1-custom.18] - 2026-11-18
 
