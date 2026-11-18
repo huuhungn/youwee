@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.20.1-custom.20] - 2026-11-18
+
 ### Fixed
 - **Trimmed downloads carried a full-length chapter track** - With Embed metadata on, a download limited to a time range also embedded the source video's chapters, which still covered the whole video, so the file gained an extra data track as long as the original. Trimmed downloads now skip the source chapters; full downloads keep them.
 

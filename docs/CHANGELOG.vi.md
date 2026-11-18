@@ -7,6 +7,8 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.20.1-custom.20] - 2026-11-18
+
 ### Sửa lỗi
 - **Tệp tải theo khoảng thời gian kèm rãnh chương dài bằng cả video** - Khi bật Nhúng metadata, bản tải chỉ một khoảng thời gian vẫn nhúng các chương của video gốc, vốn trải dài cả video, nên tệp có thêm một rãnh dữ liệu dài bằng bản gốc. Nay bản tải theo khoảng thời gian bỏ qua các chương gốc; bản tải đầy đủ vẫn giữ chúng.
 
