@@ -136,6 +136,7 @@
     "ARIA2_NOT_FOUND": "aria2c topilmadi. Aria2 ni oʻrnating va aria2c PATH da mavjudligiga ishonch hosil qiling.",
     "FFMPEG_NOT_FOUND": "FFmpeg topilmadi. Dependencies sozlamalarini tekshiring.",
     "FFMPEG_SYSTEM_MANAGED": "FFmpeg tizimi tashqi tomondan boshqariladi. Uni paket menejeri orqali yangilang yoki ilova boshqariladi ga oʻting.",
+    "FFMPEG_CUSTOM_PATH_INVALID": "Bu yoʻlda ishlaydigan FFmpeg yoʻq. ffmpeg dasturini yoki uni oʻz ichiga olgan papkani tanlang.",
     "AI_API_ERROR": "AI API xatosi.",
     "AI_NO_API_KEY": "API kaliti sozlanmagan.",
     "AI_NO_TRANSCRIPT": "Transkript mavjud emas.",

@@ -136,6 +136,7 @@
     "ARIA2_NOT_FOUND": "aria2c nu a fost găsit. Instalați aria2 și asigurați-vă că aria2c este disponibil în PATH.",
     "FFMPEG_NOT_FOUND": "FFmpeg nu a fost găsit. Verificați setările Dependențe.",
     "FFMPEG_SYSTEM_MANAGED": "Sistemul FFmpeg este gestionat extern. Actualizați-l cu managerul de pachete sau comutați la Gestionat aplicație.",
+    "FFMPEG_CUSTOM_PATH_INVALID": "Nu există un FFmpeg funcțional la această cale. Alegeți programul ffmpeg sau folderul care îl conține.",
     "AI_API_ERROR": "AI API eroare.",
     "AI_NO_API_KEY": "Cheia API nu este configurată.",
     "AI_NO_TRANSCRIPT": "Nu există o transcriere disponibilă.",

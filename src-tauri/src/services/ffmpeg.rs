@@ -1,13 +1,14 @@
 use super::{get_packaged_dependency_path, select_dependency_path_for_source};
 use crate::types::{DependencySource, FfmpegStatus};
 use crate::utils::{find_system_binary, unix_system_binary_dirs, CommandExt};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::Stdio;
 use tauri::{AppHandle, Manager};
 use tokio::process::Command;
 
 const SOURCE_CONFIG_FILE: &str = "ffmpeg-source.txt";
 const RELEASE_VERSION_FILE: &str = "ffmpeg-release-version.txt";
+const CUSTOM_PATH_FILE: &str = "ffmpeg-custom-path.txt";
 
 pub fn system_ffmpeg_upgrade_message() -> String {
     #[cfg(target_os = "macos")]
@@ -121,6 +122,95 @@ pub async fn set_ffmpeg_source(app: &AppHandle, source: &DependencySource) -> Re
     Ok(())
 }
 
+fn get_ffmpeg_custom_path_config_path(app: &AppHandle) -> Option<PathBuf> {
+    app.path()
+        .app_data_dir()
+        .ok()
+        .map(|p| p.join("bin").join(CUSTOM_PATH_FILE))
+}
+
+/// The FFmpeg path the user entered for the "custom" source, if any.
+pub async fn get_ffmpeg_custom_path_setting(app: &AppHandle) -> Option<String> {
+    let config_path = get_ffmpeg_custom_path_config_path(app)?;
+    let content = tokio::fs::read_to_string(&config_path).await.ok()?;
+    let trimmed = content.trim();
+    (!trimmed.is_empty()).then(|| trimmed.to_string())
+}
+
+/// Save the custom FFmpeg path; an empty string clears it.
+pub async fn set_ffmpeg_custom_path_setting(app: &AppHandle, path: &str) -> Result<(), String> {
+    let config_path = get_ffmpeg_custom_path_config_path(app).ok_or("Failed to get config path")?;
+
+    if let Some(parent) = config_path.parent() {
+        tokio::fs::create_dir_all(parent)
+            .await
+            .map_err(|e| format!("Failed to create bin directory: {}", e))?;
+    }
+
+    tokio::fs::write(&config_path, path.trim())
+        .await
+        .map_err(|e| format!("Failed to save custom FFmpeg path: {}", e))?;
+
+    Ok(())
+}
+
+/// Resolve a user-provided FFmpeg path: the binary itself, or a folder that holds it.
+/// Returns `None` when there is no such file or (on unix) it is not executable.
+pub fn resolve_custom_binary(configured: Option<String>) -> Option<PathBuf> {
+    let candidate = PathBuf::from(configured?.trim());
+    if candidate.as_os_str().is_empty() {
+        return None;
+    }
+    let binary = if candidate.is_dir() {
+        #[cfg(windows)]
+        let binary = candidate.join("ffmpeg.exe");
+        #[cfg(not(windows))]
+        let binary = candidate.join("ffmpeg");
+        binary
+    } else {
+        candidate
+    };
+
+    if !binary.is_file() {
+        return None;
+    }
+
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let mode = std::fs::metadata(&binary).ok()?.permissions().mode();
+        if mode & 0o111 == 0 {
+            return None;
+        }
+    }
+
+    Some(binary)
+}
+
+/// Run `ffmpeg -version` (3 s limit) to make sure a custom path really is a working FFmpeg.
+pub async fn is_working_ffmpeg(path: &Path) -> bool {
+    let mut cmd = Command::new(path);
+    cmd.args(["-version"])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped());
+    cmd.hide_window();
+
+    match tokio::time::timeout(std::time::Duration::from_secs(3), cmd.output()).await {
+        Ok(Ok(output)) => {
+            output.status.success()
+                && String::from_utf8_lossy(&output.stdout).starts_with("ffmpeg version")
+        }
+        _ => false,
+    }
+}
+
+/// The custom FFmpeg binary when it resolves and runs.
+async fn get_custom_ffmpeg_path(app: &AppHandle) -> Option<PathBuf> {
+    let binary = resolve_custom_binary(get_ffmpeg_custom_path_setting(app).await)?;
+    let working = is_working_ffmpeg(&binary).await;
+    working.then_some(binary)
+}
+
 fn get_app_ffmpeg_path(app: &AppHandle) -> Option<PathBuf> {
     let app_data_dir = app.path().app_data_dir().ok()?;
     let bin_dir = app_data_dir.join("bin");
@@ -157,6 +247,11 @@ fn get_packaged_ffmpeg_path(app: &AppHandle) -> Option<PathBuf> {
 /// Get the FFmpeg binary path (app data or system)
 pub async fn get_ffmpeg_path(app: &AppHandle) -> Option<PathBuf> {
     let source = get_ffmpeg_source(app).await;
+    if source == DependencySource::Custom {
+        if let Some(path) = get_custom_ffmpeg_path(app).await {
+            return Some(path);
+        }
+    }
     select_dependency_path_for_source(
         &source,
         get_app_ffmpeg_path(app),
@@ -474,6 +569,21 @@ pub async fn check_ffmpeg_update_internal(app: &AppHandle) -> Result<FfmpegUpdat
         });
     }
 
+    // A custom FFmpeg is replaced by the user, so there is no app update for it.
+    if get_ffmpeg_source(app).await == DependencySource::Custom {
+        let custom = get_custom_ffmpeg_path(app)
+            .await
+            .map(|p| p.to_string_lossy().to_string());
+        if custom.is_some() && custom == current_status.binary_path {
+            return Ok(FfmpegUpdateInfo {
+                has_update: false,
+                current_version,
+                latest_version: None,
+                release_url: None,
+            });
+        }
+    }
+
     let latest_release = get_latest_ffmpeg_release_info().await?;
     let latest_version = latest_release.version;
 
@@ -497,9 +607,76 @@ pub async fn check_ffmpeg_update_internal(app: &AppHandle) -> Result<FfmpegUpdat
 #[cfg(test)]
 mod tests {
     use super::{
-        ffmpeg_install_hint, ffmpeg_version_has_update, normalize_ffmpeg_release_version,
-        parse_ffmpeg_version, select_ffmpeg_release_version,
+        ffmpeg_install_hint, ffmpeg_version_has_update, is_working_ffmpeg,
+        normalize_ffmpeg_release_version, parse_ffmpeg_version, resolve_custom_binary,
+        select_ffmpeg_release_version,
     };
+
+    fn make_executable(path: &std::path::Path) {
+        std::fs::write(path, b"").expect("write probe file");
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o755))
+                .expect("chmod probe");
+        }
+    }
+
+    #[test]
+    fn custom_binary_needs_a_setting() {
+        assert!(resolve_custom_binary(None).is_none());
+        assert!(resolve_custom_binary(Some(String::new())).is_none());
+        assert!(resolve_custom_binary(Some("   ".to_string())).is_none());
+        assert!(
+            resolve_custom_binary(Some("/nonexistent/youwee-test/ffmpeg".to_string())).is_none()
+        );
+    }
+
+    #[test]
+    fn custom_binary_accepts_the_file_or_its_folder() {
+        let dir = std::env::temp_dir().join(format!("youwee-ffmpeg-custom-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).expect("create probe dir");
+        #[cfg(windows)]
+        let bin = dir.join("ffmpeg.exe");
+        #[cfg(not(windows))]
+        let bin = dir.join("ffmpeg");
+
+        // A folder without the binary does not resolve.
+        assert!(resolve_custom_binary(Some(dir.to_string_lossy().to_string())).is_none());
+
+        make_executable(&bin);
+        assert_eq!(
+            resolve_custom_binary(Some(dir.to_string_lossy().to_string())),
+            Some(bin.clone())
+        );
+        assert_eq!(
+            resolve_custom_binary(Some(format!(" {} ", bin.to_string_lossy()))),
+            Some(bin.clone())
+        );
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn custom_binary_must_be_executable() {
+        use std::os::unix::fs::PermissionsExt;
+        let probe =
+            std::env::temp_dir().join(format!("youwee-ffmpeg-noexec-{}", std::process::id()));
+        std::fs::write(&probe, b"").expect("write probe file");
+        std::fs::set_permissions(&probe, std::fs::Permissions::from_mode(0o644))
+            .expect("chmod probe");
+        assert!(resolve_custom_binary(Some(probe.to_string_lossy().to_string())).is_none());
+        std::fs::remove_file(&probe).ok();
+    }
+
+    #[tokio::test]
+    async fn only_a_running_ffmpeg_counts_as_working() {
+        // The test binary runs, but its output is not "ffmpeg version ...".
+        let exe = std::env::current_exe().expect("current exe");
+        assert!(!is_working_ffmpeg(&exe).await);
+        let missing = std::env::temp_dir().join("youwee-ffmpeg-missing-binary");
+        assert!(!is_working_ffmpeg(&missing).await);
+    }
 
     #[test]
     fn install_hint_names_a_package_manager_command() {

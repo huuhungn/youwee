@@ -42,6 +42,7 @@ pub mod code {
     pub const ARIA2_NOT_FOUND: &str = "ARIA2_NOT_FOUND";
     pub const FFMPEG_NOT_FOUND: &str = "FFMPEG_NOT_FOUND";
     pub const FFMPEG_SYSTEM_MANAGED: &str = "FFMPEG_SYSTEM_MANAGED";
+    pub const FFMPEG_CUSTOM_PATH_INVALID: &str = "FFMPEG_CUSTOM_PATH_INVALID";
     pub const AI_API_ERROR: &str = "AI_API_ERROR";
     pub const AI_NO_API_KEY: &str = "AI_NO_API_KEY";
     pub const AI_NO_TRANSCRIPT: &str = "AI_NO_TRANSCRIPT";

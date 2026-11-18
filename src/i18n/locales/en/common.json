@@ -137,6 +137,7 @@
     "ARIA2_NOT_FOUND": "aria2c not found. Install aria2 and make sure aria2c is available in PATH.",
     "FFMPEG_NOT_FOUND": "FFmpeg not found. Check Dependencies settings.",
     "FFMPEG_SYSTEM_MANAGED": "System FFmpeg is managed externally. Update it with your package manager or switch to App managed.",
+    "FFMPEG_CUSTOM_PATH_INVALID": "No working FFmpeg at this path. Choose the ffmpeg program or the folder that contains it.",
     "AI_API_ERROR": "AI API error.",
     "AI_NO_API_KEY": "API key not configured.",
     "AI_NO_TRANSCRIPT": "No transcript available.",
