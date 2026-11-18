@@ -14,7 +14,7 @@ describe('Firefox extension validation', () => {
 
     expect(manifest.browser_specific_settings.gecko.strict_min_version).toBe('140.0');
     expect(manifest.browser_specific_settings.gecko.id).toBe(canonicalAmoId);
-    expect(manifest.version).toBe('0.19.1.37');
+    expect(manifest.version).toBe('0.19.1.39');
     expect(manifest.browser_specific_settings.gecko.update_url).toBeUndefined();
     expect(manifest.browser_specific_settings.gecko_android.strict_min_version).toBe('142.0');
     expect(manifest.browser_specific_settings.gecko.data_collection_permissions).toEqual({
@@ -69,10 +69,10 @@ describe('Firefox extension validation', () => {
 
     expect(update.version).toBe(sourceManifest.version);
     expect(update.update_link).toBe(
-      'https://addons.mozilla.org/firefox/downloads/file/4904844/youwee_download_companion-0.19.1.37.xpi',
+      'https://addons.mozilla.org/firefox/downloads/file/5270622/youwee_download_companion-0.19.1.39.xpi',
     );
     expect(update.update_hash).toBe(
-      'sha256:e71f177072f008d1990762573185f66334be8ce22adf52cbcb575503732dd7fd',
+      'sha256:0c5a0135ba0ad88aa84b4974f87c5caa9c1dc9f584617ec08c5c4b6dca8c8de8',
     );
     expect(update.applications.gecko.strict_min_version).toBe(
       sourceManifest.browser_specific_settings.gecko.strict_min_version,

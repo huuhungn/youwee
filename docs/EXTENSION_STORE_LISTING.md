@@ -4,9 +4,9 @@ This document is the source of truth for the Firefox Add-ons (AMO) and Chrome We
 
 ## Current distribution status
 
-The Firefox add-on is **public and listed on AMO** at <https://addons.mozilla.org/firefox/addon/youwee-download-companion/>. AMO approved version `0.19.1.37`, which is now the canonical stable Firefox channel.
+The Firefox add-on is **public and listed on AMO** at <https://addons.mozilla.org/firefox/addon/youwee-download-companion/>. AMO approved version `0.19.1.39`, which is now the canonical stable Firefox channel.
 
-The Firefox source manifest intentionally omits `update_url`, so Firefox receives future stable updates from AMO. GitHub releases retain a validated one-time `firefox-updates.json` bridge that moves older self-hosted installs to the signed AMO `0.19.1.37` XPI.
+The Firefox source manifest intentionally omits `update_url`, so Firefox receives future stable updates from AMO. GitHub releases retain a validated one-time `firefox-updates.json` bridge that moves older self-hosted installs to the signed AMO `0.19.1.39` XPI.
 
 Use `Youwee-Extension-Firefox-AMO.zip` only when submitting a new, unique listed version. Do not publish new unlisted stable builds or reuse a version that already exists on AMO.
 
