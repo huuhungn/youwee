@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Bundled yt-dlp 2026.10.26** - The Windows Full installer now ships yt-dlp 2026.10.26 instead of 2026.07.04 (checksum-pinned as before). With the old version YouTube refused downloads with a time range (HTTP 403).
+
 ## [0.20.1-custom.18] - 2026-11-18
 
 ### Fixed
