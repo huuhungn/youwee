@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Remember the window size and position** - Youwee reopens with the size, position and maximized state it had when you quit. If the screen it was on is no longer connected, the window opens on the main screen instead of off-screen. The first launch keeps the default size. Idea from imsyy/yt-dlp-gui.
+
 ## [0.20.1-custom.16] - 2026-11-18
 
 ### Added

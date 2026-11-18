@@ -73,6 +73,14 @@ fn should_setup_system_tray() -> bool {
     !commands::is_flatpak_environment()
 }
 
+/// Window geometry restored on the next launch. `VISIBLE` stays off so a CLI
+/// launch keeps the window hidden; a saved position is only applied when a
+/// connected monitor still shows it, otherwise it opens on the main screen.
+fn window_state_flags() -> tauri_plugin_window_state::StateFlags {
+    use tauri_plugin_window_state::StateFlags;
+    StateFlags::SIZE | StateFlags::POSITION | StateFlags::MAXIMIZED
+}
+
 /// Show the main window and restore dock icon if needed
 fn show_main_window(app_handle: &tauri::AppHandle) {
     if let Some(window) = app_handle.get_webview_window("main") {
@@ -199,6 +207,11 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_notification::init())
+        .plugin(
+            tauri_plugin_window_state::Builder::new()
+                .with_state_flags(window_state_flags())
+                .build(),
+        )
         .setup(|app| {
             let updater_cleanup = utils::cleanup_stale_updater_temp_dirs();
             LAUNCHED_AFTER_UPDATE.store(updater_cleanup.current_version_detected, Ordering::SeqCst);
@@ -1019,6 +1032,19 @@ fn rebuild_tray_menu_inner(
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod window_state_tests {
+    use super::*;
+    use tauri_plugin_window_state::StateFlags;
+
+    #[test]
+    fn window_state_restores_geometry_but_never_shows_the_window() {
+        let flags = window_state_flags();
+        assert!(flags.contains(StateFlags::SIZE | StateFlags::POSITION | StateFlags::MAXIMIZED));
+        assert!(!flags.contains(StateFlags::VISIBLE));
+    }
 }
 
 #[cfg(test)]

@@ -44,6 +44,7 @@ uuid = { version = "1", features = ["v4"] }
 chrono = "0.4"
 tauri-plugin-opener = "2.7.3"
 tauri-plugin-notification = "2.8.1"
+tauri-plugin-window-state = "2.5.0"
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp", "gif"] }
 base64 = "0.23"
 ed25519-dalek = "3"
