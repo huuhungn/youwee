@@ -10,6 +10,9 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Thêm mới
 - **Nhớ kích thước và vị trí cửa sổ** - Youwee mở lại với đúng kích thước, vị trí và trạng thái phóng to như lúc bạn thoát. Nếu màn hình chứa cửa sổ không còn được kết nối, cửa sổ sẽ mở trên màn hình chính thay vì nằm ngoài màn hình. Lần chạy đầu tiên giữ kích thước mặc định. Ý tưởng từ imsyy/yt-dlp-gui.
 
+### Thay đổi
+- **Ô khoảng thời gian tải rõ ràng hơn** - Các ô khoảng thời gian (nút cây kéo) của một video trong hàng đợi nay nhận cả số giây như `45`, và khi nhập sai sẽ có dòng báo lỗi ngay bên dưới (sai định dạng, hoặc thời điểm kết thúc không sau thời điểm bắt đầu) thay vì chỉ đổi viền sang màu đỏ. Các ô có tên cho trình đọc màn hình. Khoảng thời gian được lưu dạng M:SS hoặc H:MM:SS, và video vẫn được cắt bằng `--download-sections` của yt-dlp.
+
 ## [0.20.1-custom.16] - 2026-11-18
 
 ### Thêm mới

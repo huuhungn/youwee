@@ -98,7 +98,11 @@
       "title": "Plage de téléchargement",
       "apply": "Appliquer",
       "clear": "Effacer",
-      "duration": "Durée : {{duration}}"
+      "duration": "Durée : {{duration}}",
+      "start": "Temps de début",
+      "end": "Temps de fin",
+      "invalidFormat": "Utilisez des secondes, M:SS ou H:MM:SS.",
+      "endBeforeStart": "Le temps de fin doit être après le temps de début."
     },
     "videosInQueue": "{{count}} vidéo dans la file",
     "videosInQueue_plural": "{{count}} vidéos dans la file",

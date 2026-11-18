@@ -98,7 +98,11 @@
       "title": "下载时间范围",
       "apply": "应用",
       "clear": "清除",
-      "duration": "时长: {{duration}}"
+      "duration": "时长: {{duration}}",
+      "start": "开始时间",
+      "end": "结束时间",
+      "invalidFormat": "请输入秒数、M:SS 或 H:MM:SS。",
+      "endBeforeStart": "结束时间必须晚于开始时间。"
     },
     "videosInQueue": "队列中 {{count}} 个视频",
     "videosInQueue_plural": "队列中 {{count}} 个视频",

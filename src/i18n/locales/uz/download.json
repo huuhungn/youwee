@@ -190,7 +190,11 @@
       "title": "Yuklab olish vaqt oralig'i",
       "apply": "Qoʻllash",
       "clear": "Tozalash",
-      "duration": "Davomiyligi: {{duration}}"
+      "duration": "Davomiyligi: {{duration}}",
+      "start": "Boshlanish vaqti",
+      "end": "Tugash vaqti",
+      "invalidFormat": "Soniya, M:SS yoki H:MM:SS kiriting.",
+      "endBeforeStart": "Tugash vaqti boshlanish vaqtidan keyin bo'lishi kerak."
     },
     "regenerateSummary": "Xulosani qayta yaratish",
     "empty": {

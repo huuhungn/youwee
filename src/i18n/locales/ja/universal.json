@@ -98,7 +98,11 @@
       "title": "ダウンロード範囲 (時間)",
       "apply": "適用",
       "clear": "クリア",
-      "duration": "再生時間: {{duration}}"
+      "duration": "再生時間: {{duration}}",
+      "start": "開始時間",
+      "end": "終了時間",
+      "invalidFormat": "秒数、M:SS、H:MM:SS のいずれかで入力してください。",
+      "endBeforeStart": "終了時間は開始時間より後にしてください。"
     },
     "videosInQueue": "キューに {{count}} 件の動画",
     "videosInQueue_plural": "キューに {{count}} 件の動画",

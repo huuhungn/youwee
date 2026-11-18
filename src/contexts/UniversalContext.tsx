@@ -69,6 +69,7 @@ import { markQueueStopped } from '@/lib/queue-feedback';
 import { customFilenameTemplate, sanitizeQueueFilename } from '@/lib/queue-filename';
 import { QueueRunGuard } from '@/lib/queue-run-guard';
 import { detectExtractorFromUrl, normalizeUniversalUrl, parseUniversalUrls } from '@/lib/sources';
+import { buildDownloadSections } from '@/lib/time-range';
 import type {
   AudioBitrate,
   DownloadDuplicateCandidate,
@@ -1420,9 +1421,8 @@ export function UniversalProvider({ children }: { children: ReactNode }) {
             sponsorblockMark: sponsorBlockArgs.mark,
             // Download sections (time range)
             downloadSections:
-              itemSettings?.timeRangeStart && itemSettings?.timeRangeEnd
-                ? `*${itemSettings.timeRangeStart}-${itemSettings.timeRangeEnd}`
-                : null,
+              buildDownloadSections(itemSettings?.timeRangeStart, itemSettings?.timeRangeEnd) ??
+              null,
             historyId: item.completedHistoryId || null,
             outputCollisionPolicy: item.outputCollisionPolicy ?? 'keep',
             // Title from video info fetch

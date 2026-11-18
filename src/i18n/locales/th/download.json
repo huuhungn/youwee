@@ -190,7 +190,11 @@
       "title": "ช่วงเวลาที่จะดาวน์โหลด",
       "apply": "ใช้",
       "clear": "ล้าง",
-      "duration": "ความยาว: {{duration}}"
+      "duration": "ความยาว: {{duration}}",
+      "start": "เวลาเริ่มต้น",
+      "end": "เวลาสิ้นสุด",
+      "invalidFormat": "ใช้วินาที, M:SS หรือ H:MM:SS",
+      "endBeforeStart": "เวลาสิ้นสุดต้องอยู่หลังเวลาเริ่มต้น"
     },
     "regenerateSummary": "สร้างสรุปใหม่",
     "empty": {

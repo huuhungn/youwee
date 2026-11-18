@@ -98,7 +98,11 @@
       "title": "نطاق وقت التنزيل",
       "apply": "تطبيق",
       "clear": "مسح",
-      "duration": "المدة: {{duration}}"
+      "duration": "المدة: {{duration}}",
+      "start": "وقت البدء",
+      "end": "وقت الانتهاء",
+      "invalidFormat": "استخدم الثواني أو M:SS أو H:MM:SS.",
+      "endBeforeStart": "يجب أن يكون وقت الانتهاء بعد وقت البدء."
     },
     "videosInQueue": "{{count}} فيديو في الطابور",
     "videosInQueue_plural": "{{count}} فيديوهات في الطابور",

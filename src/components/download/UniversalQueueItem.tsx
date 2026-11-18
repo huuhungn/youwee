@@ -21,58 +21,19 @@ import {
   X,
   XCircle,
 } from 'lucide-react';
-import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ChangeEvent, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SchedulePopover } from '@/components/download/SchedulePopover';
 import { SimpleMarkdown } from '@/components/ui/simple-markdown';
 import { useAI } from '@/contexts/AIContext';
 import type { ScheduleConfig } from '@/hooks/useSchedule';
 import { openFileLocation } from '@/lib/open-file-location';
+import { autoFormatTimeInput, parseDurationString, validateTimeRange } from '@/lib/time-range';
 import type { DownloadItem, ItemUniversalSettings } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { FailedLogsButton } from './FailedLogsButton';
 import { SourceBadge } from './SourceBadge';
 import { ThumbnailCompletedBadge, ThumbnailFailedBadge } from './ThumbnailStatusBadge';
-
-// Parse a duration string like "5:30" or "1:05:30" to total seconds
-function parseDurationString(dur: string): number {
-  const parts = dur.split(':').map(Number);
-  if (parts.some(Number.isNaN)) return 0;
-  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-  if (parts.length === 2) return parts[0] * 60 + parts[1];
-  return parts[0] || 0;
-}
-
-// Auto-format digits into M:SS or H:MM:SS
-function autoFormatTimeInput(raw: string): string {
-  const digits = raw.replace(/\D/g, '');
-  if (digits.length === 0) return '';
-  if (digits.length <= 2) return digits;
-  if (digits.length === 3) return `${digits[0]}:${digits.slice(1)}`;
-  if (digits.length === 4) return `${digits.slice(0, 2)}:${digits.slice(2)}`;
-  if (digits.length === 5) return `${digits[0]}:${digits.slice(1, 3)}:${digits.slice(3)}`;
-  return `${digits.slice(0, 2)}:${digits.slice(2, 4)}:${digits.slice(4, 6)}`;
-}
-
-// Validate time string format (M:SS or H:MM:SS) and return seconds, or -1 if invalid
-function parseTimeToSeconds(val: string): number {
-  if (!val) return -1;
-  const match = val.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
-  if (!match) return -1;
-  if (match[3] !== undefined) {
-    // H:MM:SS
-    const h = Number(match[1]);
-    const m = Number(match[2]);
-    const s = Number(match[3]);
-    if (m >= 60 || s >= 60) return -1;
-    return h * 3600 + m * 60 + s;
-  }
-  // M:SS
-  const m = Number(match[1]);
-  const s = Number(match[2]);
-  if (s >= 60) return -1;
-  return m * 60 + s;
-}
 
 // Helper to format file size
 function formatFileSize(bytes: number): string {
@@ -196,8 +157,9 @@ export function UniversalQueueItem({
   const outputFolderName = outputPath ? getFolderName(outputPath) : '';
 
   const handleApplyTimeRange = useCallback(() => {
-    if (timeStart && timeEnd) {
-      onUpdateTimeRange(item.id, timeStart, timeEnd);
+    const range = validateTimeRange(timeStart, timeEnd);
+    if (range.canApply) {
+      onUpdateTimeRange(item.id, range.normalizedStart, range.normalizedEnd);
       setShowTimeRange(false);
     }
   }, [item.id, onUpdateTimeRange, timeStart, timeEnd]);
@@ -287,13 +249,14 @@ export function UniversalQueueItem({
   const isLongVideo = durationSeconds >= 3600;
   const timePlaceholder = isLongVideo ? 'H:MM:SS' : 'M:SS';
 
-  const startSeconds = useMemo(() => parseTimeToSeconds(timeStart), [timeStart]);
-  const endSeconds = useMemo(() => parseTimeToSeconds(timeEnd), [timeEnd]);
-  const isStartValid = timeStart === '' || startSeconds >= 0;
-  const isEndValid = timeEnd === '' || endSeconds >= 0;
-  const isRangeValid =
-    !timeStart || !timeEnd || (startSeconds >= 0 && endSeconds >= 0 && startSeconds < endSeconds);
-  const canApply = timeStart !== '' && timeEnd !== '' && isStartValid && isEndValid && isRangeValid;
+  const {
+    isStartValid,
+    isEndValid,
+    isRangeValid,
+    error: timeRangeError,
+    canApply,
+  } = useMemo(() => validateTimeRange(timeStart, timeEnd), [timeStart, timeEnd]);
+  const timeRangeErrorId = useId();
 
   const handleGenerateSummary = () => {
     if (isGenerating) return;
@@ -757,6 +720,9 @@ export function UniversalQueueItem({
             <input
               type="text"
               placeholder={timePlaceholder}
+              aria-label={t('queue.timeRange.start')}
+              aria-invalid={!!timeStart && (!isStartValid || !isRangeValid)}
+              aria-describedby={timeRangeError ? timeRangeErrorId : undefined}
               value={timeStart}
               onChange={handleTimeStartChange}
               maxLength={8}
@@ -773,6 +739,9 @@ export function UniversalQueueItem({
             <input
               type="text"
               placeholder={timePlaceholder}
+              aria-label={t('queue.timeRange.end')}
+              aria-invalid={!!timeEnd && (!isEndValid || !isRangeValid)}
+              aria-describedby={timeRangeError ? timeRangeErrorId : undefined}
               value={timeEnd}
               onChange={handleTimeEndChange}
               maxLength={8}
@@ -808,6 +777,13 @@ export function UniversalQueueItem({
               </button>
             )}
           </div>
+        )}
+        {showTimeRange && isPending && timeRangeError && (
+          <p id={timeRangeErrorId} className="mt-1 text-xs text-destructive">
+            {timeRangeError === 'format'
+              ? t('queue.timeRange.invalidFormat')
+              : t('queue.timeRange.endBeforeStart')}
+          </p>
         )}
 
         {item.customFilename && !isCompleted && !showRenameEditor && (

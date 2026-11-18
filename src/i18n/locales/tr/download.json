@@ -190,7 +190,11 @@
       "title": "İndirme zaman aralığı",
       "apply": "Uygula",
       "clear": "Temizle",
-      "duration": "Süre: {{duration}}"
+      "duration": "Süre: {{duration}}",
+      "start": "Başlangıç zamanı",
+      "end": "Bitiş zamanı",
+      "invalidFormat": "Saniye, M:SS veya H:MM:SS kullanın.",
+      "endBeforeStart": "Bitiş zamanı başlangıç zamanından sonra olmalıdır."
     },
     "regenerateSummary": "Özeti yeniden oluştur",
     "empty": {
