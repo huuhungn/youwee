@@ -82,6 +82,18 @@ fn extract_time_range(download_sections: &Option<String>) -> Option<String> {
     })
 }
 
+/// Time-range downloads skip the source chapters: they keep the full-length timeline,
+/// so `--embed-metadata` would add a chapter track as long as the whole video.
+fn push_download_sections_args(args: &mut Vec<String>, download_sections: Option<&str>) {
+    if let Some(sections) = download_sections.filter(|sections| !sections.is_empty()) {
+        args.extend([
+            "--download-sections".to_string(),
+            sections.to_string(),
+            "--no-embed-chapters".to_string(),
+        ]);
+    }
+}
+
 #[allow(clippy::too_many_arguments)] // forwards download_video parameters
 async fn skipped_live_status(
     app: &AppHandle,
@@ -3031,13 +3043,7 @@ pub async fn download_video(
         }
     }
 
-    // Download sections (time range)
-    if let Some(ref sections) = download_sections {
-        if !sections.is_empty() {
-            args.push("--download-sections".to_string());
-            args.push(sections.clone());
-        }
-    }
+    push_download_sections_args(&mut args, download_sections.as_deref());
 
     push_facebook_title_replacement_args(&mut args, &url, title.as_deref());
 
@@ -6085,6 +6091,27 @@ mod tests {
             .map(|pair| pair[1].as_str())
             .unwrap();
         assert_eq!(output_path, "home:C:/Downloads");
+    }
+
+    #[test]
+    fn time_range_downloads_skip_source_chapters_and_full_downloads_are_unchanged() {
+        let mut args = vec!["--embed-metadata".to_string()];
+        push_download_sections_args(&mut args, Some("*0:05-0:10"));
+        assert_eq!(
+            args,
+            [
+                "--embed-metadata",
+                "--download-sections",
+                "*0:05-0:10",
+                "--no-embed-chapters"
+            ]
+        );
+
+        for sections in [None, Some("")] {
+            let mut args = vec!["--embed-metadata".to_string()];
+            push_download_sections_args(&mut args, sections);
+            assert_eq!(args, ["--embed-metadata"]);
+        }
     }
 
     #[test]
