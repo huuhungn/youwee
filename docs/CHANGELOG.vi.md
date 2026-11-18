@@ -7,6 +7,9 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Thay đổi
+- **yt-dlp đi kèm 2026.10.26** - Bộ cài Windows Full nay kèm yt-dlp 2026.10.26 thay cho 2026.07.04 (vẫn ghim checksum như trước). Với bản cũ, YouTube từ chối tải khi có khoảng thời gian (lỗi HTTP 403).
+
 ## [0.20.1-custom.18] - 2026-11-18
 
 ### Sửa lỗi
