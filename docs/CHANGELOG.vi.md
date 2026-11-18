@@ -7,8 +7,10 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.20.1-custom.16] - 2026-11-18
+
 ### Thêm mới
-- **Nút tải trên bài đăng X** - Với tiện ích trình duyệt, mỗi bài đăng X (Twitter) có video giờ hiện nút tải Youwee cạnh nút đánh dấu. Nút này tải video của chính bài đăng đó ở chất lượng tốt nhất, kể cả khi đang ở dòng thời gian trang chủ. Trên X, widget nổi không còn hiện ra vì nó chỉ thấy được địa chỉ của dòng thời gian. Port từ upstream v0.21.0.
+- **Nút tải trên bài đăng X** - Với tiện ích trình duyệt, mỗi bài đăng X (Twitter) có video giờ hiện nút tải Youwee cạnh nút đánh dấu. Nút này tải video của chính bài đăng đó ở chất lượng tốt nhất, kể cả khi đang ở dòng thời gian trang chủ. Trên X, widget nổi không còn hiện ra vì nó chỉ thấy được địa chỉ của dòng thời gian. Gói tiện ích Chromium trong bản này đã có tính năng này; tiện ích Firefox sẽ có trong lần cập nhật tiếp theo trên cửa hàng. Port từ upstream v0.21.0.
 - **Đường dẫn FFmpeg tùy chỉnh** - Cài đặt → Phụ thuộc → FFmpeg có thêm nguồn thứ ba, Đường dẫn tùy chỉnh, cho bản FFmpeg di động. Nhập đường dẫn, hoặc chọn chương trình ffmpeg hay thư mục chứa nó. Youwee chạy thử một lần trước khi lưu và từ chối đường dẫn không phải FFmpeg chạy được. Nếu sau này FFmpeg đã lưu không còn chạy, việc tải sẽ chuyển sang FFmpeg của Youwee hoặc của hệ thống thay vì báo lỗi. Youwee không đề xuất cập nhật cho FFmpeg tùy chỉnh. Theo yêu cầu ở issue #80 của upstream; dựa trên fork WasewaseX/youwee.
 
 ### Thay đổi
