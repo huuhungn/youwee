@@ -60,6 +60,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cacheRemoteThumbnailUrl } from '@/lib/asset-access';
 import { extractBackendError, localizeBackendError } from '@/lib/backend-error';
 import { createClientId } from '@/lib/client-id';
+import { scrollBehavior } from '@/lib/motion';
 import { buildCookieProxyInvokeOptions, loadNetworkSettings } from '@/lib/network-config';
 import { openFileLocation } from '@/lib/open-file-location';
 import { extractUrls } from '@/lib/sources';
@@ -955,7 +956,7 @@ export function TikTokLivePage() {
     setError('');
     setStatus('');
     requestAnimationFrame(() => {
-      watchRulesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      watchRulesRef.current?.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
     });
   }, []);
 

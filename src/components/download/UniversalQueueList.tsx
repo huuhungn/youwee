@@ -21,6 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { ScheduleConfig } from '@/hooks/useSchedule';
+import { scrollBehavior } from '@/lib/motion';
 import type { DownloadItem } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import {
@@ -84,7 +85,7 @@ export function UniversalQueueList({
     const target = containerRef.current.querySelector<HTMLElement>(
       `[data-queue-item-id="${focusedItemId}"]`,
     );
-    target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    target?.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
   }, [focusedItemId]);
 
   useEffect(() => {

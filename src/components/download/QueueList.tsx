@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { ScheduleConfig } from '@/hooks/useSchedule';
+import { scrollBehavior } from '@/lib/motion';
 import type { DownloadItem } from '@/lib/types';
 import { QueueItem } from './QueueItem';
 import {
@@ -63,7 +64,7 @@ export function QueueList({
     const target = containerRef.current.querySelector<HTMLElement>(
       `[data-queue-item-id="${focusedItemId}"]`,
     );
-    target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    target?.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
   }, [focusedItemId]);
 
   useEffect(() => {

@@ -762,3 +762,26 @@
 .screen-shake {
   animation: screen-shake 0.2s ease-in-out;
 }
+
+/* Reduce motion when the system asks for it. Spinners and the opacity pulse stay,
+   since they are the only sign that work is in progress; everything that moves,
+   slides, shakes or shimmers ends at once. Animations keep a tiny duration so
+   animationend and transitionend still fire for code that waits on them.
+   Attribute selectors, not class selectors: `@apply animate-pulse` elsewhere would
+   otherwise copy this rule with the class swapped out. */
+@media (prefers-reduced-motion: reduce) {
+  /* biome-ignore-start lint/complexity/noImportantStyles: the system setting must win over every component animation */
+  *:not([class~="animate-spin"]):not([class~="animate-pulse"]),
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* biome-ignore-end lint/complexity/noImportantStyles: the system setting must win over every component animation */
+
+  .card-hover:hover {
+    transform: none;
+  }
+}
