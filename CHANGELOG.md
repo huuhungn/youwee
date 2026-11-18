@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Download buttons on X posts** - With the browser extension, each X (Twitter) post that has a video now shows a Youwee download button next to its bookmark button. It downloads that post's video in the best quality, also from the home timeline. On X the floating widget no longer appears, because it could only see the timeline address. Ported from upstream v0.21.0.
+
 ### Changed
 - **Respect the system "reduce motion" setting** - When macOS, Windows or Linux asks apps to reduce motion, switching between light and dark mode happens at once without the meteor and screen-shake effect, queue and settings jumps no longer glide, and sliding, shimmering and glowing animations end right away. Loading spinners and the pulsing progress dots keep moving, so you can still see that work is in progress.
 
