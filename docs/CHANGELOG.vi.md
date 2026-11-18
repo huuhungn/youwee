@@ -7,6 +7,9 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Sửa lỗi
+- **Cửa sổ cao thêm sau mỗi lần mở (Windows)** - Từ 0.20.1-custom.17, kích thước cửa sổ đã nhớ được áp dụng trước khi Youwee thay thanh tiêu đề của Windows bằng thanh tiêu đề riêng, nên mỗi lần khởi động lại cửa sổ cao thêm khoảng bằng một thanh tiêu đề. Nay kích thước được khôi phục sau bước đó và giữ nguyên qua các lần mở.
+
 ## [0.20.1-custom.17] - 2026-11-18
 
 ### Thêm mới

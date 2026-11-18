@@ -22,6 +22,7 @@ use tauri::menu::{MenuBuilder, MenuItemBuilder, SubmenuBuilder};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{Emitter, Manager};
 use tauri_plugin_deep_link::DeepLinkExt;
+use tauri_plugin_window_state::WindowExt;
 
 /// Whether to hide the dock icon when closing the window (macOS only)
 static HIDE_DOCK_ON_CLOSE: AtomicBool = AtomicBool::new(false);
@@ -210,6 +211,7 @@ pub fn run() {
         .plugin(
             tauri_plugin_window_state::Builder::new()
                 .with_state_flags(window_state_flags())
+                .skip_initial_state("main")
                 .build(),
         )
         .setup(|app| {
@@ -238,6 +240,12 @@ pub fn run() {
             #[cfg(windows)]
             if let Some(window) = app.get_webview_window("main") {
                 let _ = window.set_decorations(false);
+            }
+
+            // Restore the saved geometry only after the title bar is gone: a size
+            // applied while it still exists grows the window by its height on every launch.
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.restore_state(window_state_flags());
             }
 
             // Queue deep links from cold-start arguments so frontend can consume on mount.
