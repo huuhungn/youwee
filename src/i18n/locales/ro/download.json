@@ -190,7 +190,11 @@
       "title": "Interval de timp pentru descărcare",
       "apply": "Aplicați",
       "clear": "Curăță",
-      "duration": "Durata: {{duration}}"
+      "duration": "Durata: {{duration}}",
+      "start": "Momentul de început",
+      "end": "Momentul de sfârșit",
+      "invalidFormat": "Folosiți secunde, M:SS sau H:MM:SS.",
+      "endBeforeStart": "Momentul de sfârșit trebuie să fie după cel de început."
     },
     "regenerateSummary": "Regenerează rezumatul",
     "empty": {

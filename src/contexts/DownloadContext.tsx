@@ -78,6 +78,7 @@ import { markQueueStopped } from '@/lib/queue-feedback';
 import { customFilenameTemplate, sanitizeQueueFilename } from '@/lib/queue-filename';
 import { QueueRunGuard } from '@/lib/queue-run-guard';
 import { extractUrls } from '@/lib/sources';
+import { buildDownloadSections } from '@/lib/time-range';
 import type {
   AudioBitrate,
   CookieSettings,
@@ -1849,9 +1850,8 @@ export function DownloadProvider({ children }: { children: ReactNode }) {
             sponsorblockMark: sponsorBlockArgs.mark,
             // Download sections (time range)
             downloadSections:
-              itemSettings?.timeRangeStart && itemSettings?.timeRangeEnd
-                ? `*${itemSettings.timeRangeStart}-${itemSettings.timeRangeEnd}`
-                : null,
+              buildDownloadSections(itemSettings?.timeRangeStart, itemSettings?.timeRangeEnd) ??
+              null,
             // Restore the exact history row when re-downloading a missing output.
             historyId: item.completedHistoryId || null,
             outputCollisionPolicy: item.outputCollisionPolicy ?? 'keep',

@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Remember the window size and position** - Youwee reopens with the size, position and maximized state it had when you quit. If the screen it was on is no longer connected, the window opens on the main screen instead of off-screen. The first launch keeps the default size. Idea from imsyy/yt-dlp-gui.
 
+### Changed
+- **Clearer download time range fields** - The time range fields (scissors button) on a queued download also accept plain seconds such as `45`, and a wrong entry now says what is wrong below the fields (wrong format, or an end that is not after the start) instead of only turning the border red. The fields have names for screen readers. A range is saved as M:SS or H:MM:SS, and the download is still trimmed by yt-dlp's `--download-sections`.
+
 ## [0.20.1-custom.16] - 2026-11-18
 
 ### Added

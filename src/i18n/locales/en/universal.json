@@ -98,7 +98,11 @@
       "title": "Download time range",
       "apply": "Apply",
       "clear": "Clear",
-      "duration": "Duration: {{duration}}"
+      "duration": "Duration: {{duration}}",
+      "start": "Start time",
+      "end": "End time",
+      "invalidFormat": "Use seconds, M:SS or H:MM:SS.",
+      "endBeforeStart": "The end time must be after the start time."
     },
     "videosInQueue": "{{count}} video in queue",
     "videosInQueue_plural": "{{count}} videos in queue",

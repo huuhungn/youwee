@@ -98,7 +98,11 @@
       "title": "Tải theo phân đoạn",
       "apply": "Áp dụng",
       "clear": "Xóa",
-      "duration": "Thời lượng: {{duration}}"
+      "duration": "Thời lượng: {{duration}}",
+      "start": "Thời điểm bắt đầu",
+      "end": "Thời điểm kết thúc",
+      "invalidFormat": "Nhập số giây, M:SS hoặc H:MM:SS.",
+      "endBeforeStart": "Thời điểm kết thúc phải sau thời điểm bắt đầu."
     },
     "videosInQueue": "{{count}} video trong hàng đợi",
     "videosInQueue_plural": "{{count}} video trong hàng đợi",

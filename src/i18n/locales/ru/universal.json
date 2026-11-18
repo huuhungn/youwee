@@ -98,7 +98,11 @@
       "title": "Диапазон времени загрузки",
       "apply": "Применить",
       "clear": "Сбросить",
-      "duration": "Длительность: {{duration}}"
+      "duration": "Длительность: {{duration}}",
+      "start": "Время начала",
+      "end": "Время окончания",
+      "invalidFormat": "Укажите секунды, M:SS или H:MM:SS.",
+      "endBeforeStart": "Время окончания должно быть позже времени начала."
     },
     "videosInQueue": "{{count}} видео в очереди",
     "videosInQueue_plural": "{{count}} видео в очереди",

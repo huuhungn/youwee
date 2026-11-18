@@ -98,7 +98,11 @@
       "title": "Intervalo de tempo de download",
       "apply": "Aplicar",
       "clear": "Limpar",
-      "duration": "Duração: {{duration}}"
+      "duration": "Duração: {{duration}}",
+      "start": "Tempo inicial",
+      "end": "Tempo final",
+      "invalidFormat": "Use segundos, M:SS ou H:MM:SS.",
+      "endBeforeStart": "O tempo final deve ser depois do tempo inicial."
     },
     "videosInQueue": "{{count}} vídeo na fila",
     "videosInQueue_plural": "{{count}} vídeos na fila",

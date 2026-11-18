@@ -98,7 +98,11 @@
       "title": "Rango de tiempo de descarga",
       "apply": "Aplicar",
       "clear": "Borrar",
-      "duration": "Duración: {{duration}}"
+      "duration": "Duración: {{duration}}",
+      "start": "Tiempo de inicio",
+      "end": "Tiempo de fin",
+      "invalidFormat": "Usa segundos, M:SS o H:MM:SS.",
+      "endBeforeStart": "El tiempo de fin debe ser posterior al de inicio."
     },
     "videosInQueue": "{{count}} vídeo en cola",
     "videosInQueue_plural": "{{count}} vídeos en cola",
