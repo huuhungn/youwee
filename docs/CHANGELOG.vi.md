@@ -7,6 +7,9 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Sửa lỗi
+- **Danh mục launcher Linux** - Desktop entry trên Linux nay khai báo các danh mục `AudioVideo`, `Video` và `Network`, nên Youwee không còn nằm trong mục "Other" của menu ứng dụng. Port từ upstream v0.21.0.
+
 ## [0.20.1-custom.15] - 2026-11-18
 
 ### Thêm mới

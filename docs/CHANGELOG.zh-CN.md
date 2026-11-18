@@ -7,6 +7,9 @@ Youwee 的所有重要更改都将记录在此文件中。
 
 ## [Unreleased]
 
+### 修复
+- **Linux 启动器分类** - Linux 桌面入口现在声明 `AudioVideo`、`Video` 和 `Network` 分类，Youwee 不再显示在应用菜单的“其他”分类中。移植自上游 v0.21.0。
+
 ## [0.20.1-custom.15] - 2026-11-18
 
 ### 新增
