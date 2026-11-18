@@ -1,6 +1,6 @@
 # Upstream 0.21.0 disposition ledger
 
-Status: the three error-message `port` rows (`9b63b1a`, `df8ac79`, `610d73c`) were adapted on branch `chore/upstream-0.21.0-port` and ship in `0.20.1-custom.15`. `7d815e1` was ported afterwards on `port/upstream-0.21.0-filename-position`, `05cb871` on `chore/upstream-0.21.0-deps`, `bb2ab09` and `581dba3` on `feat/upstream-0.21.0-setup-dialog`, `02821b8` on `fix/linux-desktop-categories`, and `fd8dd62` on `feat/extension-x-inline-buttons`. Every other row is ledger only: 3 `port` rows stay open for a later wave, and 17 `record` rows are closed.
+Status: the three error-message `port` rows (`9b63b1a`, `df8ac79`, `610d73c`) were adapted on branch `chore/upstream-0.21.0-port` and ship in `0.20.1-custom.15`. `7d815e1` was ported afterwards on `port/upstream-0.21.0-filename-position`, `05cb871` on `chore/upstream-0.21.0-deps`, `bb2ab09` and `581dba3` on `feat/upstream-0.21.0-setup-dialog`, `02821b8` on `fix/linux-desktop-categories`, and `fd8dd62` on `feat/extension-x-inline-buttons`. Every other row is ledger only: 3 `port` rows were skipped by owner decision on 2026-11-18, and 17 `record` rows are closed. No row is open.
 
 - Fork base: `a4c24f8` (`0.20.1-custom.14`, `origin/main`)
 - Upstream tip: `5fed7ac` (`v0.21.0`, 2026-11-13)
@@ -16,7 +16,7 @@ The fork diverges on purpose, so nothing here is merged or cherry-picked as is. 
 
 | Disposition | Count | Meaning |
 | --- | ---: | --- |
-| port | 7 | Missing behavior or missing file. 3 ported (in `0.20.1-custom.15`), `02821b8` ported later, 3 open or not replayed. |
+| port | 7 | Missing behavior or missing file. 3 ported (in `0.20.1-custom.15`), `02821b8` ported later, 3 skipped by owner decision. |
 | adapt | 5 | Fork has the area. Diff upstream against the fork and take only the missing delta. All 5 ported (`7d815e1`, `05cb871`, `bb2ab09`, `581dba3`, then `fd8dd62`). |
 | record | 17 | Changelog, upstream version identity, or merge commits with no own content. |
 | Total | 29 | |
@@ -33,9 +33,9 @@ None. `git cherry -v a4c24f8 v0.21.0` marks all 14 non-merge commits `+`.
 | `df8ac79` | 2026-10-30 | fix: report YouTube bot check separately from sign-in errors | **Ported on `chore/upstream-0.21.0-port`.** New `YT_BOT_CHECK` code in `types/error.rs`, `parse_ytdlp_error`, `build_download_error_message`, `backend-error.ts`, and all 13 `common.json` files (upstream strings). |
 | `610d73c` | 2026-11-13 | fix: show the real cause when browser cookies can't be read | **Adapted on `chore/upstream-0.21.0-port`.** Backend codes `YT_COOKIE_ACCESS_DENIED` and `YT_COOKIE_PROFILE_NOT_FOUND` with the folder probe, `src/lib/cookie-errors.ts`, and the three-variant dialog translated in 13 locales. The dialog keeps the fork's `ModalShell`. The message fallback keeps the fork's App-Bound/DPAPI coverage (`parse_ytdlp_error`: "failed to" or "could not" decrypt with DPAPI or cookie), which is wider than upstream's `failed to decrypt.*dpapi`. |
 | `02821b8` | 2026-10-29 | fix: add categories to Linux desktop entry | **Ported on `fix/linux-desktop-categories`.** Upstream `src-tauri/linux/youwee.desktop` template as is, `bundle.linux.deb.desktopTemplate` (AppImage reuses it), and the CI `Categories=` check after `fix-deb-deep-link-desktop-entry.sh`, which rewrites only `Exec=` and `MimeType=`. The Flatpak manifest already appends the same categories. |
-| `9e68aea` | 2026-10-30 | feat: embed AppImage update information | **Open, ledger only.** The fork's AppImage repair step embeds no zsync update information and the release uploads no `.zsync`. The upstream line uses `github.repository_owner` and `github.event.repository.name`, so it resolves to `huuhungn/youwee` without edits; needs `zsync` on the runner and a release dry run. |
-| `c121ae1` | 2026-10-30 | fix: read AppImage update information without running it in CI | **Open, ledger only.** CI follow-up of `9e68aea`; port together with it. |
-| `0d2f77b` | 2026-11-13 | feat: add Infistar sponsor to README and AI providers | **Not replayed.** Upstream sponsor placement: README sponsor block, a referral link, and an `Infistar` AI provider (`services/infistar.rs`). It is a sponsorship of upstream, not a fix; add only if the owner wants that provider. |
+| `9e68aea` | 2026-10-30 | feat: embed AppImage update information | **Skipped by owner decision (2026-11-18).** The fork ships its own updater on the `huuhungn/youwee` endpoints, so AppImage zsync update information would duplicate it. The fork's AppImage repair step keeps embedding none and the release uploads no `.zsync`. |
+| `c121ae1` | 2026-10-30 | fix: read AppImage update information without running it in CI | **Skipped by owner decision (2026-11-18).** CI follow-up of `9e68aea`; skipped with it. |
+| `0d2f77b` | 2026-11-13 | feat: add Infistar sponsor to README and AI providers | **Skipped by owner decision (2026-11-18).** Upstream sponsor placement: README sponsor block, a referral link, and an `Infistar` AI provider (`services/infistar.rs`). The sponsorship belongs to upstream, so the fork does not carry it. |
 
 ## Adapt
 
@@ -92,4 +92,4 @@ These fork-only surfaces must still exist after every later port wave:
 
 Port wave 1 (2026-11-17, branch `chore/upstream-0.21.0-port`, release `0.20.1-custom.15`): `9b63b1a` and `df8ac79` ported, `610d73c` adapted. To check fit, each upstream hunk was compared with the fork's copy of `download.rs`, `ytdlp.rs`, `error.rs`, `backend-error.ts`, the two download contexts and `BrowserCookieErrorDialog.tsx`; the Rust hunks applied to code of the same shape, while the dialog and the cookie message pattern were adapted as noted in the Port table. Locale strings were copied from upstream for all 13 locales, and `tests/cookie-errors.test.ts` checks that every locale has every new key. Tested: `bun test`, `bun x tsc -b`, Biome with LF line endings, `cargo check --tests`, `cargo fmt --check`, and CI on the PR head. Not tested: a live bot check, an age-restricted download, or the macOS Full Disk Access path in the packaged app.
 
-Open rows, in suggested order: the AppImage update-information rows `9e68aea` and `c121ae1` together (Ubuntu runner and a release dry run). `02821b8` and `fd8dd62` shipped on their own, since neither depends on them. `0d2f77b` waits for an owner decision.
+No rows are open. `02821b8` and `fd8dd62` shipped on their own. On 2026-11-18 the owner skipped the AppImage update-information rows `9e68aea` and `c121ae1` (the fork's own updater covers updates) and the upstream sponsor row `0d2f77b`.
