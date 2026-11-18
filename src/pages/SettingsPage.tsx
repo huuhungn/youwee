@@ -60,6 +60,7 @@ import { useDownload } from '@/contexts/DownloadContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useUpdater } from '@/contexts/UpdaterContext';
 import { useUpdateStall } from '@/hooks/useAppUpdater';
+import { scrollBehavior } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
 export function SettingsPage({
@@ -93,7 +94,7 @@ export function SettingsPage({
     setTimeout(() => {
       const element = document.getElementById(settingId);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        element.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
       }
       // Clear highlight after animation
       setTimeout(() => setHighlightId(null), 2000);

@@ -7,6 +7,9 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Thay đổi
+- **Tôn trọng cài đặt "giảm chuyển động" của hệ thống** - Khi macOS, Windows hoặc Linux yêu cầu ứng dụng giảm chuyển động, việc chuyển giữa chế độ sáng và tối diễn ra ngay, không còn hiệu ứng thiên thạch và rung màn hình, các thao tác nhảy tới mục trong hàng đợi và cài đặt không còn cuộn trượt, và các hiệu ứng trượt, lấp lánh, phát sáng kết thúc ngay. Biểu tượng đang tải và các chấm tiến độ nhấp nháy vẫn chuyển động để bạn biết công việc đang chạy.
+
 ### Sửa lỗi
 - **Danh mục launcher Linux** - Desktop entry trên Linux nay khai báo các danh mục `AudioVideo`, `Video` và `Network`, nên Youwee không còn nằm trong mục "Other" của menu ứng dụng. Port từ upstream v0.21.0.
 

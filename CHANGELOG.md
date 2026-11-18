@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Respect the system "reduce motion" setting** - When macOS, Windows or Linux asks apps to reduce motion, switching between light and dark mode happens at once without the meteor and screen-shake effect, queue and settings jumps no longer glide, and sliding, shimmering and glowing animations end right away. Loading spinners and the pulsing progress dots keep moving, so you can still see that work is in progress.
+
 ### Fixed
 - **Linux launcher category** - The Linux desktop entry now declares the `AudioVideo`, `Video` and `Network` categories, so Youwee no longer appears under "Other" in application menus. Ported from upstream v0.21.0.
 

@@ -1,6 +1,7 @@
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { prefersReducedMotion } from '@/lib/motion';
 import type { ThemeMode, ThemeName } from '@/lib/themes';
 import { getTheme } from '@/lib/themes';
 
@@ -54,6 +55,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     (newMode: ThemeMode) => {
       // If same mode, do nothing
       if (newMode === mode) return;
+
+      // Reduced motion: switch at once, without the meteor, shake and reveal effects.
+      if (prefersReducedMotion()) {
+        setModeState(newMode);
+        localStorage.setItem(MODE_KEY, newMode);
+        return;
+      }
 
       // Start meteor transition - save old mode for the shrinking overlay
       setOldMode(mode);

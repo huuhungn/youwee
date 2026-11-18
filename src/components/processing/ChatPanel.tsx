@@ -19,6 +19,7 @@ import { type DragEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { scrollBehavior } from '@/lib/motion';
 import { openFileLocation } from '@/lib/open-file-location';
 import type { ChatAttachment, ChatMessage, ProcessingProgress } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -154,7 +155,7 @@ export function ChatPanel({
   // Auto-scroll to bottom when messages change
   useEffect(() => {
     if (messages.length > 0) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.current?.scrollIntoView({ behavior: scrollBehavior() });
     }
   }, [messages]);
 
