@@ -7,6 +7,8 @@ Youwee 的所有重要更改都将记录在此文件中。
 
 ## [Unreleased]
 
+## [0.20.1-custom.19] - 2026-11-18
+
 ### 变更
 - **内置 yt-dlp 2026.10.26** - Windows 完整安装包现在附带 yt-dlp 2026.10.26，取代 2026.07.04（仍按校验和固定）。使用旧版本时，YouTube 会拒绝带时间范围的下载（HTTP 403）。
 - **AMO 上的 Firefox 扩展 0.19.1.39** - Windows 安装包和发布中的 `firefox-updates.json` 过渡文件现在指向 AMO 已批准的公开版本 Youwee Download Companion 0.19.1.39，取代 0.19.1.37。
