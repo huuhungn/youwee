@@ -7,9 +7,6 @@ on:
       - 'flatpak/**'
       - 'scripts/fix-deb-deep-link-desktop-entry.sh'
       - 'src-tauri/**'
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:
